@@ -1,0 +1,618 @@
+# Ukrainian translation of TrustCopy.
+# Copyright (C) 2026 DigitGram
+# This file is distributed under the same license as the TrustCopy package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: TrustCopy 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-10-24\n"
+"Last-Translator: AI-generated, not reviewed by a native speaker\n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. TRANSLATORS: {names} is a list of program names, such as "Nautilus, Nemo"
+#: src/settings.py
+msgid "A restart of {names} applies the change. Open windows close, and running file operations may be cancelled."
+msgstr "Щоб застосувати зміну, потрібно перезапустити: {names}. Відкриті вікна буде закрито, а поточні файлові операції можуть бути скасовані."
+
+#: src/core.py
+msgid "Already in use."
+msgstr "Уже зайнято."
+
+#: src/core.py
+msgid "Copy to…"
+msgstr "Копіювати до…"
+
+#: src/core.py
+msgid "Move to…"
+msgstr "Перемістити до…"
+
+#: src/core.py
+msgid "Paste from clipboard"
+msgstr "Вставити з буфера обміну"
+
+#: src/core.py
+#, python-brace-format
+msgid "Already in use, so not set: {keys}"
+msgstr "Уже зайняті, тому не встановлено: {keys}"
+
+#: src/trustcopy.py
+msgid "TrustCopy needs GTK 4 with libadwaita 1.5 or newer (python3-gi, gir1.2-adw-1)."
+msgstr "TrustCopy потребує GTK 4 з libadwaita 1.5 або новішою (python3-gi, gir1.2-adw-1)."
+
+#: src/ui_gtk.py
+msgid "About TrustCopy"
+msgstr "Про TrustCopy"
+
+#: src/ui_about.py
+msgid "Mascot"
+msgstr "Талісман"
+
+#: src/ui_gtk.py
+msgid "Always close"
+msgstr "Завжди закривати"
+
+#: src/ui_gtk.py
+msgid "Always close the window?"
+msgstr "Завжди закривати вікно?"
+
+#: src/ui_gtk.py
+msgid "Apply to all remaining conflicts"
+msgstr "Застосувати до всіх інших конфліктів"
+
+#: src/ui_gtk.py
+msgid "Are you really sure?"
+msgstr "Ви справді впевнені?"
+
+#: src/ui_gtk.py
+msgid "Ask every time"
+msgstr "Запитувати щоразу"
+
+#: src/ui_gtk.py
+msgid "BLAKE2b (medium)"
+msgstr "BLAKE2b (середній)"
+
+#: src/ui_gtk.py
+msgid "Back to the default values."
+msgstr "Повернення до типових значень."
+
+#: src/ui_gtk.py
+msgid "CRC32 (fast)"
+msgstr "CRC32 (швидкий)"
+
+#: src/ui_gtk.py
+msgid "CRC32 is fastest and catches accidental corruption; BLAKE2b and SHA-256 are cryptographic."
+msgstr "CRC32 найшвидший і виявляє випадкові пошкодження; BLAKE2b і SHA-256 — криптографічні."
+
+#: src/ui_gtk.py
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: src/ui_gtk.py
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#: src/ui_gtk.py
+msgid "Cancelling…"
+msgstr "Скасування…"
+
+#: src/ui_gtk.py
+msgid "Change shortcut"
+msgstr "Змінити комбінацію"
+
+#: src/ui_gtk.py
+msgid "Checksum"
+msgstr "Контрольна сума"
+
+#: src/ui_gtk.py
+msgid "Choose a destination folder…"
+msgstr "Виберіть теку призначення…"
+
+#: src/ui_gtk.py
+msgid "Close"
+msgstr "Закрити"
+
+#: src/ui_gtk.py
+msgid "Close on success"
+msgstr "Закрити за успіху"
+
+#: src/ui_gtk.py
+msgid "Context menu"
+msgstr "Контекстне меню"
+
+#: src/ui_gtk.py
+msgid "Copy and move with a checksum check, a live speed graph and clear answers when a file already exists or fails. Pause, cancel or retry only the files that went wrong."
+msgstr "Копіювання та переміщення файлів із перевіркою контрольних сум, графіком швидкості наживо та зрозумілими повідомленнями, коли файл уже існує або не вдалося його обробити. Призупиніть, скасуйте або повторіть лише ті файли, що не вдалися."
+
+#: src/ui_gtk.py
+msgid "Copying"
+msgstr "Копіювання"
+
+#: src/ui_gtk.py
+msgid "Done"
+msgstr "Готово"
+
+#: src/ui_gtk.py
+msgid "Copied"
+msgstr "Скопійовано"
+
+#: src/ui_gtk.py
+msgid "Waiting"
+msgstr "Очікує"
+
+#: src/panel.py
+msgid "Write speed"
+msgstr "Швидкість запису"
+
+#: src/panel.py
+msgid "Read speed"
+msgstr "Швидкість читання"
+
+#: src/ui_gtk.py
+msgid "Entries"
+msgstr "Пункти"
+
+#: src/ui_gtk.py
+msgid "Existing"
+msgstr "Наявний"
+
+#: src/ui_gtk.py
+msgid "Failed"
+msgstr "Помилка"
+
+#: src/ui_gtk.py
+msgid "File already exists"
+msgstr "Файл уже існує"
+
+#: src/ui_gtk.py
+msgid "Finished with errors"
+msgstr "Завершено з помилками"
+
+#: src/ui_gtk.py
+msgid "General"
+msgstr "Загальні"
+
+#: src/ui_gtk.py
+msgid "If a file exists"
+msgstr "Якщо файл існує"
+
+#: src/ui_gtk.py
+msgid "In a submenu"
+msgstr "У підменю"
+
+#: src/ui_gtk.py
+msgid "In the submenu “TrustCopy” they take one more click."
+msgstr "У підменю «TrustCopy» потрібне ще одне клацання."
+
+#: src/ui_gtk.py
+msgid "Keep both"
+msgstr "Залишити обидва"
+
+#: src/ui_gtk.py
+msgid "Keep open"
+msgstr "Залишати відкритим"
+
+#: src/ui_gtk.py
+msgid "Keyboard shortcuts"
+msgstr "Комбінації клавіш"
+
+#: src/ui_gtk.py
+msgid "Language"
+msgstr "Мова"
+
+#: src/ui_gtk.py
+msgid "Language, checksum and everything else go back to their defaults."
+msgstr "Мову, контрольну суму та решту параметрів буде скинуто до типових значень."
+
+#: src/ui_gtk.py
+msgid "Later"
+msgstr "Пізніше"
+
+#: src/ui_gtk.py
+msgid "Moving"
+msgstr "Переміщення"
+
+#: src/ui_gtk.py
+msgid "New"
+msgstr "Новий"
+
+#: src/ui_gtk.py
+msgid "No"
+msgstr "Ні"
+
+#: src/ui_gtk.py
+msgid "No files to work on."
+msgstr "Немає файлів для обробки."
+
+#: src/ui_gtk.py
+msgid "Notifications"
+msgstr "Сповіщення"
+
+#: src/ui_gtk.py
+msgid "Open folder"
+msgstr "Відкрити теку"
+
+#: src/ui_gtk.py
+msgid "Overwrite"
+msgstr "Замінити"
+
+#: src/ui_gtk.py
+msgid "Overwrite if newer"
+msgstr "Замінити, якщо новіший"
+
+#: src/ui_gtk.py
+msgid "Pause"
+msgstr "Призупинити"
+
+#: src/ui_gtk.py
+msgid "Paused"
+msgstr "Призупинено"
+
+#: src/ui_gtk.py
+msgid "Plays a sound when a job ends."
+msgstr "Відтворює звук, коли завдання завершено."
+
+#: src/ui_gtk.py
+msgid "Press the new shortcut. Esc cancels, Backspace restores the default."
+msgstr "Натисніть нову комбінацію. Esc скасовує, Backspace відновлює типову."
+
+#: src/ui_gtk.py
+msgid "Reading clipboard…"
+msgstr "Читання буфера обміну…"
+
+#: src/ui_gtk.py
+msgid "Reads every copy back from the disk and compares checksums."
+msgstr "Зчитує кожну копію з диска й порівнює контрольні суми."
+
+#: src/ui_gtk.py
+msgid "Reset"
+msgstr "Скинути"
+
+#: src/ui_gtk.py
+msgid "Reset all settings?"
+msgstr "Скинути всі параметри?"
+
+#: src/ui_gtk.py
+msgid "Reset settings"
+msgstr "Скинути параметри"
+
+#: src/ui_gtk.py
+msgid "Restart"
+msgstr "Перезапустити"
+
+#: src/ui_gtk.py
+msgid "Restart the file manager?"
+msgstr "Перезапустити файловий менеджер?"
+
+#: src/ui_gtk.py
+msgid "Resume"
+msgstr "Відновити"
+
+#: src/ui_gtk.py
+msgid "Retry failed"
+msgstr "Повторити невдалі"
+
+#: src/ui_gtk.py
+msgid "SHA-256 (thorough)"
+msgstr "SHA-256 (ретельний)"
+
+#: src/ui_gtk.py
+msgid "Scanning…"
+msgstr "Сканування…"
+
+#: src/ui_gtk.py
+msgid "Settings"
+msgstr "Параметри"
+
+#: src/ui_gtk.py
+msgid "Shows a message when a job ends while the window is in the background."
+msgstr "Показує повідомлення, коли завдання завершується, а вікно у фоновому режимі."
+
+#: src/ui_gtk.py
+msgid "Size"
+msgstr "Розмір"
+
+#: src/ui_gtk.py
+msgid "Skip"
+msgstr "Пропустити"
+
+#: src/ui_gtk.py
+msgid "Skipped"
+msgstr "Пропущено"
+
+#: src/ui_gtk.py
+msgid "Some selected items are not files on this computer. Nothing was started."
+msgstr "Деякі вибрані елементи не є файлами на цьому комп’ютері. Нічого не запущено."
+
+#: src/ui_gtk.py
+msgid "Sound"
+msgstr "Звук"
+
+#: src/ui_gtk.py
+msgid "Source file"
+msgstr "Вихідний файл"
+
+#: src/ui_gtk.py
+msgid "Status"
+msgstr "Стан"
+
+#: src/ui_gtk.py
+msgid "Stopped"
+msgstr "Зупинено"
+
+#: src/ui_gtk.py
+msgid "System default"
+msgstr "Як у системі"
+
+#: src/ui_gtk.py
+msgid "The clipboard has no files."
+msgstr "У буфері обміну немає файлів."
+
+#: src/ui_gtk.py
+msgid "The destination is not a folder on this computer."
+msgstr "Місце призначення не є текою на цьому комп’ютері."
+
+#. TRANSLATORS: "Files" is the name of the GNOME file manager (Nautilus), "Dateien" in German; put the name in quotes the way your language does
+#: src/ui_gtk.py
+msgid "The file manager (“Files”) has to restart to apply the change. Open windows close, and running file operations may be cancelled."
+msgstr "Файловий менеджер («Файли») потрібно перезапустити, щоб застосувати зміну. Відкриті вікна буде закрито, а поточні файлові операції можуть бути скасовані."
+
+#: src/ui_gtk.py
+msgid "The window closes even if files failed – you will no longer see any errors."
+msgstr "Вікно закривається, навіть якщо деякі файли не вдалося обробити, — ви більше не побачите жодних помилок."
+
+#: src/ui_gtk.py
+msgid "Under Scripts"
+msgstr "У «Скриптах»"
+
+#: src/ui_gtk.py
+msgid "Verified"
+msgstr "Перевірено"
+
+#: src/ui_gtk.py
+msgid "Verify"
+msgstr "Перевіряти"
+
+#: src/ui_gtk.py
+msgid "Verify files after copying"
+msgstr "Перевіряти файли після копіювання"
+
+#: src/ui_gtk.py
+msgid "Verifying"
+msgstr "Перевірка"
+
+#: src/ui_gtk.py
+msgid "Waiting for the previous job…"
+msgstr "Очікування попереднього завдання…"
+
+#: src/ui_gtk.py
+msgid "When finished"
+msgstr "Після завершення"
+
+#: src/ui_gtk.py
+msgid "Window"
+msgstr "Вікно"
+
+#: src/ui_gtk.py
+msgid "Yes"
+msgstr "Так"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file copied and verified successfully"
+msgid_plural "{n} files copied and verified successfully"
+msgstr[0] "{n} файл скопійовано та перевірено"
+msgstr[1] "{n} файли скопійовано та перевірено"
+msgstr[2] "{n} файлів скопійовано та перевірено"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file copied successfully"
+msgid_plural "{n} files copied successfully"
+msgstr[0] "{n} файл скопійовано"
+msgstr[1] "{n} файли скопійовано"
+msgstr[2] "{n} файлів скопійовано"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file moved and verified successfully"
+msgid_plural "{n} files moved and verified successfully"
+msgstr[0] "{n} файл переміщено та перевірено"
+msgstr[1] "{n} файли переміщено та перевірено"
+msgstr[2] "{n} файлів переміщено та перевірено"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file moved successfully"
+msgid_plural "{n} files moved successfully"
+msgstr[0] "{n} файл переміщено"
+msgstr[1] "{n} файли переміщено"
+msgstr[2] "{n} файлів переміщено"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file skipped"
+msgid_plural "{n} files skipped"
+msgstr[0] "{n} файл пропущено"
+msgstr[1] "{n} файли пропущено"
+msgstr[2] "{n} файлів пропущено"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file was done before cancelling."
+msgid_plural "{n} files were done before cancelling."
+msgstr[0] "{n} файл було оброблено до скасування."
+msgstr[1] "{n} файли було оброблено до скасування."
+msgstr[2] "{n} файлів було оброблено до скасування."
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{ok} file done, {bad} failed."
+msgid_plural "{ok} files done, {bad} failed."
+msgstr[0] "{ok} файл оброблено, помилок: {bad}."
+msgstr[1] "{ok} файли оброблено, помилок: {bad}."
+msgstr[2] "{ok} файлів оброблено, помилок: {bad}."
+
+#: src/core.py
+msgid "Not found"
+msgstr "Не знайдено"
+
+#: src/core.py
+msgid "Not a regular file (device, socket or pipe)"
+msgstr "Не є звичайним файлом (пристрій, сокет або канал)"
+
+#: src/core.py
+#, python-brace-format
+msgid "Cannot put a folder into itself: {path}"
+msgstr "Не можна помістити теку саму в себе: {path}"
+
+#: src/core.py
+msgid "Checksum mismatch after copy"
+msgstr "Контрольна сума копії не збігається"
+
+#: src/ui_gtk.py
+msgid "Moved instantly"
+msgstr "Переміщено миттєво"
+
+msgid "same partition, nothing to copy"
+msgstr "той самий розділ, копіювати нічого"
+
+#: src/core.py
+msgid "The target file system cannot store links"
+msgstr "Файлова система призначення не може зберігати посилання"
+
+#: src/core.py
+msgid "Not enough space on the target: {need} needed, {free} free"
+msgstr "Недостатньо місця в цільовому розташуванні: потрібно {need}, вільно {free}"
+
+#: src/core.py
+#, python-brace-format
+msgid "Copied, but the source could not be removed: {error}"
+msgstr "Скопійовано, але оригінал не вдалося видалити: {error}"
+
+#: src/core.py
+msgid "Copied, but the source was kept: it was changed after it was read"
+msgstr "Скопійовано, але оригінал збережено: його змінено після зчитування"
+
+#: src/core.py
+msgid "A folder with this name already exists"
+msgstr "Тека з такою назвою вже існує"
+
+#: src/core.py
+msgid "Use Ctrl, Alt or Super with the key."
+msgstr "Поєднайте клавішу з Ctrl, Alt або Super."
+
+#: src/ui_gtk.py
+msgid "“Always close” also closes when files failed."
+msgstr "«Завжди закривати» закриває вікно і тоді, коли файли не вдалося обробити."
+
+#: src/panel.py
+msgid "Not enough data for a reliable speed (it takes 1 MiB or more)"
+msgstr "Замало даних для достовірної швидкості (від 1 MiB)"
+
+#: src/settings.py
+msgid "Only possible in Files (Nautilus)"
+msgstr "Можливо лише у «Файлах» (Nautilus)"
+
+#: src/ui_panel.py
+msgid "Copying {n} file from"
+msgid_plural "Copying {n} files from"
+msgstr[0] "Копіювання {n} файлу з"
+msgstr[1] "Копіювання {n} файлів з"
+msgstr[2] "Копіювання {n} файлів з"
+
+#: src/ui_panel.py
+msgid "Moving {n} file from"
+msgid_plural "Moving {n} files from"
+msgstr[0] "Переміщення {n} файлу з"
+msgstr[1] "Переміщення {n} файлів з"
+msgstr[2] "Переміщення {n} файлів з"
+
+#: src/ui_panel.py
+msgid "to"
+msgstr "до"
+
+#: src/ui_panel.py
+msgid "Files"
+msgstr "Файли"
+
+#: src/ui_panel.py
+msgid "{t} left"
+msgstr "залишилось {t}"
+
+#: src/ui_panel.py
+msgid "{a} of {b}"
+msgstr "{a} з {b}"
+
+#: src/ui_files.py
+msgid "All"
+msgstr "Усі"
+
+#: src/ui_files.py
+msgid "Show in folder"
+msgstr "Показати в теці"
+
+#: src/ui_files.py
+msgid "Source checksum"
+msgstr "Контрольна сума джерела"
+
+#: src/ui_files.py
+msgid "Target checksum"
+msgstr "Контрольна сума призначення"
+
+#: src/ui_files.py
+msgid "Copy source checksum"
+msgstr "Копіювати контрольну суму джерела"
+
+#: src/ui_files.py
+msgid "Copy target checksum"
+msgstr "Копіювати контрольну суму призначення"
+
+#: src/ui_about.py
+msgid "3 more clicks …"
+msgstr "Ще 3 кліки …"
+
+#: src/ui_about.py
+msgid "2 more clicks …"
+msgstr "Ще 2 кліки …"
+
+#: src/ui_about.py
+msgid "1 more click …"
+msgstr "Ще 1 клік …"
+
+#: src/ui_common.py
+msgid "Newer"
+msgstr "Новіший"
+
+#: src/ui_common.py
+msgid "Older"
+msgstr "Старіший"
+
+#: src/ui_common.py
+msgid "Larger"
+msgstr "Більший"
+
+#: src/ui_common.py
+msgid "Smaller"
+msgstr "Менший"
+
+#: src/ui_dialogs.py
+msgid "Saves the new file as “{name}”"
+msgstr "Зберігає новий файл як «{name}»"
+
+#: src/ui_dialogs.py
+msgid "Leaves the existing file as it is"
+msgstr "Залишає наявний файл без змін"
+
+#: src/ui_dialogs.py
+msgid "Replaces it only when the new file is more recent"
+msgstr "Замінює його, лише якщо новий файл новіший"
+
+#: src/ui_dialogs.py
+msgid "Replaces the existing file"
+msgstr "Замінює наявний файл"

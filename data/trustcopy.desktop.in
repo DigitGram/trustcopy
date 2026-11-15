@@ -1,0 +1,29 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=TrustCopy
+GenericName=File copier
+GenericName[de]=Datei-Kopierer
+Comment=Fast, verified copying and moving
+Comment[de]=Schnelles, verifiziertes Kopieren und Verschieben
+Exec="@LAUNCHER@"
+Icon=@ICON@
+StartupNotify=true
+Actions=settings;
+StartupWMClass=@APP_ID@
+Categories=Utility;GTK;
+Keywords=copy;move;verify;checksum;teracopy;
+Keywords[de]=kopieren;verschieben;prüfen;Prüfsumme;
+
+[Desktop Action settings]
+Name=Settings
+Name[de]=Einstellungen
+Name[es]=Ajustes
+Name[fr]=Paramètres
+Name[it]=Impostazioni
+Name[ja]=設定
+Name[pl]=Ustawienia
+Name[pt_BR]=Configurações
+Name[uk]=Параметри
+Name[zh_CN]=设置
+Exec="@LAUNCHER@" settings

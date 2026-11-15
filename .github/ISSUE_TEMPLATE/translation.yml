@@ -1,0 +1,48 @@
+name: Translation fix
+description: A wrong or awkward translation, or a new language
+body:
+- type: markdown
+  attributes:
+    value: German is maintained by the author. All other translations of TrustCopy are first drafts made with an AI assistant
+      and not yet reviewed by native speakers, so corrections are very welcome. A pull request on the `.po` file in `po/`
+      is the fastest way, but an issue works too.
+- type: dropdown
+  id: lang
+  attributes:
+    label: Language
+    options:
+    - Deutsch
+    - Español
+    - Français
+    - Italiano
+    - 日本語
+    - Polski
+    - Português (Brasil)
+    - Українська
+    - 简体中文
+    - English (source strings)
+    - A new language
+  validations:
+    required: true
+- type: input
+  id: where
+  attributes:
+    label: Where is the text?
+    description: The window or dialog, and the English text next to it.
+  validations:
+    required: true
+- type: textarea
+  id: now
+  attributes:
+    label: What does it say now?
+- type: textarea
+  id: better
+  attributes:
+    label: What should it say?
+  validations:
+    required: true
+- type: input
+  id: version
+  attributes:
+    label: TrustCopy version (optional)
+    placeholder: TrustCopy 1.0

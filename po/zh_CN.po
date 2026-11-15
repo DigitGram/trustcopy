@@ -1,0 +1,600 @@
+# Simplified Chinese translation of TrustCopy.
+# Copyright (C) 2026 DigitGram
+# This file is distributed under the same license as the TrustCopy package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: TrustCopy 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-10-24\n"
+"Last-Translator: AI-generated, not reviewed by a native speaker\n"
+"Language-Team: Simplified Chinese\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. TRANSLATORS: {names} is a list of program names, such as "Nautilus, Nemo"
+#: src/settings.py
+msgid "A restart of {names} applies the change. Open windows close, and running file operations may be cancelled."
+msgstr "需要重启 {names} 才能使更改生效。已打开的窗口将被关闭，正在进行的文件操作可能被取消。"
+
+#: src/core.py
+msgid "Already in use."
+msgstr "已被占用。"
+
+#: src/core.py
+msgid "Copy to…"
+msgstr "复制到…"
+
+#: src/core.py
+msgid "Move to…"
+msgstr "移动到…"
+
+#: src/core.py
+msgid "Paste from clipboard"
+msgstr "从剪贴板粘贴"
+
+#: src/core.py
+#, python-brace-format
+msgid "Already in use, so not set: {keys}"
+msgstr "已被占用，未设置：{keys}"
+
+#: src/trustcopy.py
+msgid "TrustCopy needs GTK 4 with libadwaita 1.5 or newer (python3-gi, gir1.2-adw-1)."
+msgstr "TrustCopy 需要 GTK 4 和 libadwaita 1.5 或更高版本（python3-gi、gir1.2-adw-1）。"
+
+#: src/ui_gtk.py
+msgid "About TrustCopy"
+msgstr "关于 TrustCopy"
+
+#: src/ui_about.py
+msgid "Mascot"
+msgstr "吉祥物"
+
+#: src/ui_gtk.py
+msgid "Always close"
+msgstr "始终关闭"
+
+#: src/ui_gtk.py
+msgid "Always close the window?"
+msgstr "始终关闭窗口？"
+
+#: src/ui_gtk.py
+msgid "Apply to all remaining conflicts"
+msgstr "应用于所有剩余冲突"
+
+#: src/ui_gtk.py
+msgid "Are you really sure?"
+msgstr "你真的确定吗？"
+
+#: src/ui_gtk.py
+msgid "Ask every time"
+msgstr "每次询问"
+
+#: src/ui_gtk.py
+msgid "BLAKE2b (medium)"
+msgstr "BLAKE2b（中等）"
+
+#: src/ui_gtk.py
+msgid "Back to the default values."
+msgstr "恢复为默认值。"
+
+#: src/ui_gtk.py
+msgid "CRC32 (fast)"
+msgstr "CRC32（快速）"
+
+#: src/ui_gtk.py
+msgid "CRC32 is fastest and catches accidental corruption; BLAKE2b and SHA-256 are cryptographic."
+msgstr "CRC32 速度最快，可发现意外损坏；BLAKE2b 和 SHA-256 为加密哈希。"
+
+#: src/ui_gtk.py
+msgid "Cancel"
+msgstr "取消"
+
+#: src/ui_gtk.py
+msgid "Cancelled"
+msgstr "已取消"
+
+#: src/ui_gtk.py
+msgid "Cancelling…"
+msgstr "正在取消…"
+
+#: src/ui_gtk.py
+msgid "Change shortcut"
+msgstr "更改快捷键"
+
+#: src/ui_gtk.py
+msgid "Checksum"
+msgstr "校验和"
+
+#: src/ui_gtk.py
+msgid "Choose a destination folder…"
+msgstr "选择目标文件夹…"
+
+#: src/ui_gtk.py
+msgid "Close"
+msgstr "关闭"
+
+#: src/ui_gtk.py
+msgid "Close on success"
+msgstr "成功后关闭"
+
+#: src/ui_gtk.py
+msgid "Context menu"
+msgstr "右键菜单"
+
+#: src/ui_gtk.py
+msgid "Copy and move with a checksum check, a live speed graph and clear answers when a file already exists or fails. Pause, cancel or retry only the files that went wrong."
+msgstr "复制和移动文件，带校验和检查、实时速度图，并在文件已存在或失败时给出清晰提示。可以暂停、取消，或只重试失败的文件。"
+
+#: src/ui_gtk.py
+msgid "Copying"
+msgstr "正在复制"
+
+#: src/ui_gtk.py
+msgid "Done"
+msgstr "完成"
+
+#: src/ui_gtk.py
+msgid "Copied"
+msgstr "已复制"
+
+#: src/ui_gtk.py
+msgid "Waiting"
+msgstr "等待中"
+
+#: src/panel.py
+msgid "Write speed"
+msgstr "写入速度"
+
+#: src/panel.py
+msgid "Read speed"
+msgstr "读取速度"
+
+#: src/ui_gtk.py
+msgid "Entries"
+msgstr "菜单项"
+
+#: src/ui_gtk.py
+msgid "Existing"
+msgstr "现有"
+
+#: src/ui_gtk.py
+msgid "Failed"
+msgstr "失败"
+
+#: src/ui_gtk.py
+msgid "File already exists"
+msgstr "文件已存在"
+
+#: src/ui_gtk.py
+msgid "Finished with errors"
+msgstr "完成，但有错误"
+
+#: src/ui_gtk.py
+msgid "General"
+msgstr "常规"
+
+#: src/ui_gtk.py
+msgid "If a file exists"
+msgstr "文件已存在时"
+
+#: src/ui_gtk.py
+msgid "In a submenu"
+msgstr "子菜单中"
+
+#: src/ui_gtk.py
+msgid "In the submenu “TrustCopy” they take one more click."
+msgstr "放在“TrustCopy”子菜单中时，需要多点一次。"
+
+#: src/ui_gtk.py
+msgid "Keep both"
+msgstr "两者都保留"
+
+#: src/ui_gtk.py
+msgid "Keep open"
+msgstr "保持打开"
+
+#: src/ui_gtk.py
+msgid "Keyboard shortcuts"
+msgstr "键盘快捷键"
+
+#: src/ui_gtk.py
+msgid "Language"
+msgstr "语言"
+
+#: src/ui_gtk.py
+msgid "Language, checksum and everything else go back to their defaults."
+msgstr "语言、校验和及其他所有设置都将恢复为默认值。"
+
+#: src/ui_gtk.py
+msgid "Later"
+msgstr "稍后"
+
+#: src/ui_gtk.py
+msgid "Moving"
+msgstr "正在移动"
+
+#: src/ui_gtk.py
+msgid "New"
+msgstr "新文件"
+
+#: src/ui_gtk.py
+msgid "No"
+msgstr "否"
+
+#: src/ui_gtk.py
+msgid "No files to work on."
+msgstr "没有要处理的文件。"
+
+#: src/ui_gtk.py
+msgid "Notifications"
+msgstr "通知"
+
+#: src/ui_gtk.py
+msgid "Open folder"
+msgstr "打开文件夹"
+
+#: src/ui_gtk.py
+msgid "Overwrite"
+msgstr "覆盖"
+
+#: src/ui_gtk.py
+msgid "Overwrite if newer"
+msgstr "较新时覆盖"
+
+#: src/ui_gtk.py
+msgid "Pause"
+msgstr "暂停"
+
+#: src/ui_gtk.py
+msgid "Paused"
+msgstr "已暂停"
+
+#: src/ui_gtk.py
+msgid "Plays a sound when a job ends."
+msgstr "任务结束时播放提示音。"
+
+#: src/ui_gtk.py
+msgid "Press the new shortcut. Esc cancels, Backspace restores the default."
+msgstr "请按下新的快捷键。Esc 取消，Backspace 恢复默认。"
+
+#: src/ui_gtk.py
+msgid "Reading clipboard…"
+msgstr "正在读取剪贴板…"
+
+#: src/ui_gtk.py
+msgid "Reads every copy back from the disk and compares checksums."
+msgstr "从磁盘重新读取每个副本并比较校验和。"
+
+#: src/ui_gtk.py
+msgid "Reset"
+msgstr "重置"
+
+#: src/ui_gtk.py
+msgid "Reset all settings?"
+msgstr "重置所有设置？"
+
+#: src/ui_gtk.py
+msgid "Reset settings"
+msgstr "重置设置"
+
+#: src/ui_gtk.py
+msgid "Restart"
+msgstr "重启"
+
+#: src/ui_gtk.py
+msgid "Restart the file manager?"
+msgstr "重启文件管理器？"
+
+#: src/ui_gtk.py
+msgid "Resume"
+msgstr "继续"
+
+#: src/ui_gtk.py
+msgid "Retry failed"
+msgstr "重试失败项"
+
+#: src/ui_gtk.py
+msgid "SHA-256 (thorough)"
+msgstr "SHA-256（严格）"
+
+#: src/ui_gtk.py
+msgid "Scanning…"
+msgstr "正在扫描…"
+
+#: src/ui_gtk.py
+msgid "Settings"
+msgstr "设置"
+
+#: src/ui_gtk.py
+msgid "Shows a message when a job ends while the window is in the background."
+msgstr "窗口在后台时，任务结束会显示一条消息。"
+
+#: src/ui_gtk.py
+msgid "Size"
+msgstr "大小"
+
+#: src/ui_gtk.py
+msgid "Skip"
+msgstr "跳过"
+
+#: src/ui_gtk.py
+msgid "Skipped"
+msgstr "已跳过"
+
+#: src/ui_gtk.py
+msgid "Some selected items are not files on this computer. Nothing was started."
+msgstr "所选项目中有些不是这台电脑上的文件。未开始任何操作。"
+
+#: src/ui_gtk.py
+msgid "Sound"
+msgstr "声音"
+
+#: src/ui_gtk.py
+msgid "Source file"
+msgstr "源文件"
+
+#: src/ui_gtk.py
+msgid "Status"
+msgstr "状态"
+
+#: src/ui_gtk.py
+msgid "Stopped"
+msgstr "已停止"
+
+#: src/ui_gtk.py
+msgid "System default"
+msgstr "跟随系统"
+
+#: src/ui_gtk.py
+msgid "The clipboard has no files."
+msgstr "剪贴板中没有文件。"
+
+#: src/ui_gtk.py
+msgid "The destination is not a folder on this computer."
+msgstr "目标不是这台电脑上的文件夹。"
+
+#. TRANSLATORS: "Files" is the name of the GNOME file manager (Nautilus), "Dateien" in German; put the name in quotes the way your language does
+#: src/ui_gtk.py
+msgid "The file manager (“Files”) has to restart to apply the change. Open windows close, and running file operations may be cancelled."
+msgstr "需要重启文件管理器（“文件”）才能使更改生效。已打开的窗口将被关闭，正在进行的文件操作可能被取消。"
+
+#: src/ui_gtk.py
+msgid "The window closes even if files failed – you will no longer see any errors."
+msgstr "即使有文件失败，窗口也会关闭——你将不会再看到任何错误。"
+
+#: src/ui_gtk.py
+msgid "Under Scripts"
+msgstr "脚本中"
+
+#: src/ui_gtk.py
+msgid "Verified"
+msgstr "已验证"
+
+#: src/ui_gtk.py
+msgid "Verify"
+msgstr "验证"
+
+#: src/ui_gtk.py
+msgid "Verify files after copying"
+msgstr "复制后验证文件"
+
+#: src/ui_gtk.py
+msgid "Verifying"
+msgstr "正在验证"
+
+#: src/ui_gtk.py
+msgid "Waiting for the previous job…"
+msgstr "正在等待上一个任务…"
+
+#: src/ui_gtk.py
+msgid "When finished"
+msgstr "完成后"
+
+#: src/ui_gtk.py
+msgid "Window"
+msgstr "窗口"
+
+#: src/ui_gtk.py
+msgid "Yes"
+msgstr "是"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file copied and verified successfully"
+msgid_plural "{n} files copied and verified successfully"
+msgstr[0] "已成功复制并验证 {n} 个文件"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file copied successfully"
+msgid_plural "{n} files copied successfully"
+msgstr[0] "已成功复制 {n} 个文件"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file moved and verified successfully"
+msgid_plural "{n} files moved and verified successfully"
+msgstr[0] "已成功移动并验证 {n} 个文件"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file moved successfully"
+msgid_plural "{n} files moved successfully"
+msgstr[0] "已成功移动 {n} 个文件"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file skipped"
+msgid_plural "{n} files skipped"
+msgstr[0] "已跳过 {n} 个文件"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file was done before cancelling."
+msgid_plural "{n} files were done before cancelling."
+msgstr[0] "取消前已完成 {n} 个文件。"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{ok} file done, {bad} failed."
+msgid_plural "{ok} files done, {bad} failed."
+msgstr[0] "已完成 {ok} 个文件，{bad} 个失败。"
+
+#: src/core.py
+msgid "Not found"
+msgstr "未找到"
+
+#: src/core.py
+msgid "Not a regular file (device, socket or pipe)"
+msgstr "不是普通文件（设备、套接字或管道）"
+
+#: src/core.py
+#, python-brace-format
+msgid "Cannot put a folder into itself: {path}"
+msgstr "不能把文件夹放进它自己里面：{path}"
+
+#: src/core.py
+msgid "Checksum mismatch after copy"
+msgstr "副本的校验和不一致"
+
+#: src/ui_gtk.py
+msgid "Moved instantly"
+msgstr "已立即移动"
+
+msgid "same partition, nothing to copy"
+msgstr "同一分区，无需复制"
+
+#: src/core.py
+msgid "The target file system cannot store links"
+msgstr "目标文件系统无法保存链接"
+
+#: src/core.py
+msgid "Not enough space on the target: {need} needed, {free} free"
+msgstr "目标位置空间不足：需要 {need}，可用 {free}"
+
+#: src/core.py
+#, python-brace-format
+msgid "Copied, but the source could not be removed: {error}"
+msgstr "已复制，但无法删除原文件：{error}"
+
+#: src/core.py
+msgid "Copied, but the source was kept: it was changed after it was read"
+msgstr "已复制，但保留了原文件：它在读取后被修改过"
+
+#: src/core.py
+msgid "A folder with this name already exists"
+msgstr "已存在同名文件夹"
+
+#: src/core.py
+msgid "Use Ctrl, Alt or Super with the key."
+msgstr "请将按键与 Ctrl、Alt 或 Super 组合使用。"
+
+#: src/ui_gtk.py
+msgid "“Always close” also closes when files failed."
+msgstr "“始终关闭”在有文件失败时也会关闭。"
+
+#: src/panel.py
+msgid "Not enough data for a reliable speed (it takes 1 MiB or more)"
+msgstr "数据量太少，无法得出可靠的速度（需要 1 MiB 以上）"
+
+#: src/settings.py
+msgid "Only possible in Files (Nautilus)"
+msgstr "仅在“文件”（Nautilus）中可用"
+
+#: src/ui_panel.py
+msgid "Copying {n} file from"
+msgid_plural "Copying {n} files from"
+msgstr[0] "正在复制 {n} 个文件，从"
+
+#: src/ui_panel.py
+msgid "Moving {n} file from"
+msgid_plural "Moving {n} files from"
+msgstr[0] "正在移动 {n} 个文件，从"
+
+#: src/ui_panel.py
+msgid "to"
+msgstr "到"
+
+#: src/ui_panel.py
+msgid "Files"
+msgstr "文件"
+
+#: src/ui_panel.py
+msgid "{t} left"
+msgstr "剩余 {t}"
+
+#: src/ui_panel.py
+msgid "{a} of {b}"
+msgstr "{a} / {b}"
+
+#: src/ui_files.py
+msgid "All"
+msgstr "全部"
+
+#: src/ui_files.py
+msgid "Show in folder"
+msgstr "在文件夹中显示"
+
+#: src/ui_files.py
+msgid "Source checksum"
+msgstr "源校验和"
+
+#: src/ui_files.py
+msgid "Target checksum"
+msgstr "目标校验和"
+
+#: src/ui_files.py
+msgid "Copy source checksum"
+msgstr "复制源校验和"
+
+#: src/ui_files.py
+msgid "Copy target checksum"
+msgstr "复制目标校验和"
+
+#: src/ui_about.py
+msgid "3 more clicks …"
+msgstr "还需点击 3 次 …"
+
+#: src/ui_about.py
+msgid "2 more clicks …"
+msgstr "还需点击 2 次 …"
+
+#: src/ui_about.py
+msgid "1 more click …"
+msgstr "还需点击 1 次 …"
+
+#: src/ui_common.py
+msgid "Newer"
+msgstr "更新"
+
+#: src/ui_common.py
+msgid "Older"
+msgstr "更旧"
+
+#: src/ui_common.py
+msgid "Larger"
+msgstr "更大"
+
+#: src/ui_common.py
+msgid "Smaller"
+msgstr "更小"
+
+#: src/ui_dialogs.py
+msgid "Saves the new file as “{name}”"
+msgstr "将新文件保存为“{name}”"
+
+#: src/ui_dialogs.py
+msgid "Leaves the existing file as it is"
+msgstr "保留现有文件不变"
+
+#: src/ui_dialogs.py
+msgid "Replaces it only when the new file is more recent"
+msgstr "仅当新文件更新时才替换"
+
+#: src/ui_dialogs.py
+msgid "Replaces the existing file"
+msgstr "替换现有文件"

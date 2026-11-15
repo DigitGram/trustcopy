@@ -1,0 +1,113 @@
+name: Bug report
+description: Something in TrustCopy does not work as expected
+labels:
+- bug
+body:
+- type: markdown
+  attributes:
+    value: Thanks for reporting! The more of this you fill in, the faster TrustCopy gets fixed. Please search the existing
+      issues first.
+- type: textarea
+  id: what
+  attributes:
+    label: What happened?
+    description: A short description of the problem. What did you expect instead?
+  validations:
+    required: true
+- type: textarea
+  id: steps
+  attributes:
+    label: Steps to reproduce
+    placeholder: '1. Select ...
+
+      2. Right-click > Scripts > ...
+
+      3. ...'
+  validations:
+    required: true
+- type: dropdown
+  id: area
+  attributes:
+    label: Where does it happen?
+    options:
+    - Copying or moving
+    - Verification (checksum check)
+    - Conflict dialog
+    - Progress window, speed graph or file list
+    - Settings
+    - Right-click menu / keyboard shortcuts
+    - Installation
+    - Other
+  validations:
+    required: true
+- type: input
+  id: version
+  attributes:
+    label: TrustCopy version
+    description: Output of `trustcopy --version`
+    placeholder: TrustCopy 1.0
+  validations:
+    required: true
+- type: dropdown
+  id: install
+  attributes:
+    label: How did you install it?
+    options:
+    - One-line installer (curl/wget)
+    - git clone + ./install.sh
+    - Other
+- type: input
+  id: os
+  attributes:
+    label: Distribution and version
+    description: For example Ubuntu 24.04 or Fedora 40. `cat /etc/os-release` shows it.
+    placeholder: Ubuntu 24.04
+  validations:
+    required: true
+- type: input
+  id: desktop
+  attributes:
+    label: Desktop and file manager
+    description: For example GNOME 46 with Nautilus 46, or Cinnamon with Nemo.
+    placeholder: GNOME 46, Nautilus 46
+  validations:
+    required: true
+- type: input
+  id: libs
+  attributes:
+    label: GTK, libadwaita and Python versions (optional)
+    description: '`python3 -c "import gi; gi.require_version(''Adw'',''1''); from gi.repository import Adw; print(''libadwaita'',
+      Adw.get_major_version(), Adw.get_minor_version(), Adw.get_micro_version())"` and `python3 --version`'
+    placeholder: libadwaita 1.5.0, Python 3.12
+- type: dropdown
+  id: storage
+  attributes:
+    label: What kind of storage is involved? (optional)
+    options:
+    - Local disk (SSD/HDD)
+    - USB stick or external drive
+    - Network share (SMB/NFS)
+    - Other
+- type: input
+  id: fs
+  attributes:
+    label: File systems (optional)
+    description: For example ext4 to NTFS, or btrfs to SMB share.
+- type: textarea
+  id: log
+  attributes:
+    label: Terminal output (optional)
+    description: Start `trustcopy` from a terminal, repeat the problem and paste anything it prints.
+    render: shell
+- type: textarea
+  id: shots
+  attributes:
+    label: Screenshots (optional)
+    description: Drag and drop images here.
+- type: checkboxes
+  id: dupes
+  attributes:
+    label: Before sending
+    options:
+    - label: I searched the existing issues and found none for this problem
+      required: true

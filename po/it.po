@@ -1,0 +1,609 @@
+# Italian translation of TrustCopy.
+# Copyright (C) 2026 DigitGram
+# This file is distributed under the same license as the TrustCopy package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: TrustCopy 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-10-24\n"
+"Last-Translator: AI-generated, not reviewed by a native speaker\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. TRANSLATORS: {names} is a list of program names, such as "Nautilus, Nemo"
+#: src/settings.py
+msgid "A restart of {names} applies the change. Open windows close, and running file operations may be cancelled."
+msgstr "Per applicare la modifica occorre riavviare {names}. Le finestre aperte verranno chiuse e le operazioni sui file in corso potrebbero essere annullate."
+
+#: src/core.py
+msgid "Already in use."
+msgstr "Già in uso."
+
+#: src/core.py
+msgid "Copy to…"
+msgstr "Copia in…"
+
+#: src/core.py
+msgid "Move to…"
+msgstr "Sposta in…"
+
+#: src/core.py
+msgid "Paste from clipboard"
+msgstr "Incolla dagli appunti"
+
+#: src/core.py
+#, python-brace-format
+msgid "Already in use, so not set: {keys}"
+msgstr "Già in uso, quindi non impostate: {keys}"
+
+#: src/trustcopy.py
+msgid "TrustCopy needs GTK 4 with libadwaita 1.5 or newer (python3-gi, gir1.2-adw-1)."
+msgstr "TrustCopy richiede GTK 4 con libadwaita 1.5 o successiva (python3-gi, gir1.2-adw-1)."
+
+#: src/ui_gtk.py
+msgid "About TrustCopy"
+msgstr "Informazioni su TrustCopy"
+
+#: src/ui_about.py
+msgid "Mascot"
+msgstr "Mascotte"
+
+#: src/ui_gtk.py
+msgid "Always close"
+msgstr "Chiudi sempre"
+
+#: src/ui_gtk.py
+msgid "Always close the window?"
+msgstr "Chiudere sempre la finestra?"
+
+#: src/ui_gtk.py
+msgid "Apply to all remaining conflicts"
+msgstr "Applica a tutti i conflitti rimanenti"
+
+#: src/ui_gtk.py
+msgid "Are you really sure?"
+msgstr "Sei davvero sicuro?"
+
+#: src/ui_gtk.py
+msgid "Ask every time"
+msgstr "Chiedi ogni volta"
+
+#: src/ui_gtk.py
+msgid "BLAKE2b (medium)"
+msgstr "BLAKE2b (medio)"
+
+#: src/ui_gtk.py
+msgid "Back to the default values."
+msgstr "Ripristina i valori predefiniti."
+
+#: src/ui_gtk.py
+msgid "CRC32 (fast)"
+msgstr "CRC32 (veloce)"
+
+#: src/ui_gtk.py
+msgid "CRC32 is fastest and catches accidental corruption; BLAKE2b and SHA-256 are cryptographic."
+msgstr "CRC32 è il più veloce e rileva i danneggiamenti accidentali; BLAKE2b e SHA-256 sono crittografici."
+
+#: src/ui_gtk.py
+msgid "Cancel"
+msgstr "Annulla"
+
+#: src/ui_gtk.py
+msgid "Cancelled"
+msgstr "Annullato"
+
+#: src/ui_gtk.py
+msgid "Cancelling…"
+msgstr "Annullamento…"
+
+#: src/ui_gtk.py
+msgid "Change shortcut"
+msgstr "Cambia scorciatoia"
+
+#: src/ui_gtk.py
+msgid "Checksum"
+msgstr "Checksum"
+
+#: src/ui_gtk.py
+msgid "Choose a destination folder…"
+msgstr "Scegli una cartella di destinazione…"
+
+#: src/ui_gtk.py
+msgid "Close"
+msgstr "Chiudi"
+
+#: src/ui_gtk.py
+msgid "Close on success"
+msgstr "Chiudi se riuscito"
+
+#: src/ui_gtk.py
+msgid "Context menu"
+msgstr "Menu contestuale"
+
+#: src/ui_gtk.py
+msgid "Copy and move with a checksum check, a live speed graph and clear answers when a file already exists or fails. Pause, cancel or retry only the files that went wrong."
+msgstr "Copia e sposta file con controllo del checksum, un grafico della velocità in tempo reale e messaggi chiari quando un file esiste già o non riesce. Metti in pausa, annulla o riprova solo i file non riusciti."
+
+#: src/ui_gtk.py
+msgid "Copying"
+msgstr "Copia in corso"
+
+#: src/ui_gtk.py
+msgid "Done"
+msgstr "Fatto"
+
+#: src/ui_gtk.py
+msgid "Copied"
+msgstr "Copiato"
+
+#: src/ui_gtk.py
+msgid "Waiting"
+msgstr "In attesa"
+
+#: src/panel.py
+msgid "Write speed"
+msgstr "Velocità di scrittura"
+
+#: src/panel.py
+msgid "Read speed"
+msgstr "Velocità di lettura"
+
+#: src/ui_gtk.py
+msgid "Entries"
+msgstr "Voci"
+
+#: src/ui_gtk.py
+msgid "Existing"
+msgstr "Esistente"
+
+#: src/ui_gtk.py
+msgid "Failed"
+msgstr "Errore"
+
+#: src/ui_gtk.py
+msgid "File already exists"
+msgstr "Il file esiste già"
+
+#: src/ui_gtk.py
+msgid "Finished with errors"
+msgstr "Terminato con errori"
+
+#: src/ui_gtk.py
+msgid "General"
+msgstr "Generale"
+
+#: src/ui_gtk.py
+msgid "If a file exists"
+msgstr "Se un file esiste"
+
+#: src/ui_gtk.py
+msgid "In a submenu"
+msgstr "In un sottomenu"
+
+#: src/ui_gtk.py
+msgid "In the submenu “TrustCopy” they take one more click."
+msgstr "Nel sottomenu «TrustCopy» serve un clic in più."
+
+#: src/ui_gtk.py
+msgid "Keep both"
+msgstr "Mantieni entrambi"
+
+#: src/ui_gtk.py
+msgid "Keep open"
+msgstr "Lascia aperta"
+
+#: src/ui_gtk.py
+msgid "Keyboard shortcuts"
+msgstr "Scorciatoie da tastiera"
+
+#: src/ui_gtk.py
+msgid "Language"
+msgstr "Lingua"
+
+#: src/ui_gtk.py
+msgid "Language, checksum and everything else go back to their defaults."
+msgstr "Lingua, checksum e tutto il resto tornano ai valori predefiniti."
+
+#: src/ui_gtk.py
+msgid "Later"
+msgstr "Più tardi"
+
+#: src/ui_gtk.py
+msgid "Moving"
+msgstr "Spostamento"
+
+#: src/ui_gtk.py
+msgid "New"
+msgstr "Nuovo"
+
+#: src/ui_gtk.py
+msgid "No"
+msgstr "No"
+
+#: src/ui_gtk.py
+msgid "No files to work on."
+msgstr "Nessun file da elaborare."
+
+#: src/ui_gtk.py
+msgid "Notifications"
+msgstr "Notifiche"
+
+#: src/ui_gtk.py
+msgid "Open folder"
+msgstr "Apri cartella"
+
+#: src/ui_gtk.py
+msgid "Overwrite"
+msgstr "Sovrascrivi"
+
+#: src/ui_gtk.py
+msgid "Overwrite if newer"
+msgstr "Sovrascrivi se più recente"
+
+#: src/ui_gtk.py
+msgid "Pause"
+msgstr "Pausa"
+
+#: src/ui_gtk.py
+msgid "Paused"
+msgstr "In pausa"
+
+#: src/ui_gtk.py
+msgid "Plays a sound when a job ends."
+msgstr "Riproduce un suono al termine di un lavoro."
+
+#: src/ui_gtk.py
+msgid "Press the new shortcut. Esc cancels, Backspace restores the default."
+msgstr "Premi la nuova scorciatoia. Esc annulla, Backspace ripristina il valore predefinito."
+
+#: src/ui_gtk.py
+msgid "Reading clipboard…"
+msgstr "Lettura degli appunti…"
+
+#: src/ui_gtk.py
+msgid "Reads every copy back from the disk and compares checksums."
+msgstr "Rilegge ogni copia dal disco e confronta i checksum."
+
+#: src/ui_gtk.py
+msgid "Reset"
+msgstr "Ripristina"
+
+#: src/ui_gtk.py
+msgid "Reset all settings?"
+msgstr "Ripristinare tutte le impostazioni?"
+
+#: src/ui_gtk.py
+msgid "Reset settings"
+msgstr "Ripristina impostazioni"
+
+#: src/ui_gtk.py
+msgid "Restart"
+msgstr "Riavvia"
+
+#: src/ui_gtk.py
+msgid "Restart the file manager?"
+msgstr "Riavviare il gestore di file?"
+
+#: src/ui_gtk.py
+msgid "Resume"
+msgstr "Riprendi"
+
+#: src/ui_gtk.py
+msgid "Retry failed"
+msgstr "Riprova quelli falliti"
+
+#: src/ui_gtk.py
+msgid "SHA-256 (thorough)"
+msgstr "SHA-256 (approfondito)"
+
+#: src/ui_gtk.py
+msgid "Scanning…"
+msgstr "Scansione…"
+
+#: src/ui_gtk.py
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: src/ui_gtk.py
+msgid "Shows a message when a job ends while the window is in the background."
+msgstr "Mostra un messaggio al termine di un lavoro quando la finestra è in secondo piano."
+
+#: src/ui_gtk.py
+msgid "Size"
+msgstr "Dimensione"
+
+#: src/ui_gtk.py
+msgid "Skip"
+msgstr "Salta"
+
+#: src/ui_gtk.py
+msgid "Skipped"
+msgstr "Saltato"
+
+#: src/ui_gtk.py
+msgid "Some selected items are not files on this computer. Nothing was started."
+msgstr "Alcuni elementi selezionati non sono file di questo computer. Non è stato avviato nulla."
+
+#: src/ui_gtk.py
+msgid "Sound"
+msgstr "Suono"
+
+#: src/ui_gtk.py
+msgid "Source file"
+msgstr "File di origine"
+
+#: src/ui_gtk.py
+msgid "Status"
+msgstr "Stato"
+
+#: src/ui_gtk.py
+msgid "Stopped"
+msgstr "Interrotto"
+
+#: src/ui_gtk.py
+msgid "System default"
+msgstr "Predefinito di sistema"
+
+#: src/ui_gtk.py
+msgid "The clipboard has no files."
+msgstr "Gli appunti non contengono file."
+
+#: src/ui_gtk.py
+msgid "The destination is not a folder on this computer."
+msgstr "La destinazione non è una cartella su questo computer."
+
+#. TRANSLATORS: "Files" is the name of the GNOME file manager (Nautilus), "Dateien" in German; put the name in quotes the way your language does
+#: src/ui_gtk.py
+msgid "The file manager (“Files”) has to restart to apply the change. Open windows close, and running file operations may be cancelled."
+msgstr "Il gestore di file (“File”) deve essere riavviato per applicare la modifica. Le finestre aperte verranno chiuse e le operazioni sui file in corso potrebbero essere annullate."
+
+#: src/ui_gtk.py
+msgid "The window closes even if files failed – you will no longer see any errors."
+msgstr "La finestra si chiude anche se alcuni file sono falliti: non vedrai più alcun errore."
+
+#: src/ui_gtk.py
+msgid "Under Scripts"
+msgstr "In Script"
+
+#: src/ui_gtk.py
+msgid "Verified"
+msgstr "Verificato"
+
+#: src/ui_gtk.py
+msgid "Verify"
+msgstr "Verifica"
+
+#: src/ui_gtk.py
+msgid "Verify files after copying"
+msgstr "Verifica i file dopo la copia"
+
+#: src/ui_gtk.py
+msgid "Verifying"
+msgstr "Verifica in corso"
+
+#: src/ui_gtk.py
+msgid "Waiting for the previous job…"
+msgstr "In attesa del lavoro precedente…"
+
+#: src/ui_gtk.py
+msgid "When finished"
+msgstr "Al termine"
+
+#: src/ui_gtk.py
+msgid "Window"
+msgstr "Finestra"
+
+#: src/ui_gtk.py
+msgid "Yes"
+msgstr "Sì"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file copied and verified successfully"
+msgid_plural "{n} files copied and verified successfully"
+msgstr[0] "{n} file copiato e verificato correttamente"
+msgstr[1] "{n} file copiati e verificati correttamente"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file copied successfully"
+msgid_plural "{n} files copied successfully"
+msgstr[0] "{n} file copiato correttamente"
+msgstr[1] "{n} file copiati correttamente"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file moved and verified successfully"
+msgid_plural "{n} files moved and verified successfully"
+msgstr[0] "{n} file spostato e verificato correttamente"
+msgstr[1] "{n} file spostati e verificati correttamente"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file moved successfully"
+msgid_plural "{n} files moved successfully"
+msgstr[0] "{n} file spostato correttamente"
+msgstr[1] "{n} file spostati correttamente"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file skipped"
+msgid_plural "{n} files skipped"
+msgstr[0] "{n} file saltato"
+msgstr[1] "{n} file saltati"
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{n} file was done before cancelling."
+msgid_plural "{n} files were done before cancelling."
+msgstr[0] "{n} file era completato prima dell’annullamento."
+msgstr[1] "{n} file erano completati prima dell’annullamento."
+
+#: src/ui_gtk.py
+#, python-brace-format
+msgid "{ok} file done, {bad} failed."
+msgid_plural "{ok} files done, {bad} failed."
+msgstr[0] "{ok} file completato, {bad} con errore."
+msgstr[1] "{ok} file completati, {bad} con errore."
+
+#: src/core.py
+msgid "Not found"
+msgstr "Non trovato"
+
+#: src/core.py
+msgid "Not a regular file (device, socket or pipe)"
+msgstr "Non è un file normale (dispositivo, socket o pipe)"
+
+#: src/core.py
+#, python-brace-format
+msgid "Cannot put a folder into itself: {path}"
+msgstr "Impossibile mettere una cartella dentro se stessa: {path}"
+
+#: src/core.py
+msgid "Checksum mismatch after copy"
+msgstr "Il checksum della copia non corrisponde"
+
+#: src/ui_gtk.py
+msgid "Moved instantly"
+msgstr "Spostato subito"
+
+msgid "same partition, nothing to copy"
+msgstr "stessa partizione, niente da copiare"
+
+#: src/core.py
+msgid "The target file system cannot store links"
+msgstr "Il file system di destinazione non può memorizzare collegamenti"
+
+#: src/core.py
+msgid "Not enough space on the target: {need} needed, {free} free"
+msgstr "Spazio insufficiente sulla destinazione: servono {need}, liberi {free}"
+
+#: src/core.py
+#, python-brace-format
+msgid "Copied, but the source could not be removed: {error}"
+msgstr "Copiato, ma non è stato possibile rimuovere l'originale: {error}"
+
+#: src/core.py
+msgid "Copied, but the source was kept: it was changed after it was read"
+msgstr "Copiato, ma l'originale è stato mantenuto: è stato modificato dopo la lettura"
+
+#: src/core.py
+msgid "A folder with this name already exists"
+msgstr "Esiste già una cartella con questo nome"
+
+#: src/core.py
+msgid "Use Ctrl, Alt or Super with the key."
+msgstr "Combina il tasto con Ctrl, Alt o Super."
+
+#: src/ui_gtk.py
+msgid "“Always close” also closes when files failed."
+msgstr "«Chiudi sempre» chiude anche se alcuni file sono falliti."
+
+#: src/panel.py
+msgid "Not enough data for a reliable speed (it takes 1 MiB or more)"
+msgstr "Dati insufficienti per una velocità affidabile (da 1 MiB in su)"
+
+#: src/settings.py
+msgid "Only possible in Files (Nautilus)"
+msgstr "Possibile solo in File (Nautilus)"
+
+#: src/ui_panel.py
+msgid "Copying {n} file from"
+msgid_plural "Copying {n} files from"
+msgstr[0] "Copia di {n} file da"
+msgstr[1] "Copia di {n} file da"
+
+#: src/ui_panel.py
+msgid "Moving {n} file from"
+msgid_plural "Moving {n} files from"
+msgstr[0] "Spostamento di {n} file da"
+msgstr[1] "Spostamento di {n} file da"
+
+#: src/ui_panel.py
+msgid "to"
+msgstr "a"
+
+#: src/ui_panel.py
+msgid "Files"
+msgstr "File"
+
+#: src/ui_panel.py
+msgid "{t} left"
+msgstr "{t} rimanenti"
+
+#: src/ui_panel.py
+msgid "{a} of {b}"
+msgstr "{a} di {b}"
+
+#: src/ui_files.py
+msgid "All"
+msgstr "Tutti"
+
+#: src/ui_files.py
+msgid "Show in folder"
+msgstr "Mostra nella cartella"
+
+#: src/ui_files.py
+msgid "Source checksum"
+msgstr "Checksum sorgente"
+
+#: src/ui_files.py
+msgid "Target checksum"
+msgstr "Checksum destinazione"
+
+#: src/ui_files.py
+msgid "Copy source checksum"
+msgstr "Copia checksum sorgente"
+
+#: src/ui_files.py
+msgid "Copy target checksum"
+msgstr "Copia checksum destinazione"
+
+#: src/ui_about.py
+msgid "3 more clicks …"
+msgstr "Ancora 3 clic …"
+
+#: src/ui_about.py
+msgid "2 more clicks …"
+msgstr "Ancora 2 clic …"
+
+#: src/ui_about.py
+msgid "1 more click …"
+msgstr "Ancora 1 clic …"
+
+#: src/ui_common.py
+msgid "Newer"
+msgstr "Più recente"
+
+#: src/ui_common.py
+msgid "Older"
+msgstr "Più vecchio"
+
+#: src/ui_common.py
+msgid "Larger"
+msgstr "Più grande"
+
+#: src/ui_common.py
+msgid "Smaller"
+msgstr "Più piccolo"
+
+#: src/ui_dialogs.py
+msgid "Saves the new file as “{name}”"
+msgstr "Salva il nuovo file come «{name}»"
+
+#: src/ui_dialogs.py
+msgid "Leaves the existing file as it is"
+msgstr "Lascia invariato il file esistente"
+
+#: src/ui_dialogs.py
+msgid "Replaces it only when the new file is more recent"
+msgstr "Lo sostituisce solo se il nuovo file è più recente"
+
+#: src/ui_dialogs.py
+msgid "Replaces the existing file"
+msgstr "Sostituisce il file esistente"

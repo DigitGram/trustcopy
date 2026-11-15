@@ -1,0 +1,30 @@
+name: release
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  attach:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      # the one-liner downloads install.sh from the latest release; it installs the tag v$VERSION, so the tag must be exactly that
+      - name: install.sh must name the tag it is attached to
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: test "v$(sed -n 's/^VERSION="\([^"]*\)".*/\1/p' install.sh)" = "$TAG"
+      # a tag can be moved to other code later; the commit names exactly this one, so the signature on install.sh covers the program too
+      - name: pin the commit in the install.sh that gets attached
+        run: |
+          sed -i "s/^COMMIT=\"\"/COMMIT=\"$(git rev-parse HEAD)\"/" install.sh
+          grep -qE '^COMMIT="[0-9a-f]{40}"' install.sh
+      - name: attach install.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" install.sh --clobber

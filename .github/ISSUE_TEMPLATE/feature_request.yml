@@ -1,0 +1,53 @@
+name: Feature request
+description: Suggest an improvement or a new feature
+labels:
+- enhancement
+body:
+- type: markdown
+  attributes:
+    value: Ideas are welcome. TrustCopy is a small, focused tool, so please describe the problem you want solved, not only
+      the solution.
+- type: textarea
+  id: problem
+  attributes:
+    label: What do you want to do?
+    description: Describe the situation where you are missing something.
+  validations:
+    required: true
+- type: textarea
+  id: idea
+  attributes:
+    label: What would you like to see?
+    description: An idea, a mock-up or a reference to a similar tool is welcome.
+- type: textarea
+  id: alt
+  attributes:
+    label: What do you do today instead?
+    description: Workarounds and alternatives you tried.
+- type: dropdown
+  id: kind
+  attributes:
+    label: Is this about
+    options:
+    - Copying or moving
+    - Verification
+    - The windows
+    - Settings
+    - Something else
+- type: input
+  id: version
+  attributes:
+    label: TrustCopy version (optional)
+    placeholder: TrustCopy 1.0
+- type: textarea
+  id: shots
+  attributes:
+    label: Screenshots or mock-ups (optional)
+    description: Drag and drop images here.
+- type: checkboxes
+  id: dupes
+  attributes:
+    label: Before sending
+    options:
+    - label: I searched the existing issues and found none for this idea
+      required: true

@@ -1,0 +1,65 @@
+# TrustCopy in detail
+
+Reference for the things the [README](../README.md) only sums up.
+
+## Features in detail
+
+- **Verify** in two steps: first every file is copied (the source is hashed while it is read, the copy is flushed to a temp file), then every copy is dropped from the cache, read back and compared; only a copy that matches gets its name, so a bad one never replaces an older file. A move removes each source right after its own check, once the copy's name is on the disk; a source that was changed after it was read stays (listed as failed). Switching verification off while copying skips the second step. Choose **CRC32** (fast, default: it catches accidental corruption, which is what copying risks), **BLAKE2b** (medium) or **SHA-256** (thorough) in the settings
+- **Three steps in view**: Copying, Verifying, Done, each with its size, checksum and time (two steps without verification). The progress bar is green while copying and blue while verifying.
+- **Live speed graph**
+  - The x axis is the elapsed time and always fills the width; the y axis shows the speed with round values on the grid lines. A burst into the cache above 3 times the mean runs off the top.
+  - The curve starts at 0 with the first written byte (scanning and opening files do not count). It is the speed of the last 5 seconds, which calms the jumps of a network share or the cache; the figures (big speed, tiles) are the real averages.
+  - The big figure in the corner is the current speed and, when done, the average. Green while writing; blue, starting from 0 again, while the copies are read back. While verifying, a click on step 1 shows the copy graph again; a pulsing "Paused" says why it stands still.
+  - Around it: source and destination in the title bar, the percentage inside a bar, below it the bytes, the file in flight and the time left; pause / resume.
+  - When done: a round result badge with what happened and where the files went, and four tiles (size, write speed, read speed, checksum; measured separately so verification never drags down the write speed). The three steps stay on top, all ticked; a click on a step or on the write or read speed tile shows that graph.
+- **File list** in a window of its own (*Files* in the job window), in the style of HashTally's detail window: filter tabs with counts (All, Verified, Done without verification, Skipped, Failed), every file with a colored status (green verified, red failed with the reason, yellow skipped, grey done without verification), its size and a shortened checksum. It fills in while the job runs; a right click copies a file's checksum or shows it in its folder
+- **Verify on the fly**: tick or untick *Verify* in the window while a job runs; files copied before you switched it on are checked at the end. *Verify* and the close choice (*Keep open*, *Close on success*, *Always close*) can be changed per window; the settings hold the defaults
+- **Clean cancel**: files are written as `name.trustpart` and renamed only when complete and verified, so a cancel or a bad copy never leaves a half file, and an existing file you overwrite stays intact until the new one is good
+- **Conflict handling**: ask (keep both / skip / overwrite if newer / overwrite / cancel, optionally for all), or a fixed rule in the settings
+- **When finished**: close the window (never / on success / always), a desktop notification if the window is in the background, an optional sound, and an *Open folder* button (also in the notification while the window stays open)
+- **Context menu**: the entries sit directly under *Scripts* or, if you prefer, grouped in a *TrustCopy* submenu (settings; changing the style or the language offers to restart the running file managers, which closes their windows and may cancel a file operation still running there). A top-level right-click entry would need the `python3-nautilus` extension; it is left out on purpose to keep the install dependency-free
+- **Speed boost**: instant reflink on btrfs/XFS and kernel-side copy when verification is off (it fills the cache at full speed, so the graph can show cache speed at first, and flushes each file once at the end: "done" means on the target, and a failing disk is reported; with Verify it is flushed in small steps and shows the disk's speed); parallel copies on SSD/NAS, a single stream on spinning disks
+- **Errors don't stop the job**: three retries, then the file is listed, and "Retry failed" copies only those
+- Jobs queue up and run one at a time (parallel jobs on one disk only slow each other down)
+
+## Keyboard shortcuts
+
+Optional, off by default, and for Nautilus only (Nemo and Caja overwrite their key files on quit). They work in Files windows,
+next to its own Ctrl+C / Ctrl+X / Ctrl+V: **Ctrl+Alt+C** copy to…, **Ctrl+Alt+X** move to…, **Ctrl+Alt+V** paste from
+clipboard. The pencil beside a key lets you press another one (Esc cancels, Backspace restores the default). The keys are
+written between two `# TrustCopy…` lines of `~/.config/nautilus/scripts-accels`, which Files reads at start (the settings
+offer the restart; a change of only a shortcut restarts only Nautilus, any other change restarts each file manager that runs).
+
+A key must carry Ctrl, Alt or Super, and TrustCopy refuses one that GNOME uses (including the custom ones of *Settings >
+Keyboard*), that Files binds itself (a list for Files 46), that another action has, or that another line of `scripts-accels`
+has. A global shortcut of another program (for example a hotkey daemon) cannot be seen: if a key does nothing, that program
+has it. Files' own shortcuts win over a script's, and of two scripts on one key only one runs.
+
+## Command line
+
+The output follows the installer: a banner, then one line per step marked `[✓]`, `[✗]`, `[!]` or `[i]`, without colours.
+Without `--to` the window asks for the folder, and `paste` always uses the window. Options may come before or after the files;
+`--` ends the options.
+
+```sh
+trustcopy copy|move --to DESTINATION SOURCE...      # the general form: where it goes (--to), then what to take (one or more)
+trustcopy integrate --remove                        # remove the right-click entries (without --remove: write them again)
+```
+
+## Limits
+
+- After a hard stop (crash, power cut) a `name.trustpart` can be left behind; delete it, or copy the same file again and it goes (its source is still there: a move removes a source only after its copy's name is on the disk). Files that end in `.trustpart` are never copied or moved (the name is the temp name of the file beside them).
+- Linux only. Symlinks are copied as links; devices, sockets and pipes are not copied (listed as failed).
+- Ownership is not preserved (like plain `cp`); permissions, times and xattrs are.
+- Verification reads every copy back from the disk, not from the page cache (each copy is flushed first, then dropped from the cache).
+  Over NFS/SMB and FUSE mounts, and on ZFS (whose cache may ignore the drop), a cache may still answer, and a drive or USB stick whose controller confirms a flush it
+  has not done cannot be caught by any read-back. The two steps make that rare (the copies are read back only after all of them
+  are written, when a big job has pushed most of them out of the drive's small cache), but for a copy that must not fail on a
+  cheap stick: eject it, plug it in again and check it with a hash file (HashTally), which then reads what really is on the flash.
+- A file that changes while it is being copied is copied as it was read: "verified" means the copy equals what was read. A move keeps such a source (listed as failed).
+- Overwriting on a nearly full target needs room for the new copies beside the old files: the job can stop with a full target, and nothing is lost (the old files stay).
+- Before a copy starts, the files that are new on the target are added up and compared with the free room: if they cannot fit, nothing is written and the job stops with the numbers (files that exist on the target are not counted, nor are files that stay on one filesystem in a move or in a copy without verification: a rename or a reflink needs no room). Then the room for each file is reserved before it is written, so a full target stops a big file at once (not on filesystems that cannot reserve, such as exFAT and many network shares; there the first check is what catches it). A compressing filesystem such as btrfs reserves the uncompressed size, so a nearly full one may refuse a file that would have fit.
+- Files hands individually selected files to a script in one environment variable, which Linux caps at 128 KiB (about 1,500 files of typical path length). Beyond that the entry silently does not start. A selected folder has no such limit, and neither has the keyboard route: copy with Ctrl+C, then **Scripts** > **TrustCopy: Paste from clipboard** or its shortcut.
+- Sparse files are copied in full (a 64 MiB file with holes occupies 64 MiB on the copy), unlike `cp --sparse=always`.
+- A symlink to a folder in the destination is followed, like with `cp -r`; files already there are still asked about one by one.
+- Two files with the same name in one job (search results, clipboard) are both kept: the second becomes `name (2)`. Names that differ only in capitals, in a dot at the end or in Unicode normalization (NFC/NFD) count as one, because FAT, exFAT, NTFS, macOS and network shares do not tell them apart; on a target that does, the extra `(2)` is harmless.
