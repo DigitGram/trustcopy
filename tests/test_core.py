@@ -1736,6 +1736,7 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("archive/${COMMIT:-refs/tags/v$VERSION}.tar.gz", text)
         self.assertIn('s/^COMMIT=\\"\\"/COMMIT=', (SRC.parent / ".github/workflows/release.yml").read_text())
 
+    @unittest.skipIf(os.geteuid() == 0, "install.sh refuses root; tests/install_test.sh runs this as a user in CI")
     def test_install_and_purge_in_a_home_of_their_own(self):
         with tempfile.TemporaryDirectory() as home:
             env = {k: v for k, v in os.environ.items() if k not in ("XDG_DATA_HOME", "XDG_CONFIG_HOME")} | {"HOME": home, "NO_COLOR": "1"}
