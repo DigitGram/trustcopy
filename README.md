@@ -153,6 +153,10 @@ AI-assisted tools were used during implementation and to support code quality im
 
 The code is open, the test suite is available in `tests/`, and issues and pull requests are welcome.
 
+## Support
+
+TrustCopy is free and stays free. If it is useful to you, you can support its development on [Liberapay](https://liberapay.com/DigitGram). Donations are voluntary and unlock nothing.
+
 ## License
 
 Copyright (C) 2026 DigitGram. TrustCopy is free software: you can redistribute it and/or modify it
