@@ -49,6 +49,7 @@ One line (installs for the current user only, no root):
 
 ```sh
 curl -fsSL https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash
+
 # no curl (e.g. a fresh Ubuntu)? wget does the same:
 wget -qO- https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash
 ```
