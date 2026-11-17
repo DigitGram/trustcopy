@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TrustCopy: copies you can trust</title>
+<meta name="description" content="Fast, verified copying and moving from the right-click menu of GNOME Files. Every copy is read back from the disk and compared.">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="TrustCopy: copies you can trust">
+<meta property="og:description" content="Fast, verified copying and moving from the right-click menu of GNOME Files.">
+<meta property="og:image" content="https://digitgram.github.io/trustcopy/img/social.png">
+<link rel="icon" type="image/svg+xml" href="img/icon.svg">
+<style>
+@font-face{font-family:Lato;font-weight:300;src:url(fonts/Lato-Light.woff2) format("woff2");font-display:swap}
+@font-face{font-family:Lato;font-weight:400;src:url(fonts/Lato-Regular.woff2) format("woff2");font-display:swap}
+@font-face{font-family:Lato;font-weight:700;src:url(fonts/Lato-Bold.woff2) format("woff2");font-display:swap}
+
+:root{
+  --bg:#081c1e;            /* banner: dark teal */
+  --bg2:#0b2b2c;
+  --panel:#0e3a38;
+  --panel-line:rgba(150,188,220,.16);
+  --green:#57e389;         /* icon gradient */
+  --green-d:#26a269;
+  --blue:#78aeed;          /* verified badge */
+  --white:#fff;
+  --tagline:#d6e8f7;
+  --sub:#96bcdc;
+  --foot:#87b0d2;
+  --radius:18px;
+  --wrap:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--tagline);
+  font:400 18px/1.6 Lato,system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+}
+a{color:var(--green);text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%;height:auto;display:block}
+.wrap{width:min(var(--wrap),100% - 32px);margin-inline:auto}
+
+/* ---------- top bar ---------- */
+.nav{position:absolute;inset:0 0 auto 0;z-index:5}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+.nav .brand{display:flex;align-items:center;gap:10px;color:var(--white);font-weight:700;font-size:19px}
+.nav .brand img{width:30px;height:30px}
+.nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:16px}
+.nav ul a{color:var(--sub)}
+.nav ul a:hover{color:var(--white);text-decoration:none}
+@media(max-width:700px){.nav ul li:not(:last-child){display:none}}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;overflow:hidden;padding:150px 0 110px;
+  background:
+    radial-gradient(1100px 700px at 92% 60%,rgba(38,162,105,.55),transparent 62%),
+    radial-gradient(700px 500px at 60% 110%,rgba(23,92,83,.7),transparent 70%),
+    linear-gradient(135deg,#081c1e 0%,#0a2b2b 45%,#0f4c48 100%);
+}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:56px;align-items:center}
+.app-icon{width:140px;height:auto;filter:drop-shadow(0 22px 26px rgba(0,0,0,.5)) drop-shadow(0 0 40px rgba(87,227,137,.12));margin-bottom:34px}
+h1{margin:0;color:var(--white);font-weight:700;font-size:clamp(46px,7vw,84px);line-height:1;letter-spacing:-.02em}
+.tagline{margin:18px 0 0;font-weight:300;font-size:clamp(24px,3vw,36px);color:var(--tagline);line-height:1.25}
+.lead{margin:20px 0 0;color:var(--sub);font-size:20px;max-width:30em}
+.cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;padding:13px 24px;border-radius:12px;
+  font-weight:700;font-size:17px;border:1px solid var(--panel-line);color:var(--white);background:rgba(255,255,255,.06);
+  transition:transform .12s,background .12s;
+}
+.btn:hover{background:rgba(255,255,255,.12);text-decoration:none;transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(#57e389,#26a269);color:#04251a;border-color:transparent;box-shadow:0 8px 22px rgba(38,162,105,.35)}
+.btn.primary:hover{background:linear-gradient(#6aeb9a,#2db375)}
+.meta{margin-top:30px;color:var(--foot);font-size:16px}
+.meta span+span::before{content:"·";margin:0 .6em}
+
+.shots{position:relative;aspect-ratio:1/0.93}
+.shots img{position:absolute;border-radius:16px;box-shadow:0 28px 60px rgba(0,0,0,.5),0 6px 16px rgba(0,0,0,.3)}
+.shots .back{top:0;right:0;width:84%}
+.shots .front{bottom:0;left:0;width:66%}
+
+@media(max-width:900px){
+  .hero{padding:120px 0 70px}
+  .hero .wrap{grid-template-columns:1fr;gap:48px}
+  .app-icon{width:110px;margin-bottom:24px}
+}
+
+/* ---------- sections ---------- */
+section{padding:96px 0}
+h2{margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px);line-height:1.15;letter-spacing:-.01em}
+.kicker{color:var(--green);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+.intro{color:var(--sub);max-width:36em;margin:0 0 48px;font-size:20px}
+
+/* how it works */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
+.step{background:var(--bg2);border:1px solid var(--panel-line);border-radius:var(--radius);padding:28px}
+.step::before{
+  counter-increment:s;content:counter(s);display:grid;place-items:center;width:38px;height:38px;border-radius:50%;
+  background:var(--blue);color:#06223f;font-weight:700;margin-bottom:18px;
+}
+.step:last-child::before{content:"✓";background:var(--green);color:#04251a}
+.step h3{margin:0 0 6px;color:var(--white);font-size:22px}
+.step p{margin:0;color:var(--sub);font-size:17px}
+@media(max-width:800px){.steps{grid-template-columns:1fr}}
+
+/* features */
+.features{background:var(--bg2);border-block:1px solid var(--panel-line)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:rgba(255,255,255,.035);border:1px solid var(--panel-line);border-radius:var(--radius);padding:26px 26px 24px}
+.card h3{margin:0 0 8px;color:var(--white);font-size:20px;display:flex;align-items:center;gap:10px}
+.card h3 i{font-style:normal;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:rgba(87,227,137,.14);font-size:17px}
+.card p{margin:0;color:var(--sub);font-size:16.5px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:start}
+.gallery figure{margin:0}
+.gallery img{border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.4)}
+.gallery figcaption{margin-top:12px;color:var(--sub);font-size:15.5px;text-align:center}
+@media(max-width:800px){.gallery{grid-template-columns:1fr;max-width:460px;margin-inline:auto}}
+
+/* install */
+.install .box{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+.codewrap{position:relative}
+.code{background:#04100f;border:1px solid var(--panel-line);border-radius:14px;padding:20px 78px 20px 22px;
+  font:400 15.5px/1.55 ui-monospace,"JetBrains Mono","DejaVu Sans Mono",monospace;color:#cfe9dc;overflow-x:auto;white-space:pre}
+.code .c{color:#6f9a8c}
+.copy{position:absolute;top:12px;right:12px;padding:6px 12px;border-radius:8px;border:1px solid var(--panel-line);
+  background:rgba(255,255,255,.07);color:var(--tagline);font:700 13px Lato,sans-serif;cursor:pointer}
+.copy:hover{background:rgba(255,255,255,.14)}
+.install ul{margin:0;padding-left:1.1em;color:var(--sub)}
+.install li{margin:.5em 0}
+.install li b{color:var(--tagline)}
+.fp{font:400 14px ui-monospace,monospace;color:var(--foot);word-break:break-word}
+.install .box>div{min-width:0}
+@media(max-width:900px){.install .box{grid-template-columns:minmax(0,1fr)}}
+
+/* footer */
+footer{padding:56px 0 64px;border-top:1px solid var(--panel-line);color:var(--foot);font-size:16px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px}
+footer a{color:var(--sub)}
+footer .links{display:flex;flex-wrap:wrap;gap:22px}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="img/icon.svg" alt="">TrustCopy</a>
+    <ul>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#install">Install</a></li>
+      <li><a href="https://github.com/DigitGram/trustcopy">GitHub</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="top">
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <img class="app-icon" src="img/icon-3d.png" alt="TrustCopy icon" width="263" height="286">
+      <h1>TrustCopy</h1>
+      <p class="tagline">Copies you can trust.</p>
+      <p class="lead">Fast, verified copying and moving from the right-click menu of GNOME Files.</p>
+      <div class="cta">
+        <a class="btn primary" href="#install">Install</a>
+        <a class="btn" href="https://github.com/DigitGram/trustcopy">View on GitHub</a>
+      </div>
+      <p class="meta"><span>GPL-3.0</span><span>GTK 4 + libadwaita</span><span>10 languages</span></p>
+    </div>
+    <div class="shots">
+      <img class="back" src="img/running-light.webp" alt="TrustCopy while copying: steps, live speed graph and progress" width="1280" height="940">
+      <img class="front" src="img/done-dark.webp" alt="TrustCopy when done: all files verified, with write and read speed" width="1280" height="1082">
+    </div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="kicker">How it works</div>
+    <h2>A copy that is checked, not assumed.</h2>
+    <p class="intro">Normal copying assumes the copy is fine. TrustCopy checks, so a bad copy is reported instead of discovered months later.</p>
+    <div class="steps">
+      <div class="step"><h3>Copy</h3><p>Every file is hashed while it is read, so the checksum costs almost no extra time.</p></div>
+      <div class="step"><h3>Verify</h3><p>The copy is flushed, read back from the disk and compared. CRC32, BLAKE2b or SHA-256.</p></div>
+      <div class="step"><h3>Done</h3><p>A bad copy never replaces your old file. A moved source goes only after its own copy is verified.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="kicker">Features</div>
+    <h2>Everything a file copy should do.</h2>
+    <p class="intro">Small, native and out of your way until you need it.</p>
+    <div class="grid">
+      <div class="card"><h3><i>✔</i>Verified copies</h3><p>Each copy is read back from the disk and compared. Pick CRC32 (fast, default), BLAKE2b or SHA-256.</p></div>
+      <div class="card"><h3><i>➜</i>Safe moves</h3><p>A source is deleted only after its own copy has been verified.</p></div>
+      <div class="card"><h3><i>◔</i>A live view</h3><p>Three steps, a speed graph, time remaining and a status for every file.</p></div>
+      <div class="card"><h3><i>⛨</i>No half-written files</h3><p>A cancel or a power cut never leaves a damaged file under its real name.</p></div>
+      <div class="card"><h3><i>≡</i>Checksum file</h3><p>Optional <code>SHA256SUMS</code> in the target folder, ready for HashTally or <code>sha256sum -c</code>.</p></div>
+      <div class="card"><h3><i>⚖</i>Conflicts your way</h3><p>Ask each time (keep both, skip, overwrite if newer, overwrite) or set a rule.</p></div>
+      <div class="card"><h3><i>❚❚</i>Pause, resume, queue</h3><p>Jobs run one after the other. Errors are retried, and “Retry failed” repeats only those files.</p></div>
+      <div class="card"><h3><i>◐</i>Native look</h3><p>GTK 4 and libadwaita, light and dark, in ten languages.</p></div>
+      <div class="card"><h3><i>›_</i>Command line too</h3><p><code>trustcopy copy --to /media/usb ~/Pictures</code>, with plain-text output and clear exit codes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="wrap">
+    <div class="kicker">Screenshots</div>
+    <h2>Looks like it belongs.</h2>
+    <p class="intro">Follows your system theme, light or dark.</p>
+    <div class="gallery">
+      <figure><img src="img/running-light.webp" alt="Copying" loading="lazy" width="1280" height="940"><figcaption>Copying, with live speed graph</figcaption></figure>
+      <figure><img src="img/conflict-light.webp" alt="File already exists dialog" loading="lazy" width="1280" height="940"><figcaption>A file that already exists</figcaption></figure>
+      <figure><img src="img/settings-light.webp" alt="Settings window" loading="lazy" width="1400" height="1010"><figcaption>Settings</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="install" id="install">
+  <div class="wrap">
+    <div class="kicker">Install</div>
+    <h2>One line, no root.</h2>
+    <p class="intro">Installs for the current user only. Running it again from a newer release updates.</p>
+    <div class="box">
+      <div>
+        <div class="codewrap">
+          <div class="code" id="cmd"><span class="c"># curl</span>
+curl -fsSL https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash
+
+<span class="c"># or wget</span>
+wget -qO- https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash</div>
+          <button class="copy" type="button" aria-label="Copy the curl command">Copy</button>
+        </div>
+      </div>
+      <div>
+        <ul>
+          <li><b>Needs</b> a GNOME-family desktop with Nautilus: Ubuntu 24.04+, Fedora 40+, Debian 13+, Linux Mint 22+. Nemo and Caja get the same Scripts entries.</li>
+          <li><b>Then</b> right-click files › <i>Scripts</i> › <i>TrustCopy: Copy to…</i></li>
+          <li><b>Signed.</b> Releases carry a GPG signature; the fingerprint is
+            <div class="fp">E7AA EB31 A4DE CF99 B314 7E1D FAAB 30B5 FD49 0E93</div></li>
+          <li><a href="https://github.com/DigitGram/trustcopy#verify-the-download">How to verify the download</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 DigitGram · TrustCopy is free software under the GPL-3.0.</div>
+    <div class="links">
+      <a href="https://github.com/DigitGram/trustcopy">GitHub</a>
+      <a href="https://github.com/DigitGram/hashtally">HashTally</a>
+      <a href="https://liberapay.com/DigitGram">Support on Liberapay</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelector('.copy').addEventListener('click', function () {
+  var b = this, text = 'curl -fsSL https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash';
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () {
+    b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1600);
+  }).catch(function () { b.textContent = 'Press Ctrl+C'; });
+});
+</script>
+</body>
+</html>
