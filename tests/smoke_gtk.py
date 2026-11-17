@@ -145,9 +145,16 @@ def child(tmp):
     assert folder == "/x" and len(rows) == 4 and rows[0][0] == "f0.trustpart" and more[:2] == (996, 9960), (len(rows), more[:2])  # a thousand stay four rows and a count with its size
     assert more[2].split("\n")[0] == "f4.trustpart" and more[2].split("\n")[-1] == "…" and len(more[2].split("\n")) == 21  # its tooltip names the next twenty
     assert common.leftover_rows([(f"/x/f{n}.trustpart", 1) for n in range(5)])[2] is None and common.leftover_rows([(f"/x/f{n}.trustpart", 1) for n in range(6)])[2][0] == 2  # never "and 1 more"
+    for missing, total in ((1, 1), (3, 10)):  # the two checksum-file questions build, with and without the middle answer
+        dialogs.sums_gap_dialog(missing, total, 5 << 20, lambda choice: None)
+    dialogs.sums_conflict_dialog("/x/SHA256SUMS", {"a": "0" * 64}, 1700000000, 12, lambda how: None)
     for pairs in ([("/x/a.trustpart", 5)], [(f"/x/f{n}.trustpart", 10) for n in range(40)] + [("/y/z.trustpart", 1)]):  # the dialog builds, one folder or many, few or many
         answers = []
         dialogs.cleanup_dialog(pairs, answers.append)
+    still = NS(sums_reading=False, sums_label=MagicMock(), job=NS(sum_read=1, sum_gap=lambda: ([], 1)))  # the tick that comes after the end must leave the result alone
+    assert Panel.sums_progress(still, 1) is False and not still.sums_label.set_label.called
+    running = NS(sums_reading=True, sums_label=MagicMock(), job=NS(sum_read=50))
+    assert Panel.sums_progress(running, 100) is True and "50" in running.sums_label.set_label.call_args.args[0]
     with tempfile.TemporaryDirectory() as d:  # the offer to delete the leftovers of a crashed job
         part = Path(d, "x.bin.trustpart")
         part.write_bytes(b"half")
@@ -259,6 +266,8 @@ def child(tmp):
         if not (panel and panel.job and panel.job.finished and not panel.active) and time.monotonic() < deadline:
             return True  # the copy is still running (slow machine): look again
         failures.extend(problems(panel))
+        if opened and not (panel.sums_row.get_visible() and "file.sha256" in panel.sums_label.get_label() and os.path.exists(f"{tmp}/dst/file.sha256")):
+            failures.append("the checksum file is not written or not shown")
         if opened and not panel.sweep.get_visible():  # the thread that looks for them has had a round of 250 ms by now
             failures.append("the leftover of an earlier job in the target folder is not offered for deletion")
         if not opened:
@@ -295,6 +304,8 @@ def main():
         Path(tmp, "dst").mkdir()
         Path(tmp, "file").write_bytes(b"x" * 100_000)
         Path(tmp, "runtime").mkdir(mode=0o700)
+        Path(tmp, "config", "trustcopy").mkdir(parents=True)
+        Path(tmp, "config", "trustcopy", "settings.json").write_text('{"sums": true}')  # the real job below writes a checksum file
         # The test must stay off the desk of whoever runs it. X11 only: with WAYLAND_DISPLAY set GTK opens its windows on the real screen, not
         # in Xvfb. No session bus and a runtime folder of its own: on the real ones the test would send a notification, join a TrustCopy that
         # runs, and a portal started for it has unmounted the Flatpak document folder (/run/user/<id>/doc) before.

@@ -2,6 +2,7 @@
 # Copyright (C) 2026 DigitGram
 """Questions the job window asks: a file that already exists, and yes/no warnings."""
 import os
+from datetime import datetime
 
 import gi
 
@@ -59,6 +60,83 @@ def conflict_dialog(src, dst, respond):
     footer.append(cancel)
     box.append(footer)
     dialog.connect("closed", lambda d: respond("cancel", False))  # Escape is the Cancel button, not a skip
+    return dialog
+
+
+def _answer_rows(box, rows, pick):
+    """The answers of a question as a card of rows, each saying what it does (as in the conflict dialog). Returns the first row."""
+    choices = Gtk.ListBox(css_classes=["boxed-list"], selection_mode=Gtk.SelectionMode.NONE)
+    first = None
+    for key, title, subtitle, icon, css in rows:
+        row = Adw.ActionRow(title=title, subtitle=subtitle, activatable=True, use_markup=False)
+        row.add_prefix(Gtk.Image(icon_name=icon, css_classes=[css] if css else []))
+        row.add_suffix(Gtk.Image(icon_name="go-next-symbolic", css_classes=["dim-label"]))
+        row.connect("activated", pick, key)
+        choices.append(row)
+        first = first or row
+    box.append(choices)
+    return first
+
+
+def _question(title, text):
+    """The frame of the two checksum-file questions: a heading with a question mark and a few calm words. Returns the dialog's box."""
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=18, margin_bottom=18, margin_start=18, margin_end=18)
+    box.set_size_request(480, -1)
+    heading = Gtk.Box(spacing=10, halign=Gtk.Align.CENTER)
+    heading.append(Gtk.Image(icon_name="dialog-question-symbolic", pixel_size=28))
+    heading.append(Gtk.Label(label=title, css_classes=["title-3"]))
+    box.append(heading)
+    if text:
+        box.append(Gtk.Label(label=text, wrap=True, justify=Gtk.Justification.CENTER, css_classes=["dim-label"]))
+    return box
+
+
+def sums_gap_dialog(missing, total, size, respond):
+    """The checksum file was switched on while the job ran, or files were only renamed: `missing` of `total` files have no checksum yet.
+    respond("all") reads them now (`size` bytes), respond("some") leaves them out, respond("none") writes no file; Escape is "none"."""
+    text = _n("{n} of {total} file has no checksum yet: it was done before the checksum file was switched on, or only renamed.",
+              "{n} of {total} files have no checksum yet: they were done before the checksum file was switched on, or only renamed.", missing).format(n=missing, total=total)
+    box = _question(_("Checksums for all files?"), text)
+    dialog = Adw.Dialog(child=box)
+    answered = []
+
+    def pick(widget, key):
+        answered.append(key)
+        respond(key)
+        dialog.close()
+
+    rows = [("all", _n("Include {n} file", "Include all {n} files", total).format(n=total), _("Reads the rest now: {size}").format(size=GLib.format_size(size)), "document-save-symbolic", "accent")]
+    if missing < total:  # when none has one, leaving them out would leave nothing
+        rows.append(("some", _("Only those that have one"), _("The checksum file is incomplete"), "list-remove-symbolic", None))
+    rows.append(("none", _("No checksum file"), _("Nothing is written"), "window-close-symbolic", None))
+    dialog.set_focus(_answer_rows(box, rows, pick))
+    dialog.connect("closed", lambda d: respond("none") if not answered else None)
+    return dialog
+
+
+def sums_conflict_dialog(path, entries, mtime, new_entries, respond):
+    """A checksum file with this name is there already. respond("update"|"keep_both"|"overwrite"|"skip"); Escape is "skip"."""
+    box = _question(_("Checksum file already exists"), "")
+    box.append(Gtk.Label(label=desktop.shown(os.path.basename(path)), ellipsize=Pango.EllipsizeMode.MIDDLE, css_classes=["heading"]))
+    info, (new, old) = key_value_grid(_("New"), _("Existing"))
+    info.set_halign(Gtk.Align.CENTER)
+    new.set_label(_n("{n} entry", "{n} entries", new_entries).format(n=new_entries))
+    old.set_label(_n("{n} entry", "{n} entries", len(entries)).format(n=len(entries)) + f" · {datetime.fromtimestamp(mtime):%x %X}")
+    box.append(info)
+    dialog = Adw.Dialog(child=box)
+    answered = []
+
+    def pick(widget, key):
+        answered.append(key)
+        respond(key)
+        dialog.close()
+
+    rows = [("update", _("Update"), _("Replaces the entries of these files and keeps the others"), "view-refresh-symbolic", "accent"),
+            ("keep_both", _("Keep both"), _("Saves the new file as “{name}”").format(name=desktop.shown(os.path.basename(core.free_name(path)))), "edit-copy-symbolic", None),
+            ("overwrite", _("Overwrite"), _("Replaces the existing file"), "edit-delete-symbolic", "error"),
+            ("skip", _("Skip"), _("Leaves the existing file as it is"), "media-skip-forward-symbolic", None)]
+    dialog.set_focus(_answer_rows(box, rows, pick))
+    dialog.connect("closed", lambda d: respond("skip") if not answered else None)
     return dialog
 
 

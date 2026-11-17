@@ -17,7 +17,7 @@ except ImportError:
     Gio = GLib = None
 
 import i18n
-from core import ALGOS
+from core import ALGOS, SUM_ALGOS
 from i18n import N_, _
 
 # --------------------------------------------------------------------------- settings
@@ -25,7 +25,7 @@ from i18n import N_, _
 CONFIG_FILE = Path(os.environ.get("XDG_CONFIG_HOME") or "~/.config").expanduser() / "trustcopy" / "settings.json"
 CONFLICTS = ("ask", "skip", "keep_both", "newer", "overwrite")
 AFTER = ("keep", "clean", "always")  # what the window does when the job is over
-DEFAULTS = {"verify": True, "algo": "crc32", "conflict": "ask", "after": "keep",
+DEFAULTS = {"verify": True, "algo": "crc32", "conflict": "ask", "after": "keep", "sums": False, "sums_algo": "sha256",
             "notify": True, "sound": False, "menu": "scripts", "shortcuts": False, "keys": {}, "language": "auto"}
 
 
@@ -57,7 +57,7 @@ def write_atomic(path, text):
 
 def allowed():
     """Settings with a fixed set of values: {key: tuple of values}."""
-    return {"algo": tuple(ALGOS), "conflict": CONFLICTS, "after": AFTER, "menu": ("scripts", "folder"),
+    return {"algo": tuple(ALGOS), "sums_algo": tuple(SUM_ALGOS), "conflict": CONFLICTS, "after": AFTER, "menu": ("scripts", "folder"),
             "language": ("auto", *i18n.languages())}
 
 

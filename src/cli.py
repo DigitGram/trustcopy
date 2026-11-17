@@ -45,6 +45,8 @@ parser.add_argument("--gui", action="store_true", help="open the window even whe
 parser.add_argument("-q", "--quiet", action="store_true", help="in a terminal: no banner and only the files that are not fine")
 parser.add_argument("--on-conflict", choices=POLICIES, help="in a terminal: what to do with a file that exists (default: the setting; ask needs a terminal)")
 parser.add_argument("--no-verify", action="store_true", help="in a terminal: copy without the checksum check")
+parser.add_argument("--checksum-file", choices=tuple(core.SUM_ALGOS), metavar="KIND", help="in a terminal: also write a checksum file into the destination (%s; default: the setting)" % ", ".join(core.SUM_ALGOS))
+parser.add_argument("--no-checksum-file", action="store_true", help="in a terminal: no checksum file, whatever the setting says")
 parser.add_argument("files", nargs="*", metavar="SOURCE", help="the files and folders to copy or move")
 
 
@@ -245,7 +247,8 @@ def run(args):
     verify, policy = cfg["verify"] and not args.no_verify, args.on_conflict or cfg["conflict"]
     items = core.items_for(sources, dest)
     try:
-        job = core.Job(items, move=move, verify=verify, policy=policy, algo=cfg["algo"])
+        job = core.Job(items, move=move, verify=verify, policy=policy, algo=cfg["algo"],
+                       sums=None if args.no_checksum_file else args.checksum_file or (cfg["sums_algo"] if cfg["sums"] else None))
     except (ValueError, OSError) as exc:
         return _fail(str(exc))
     screen = Screen(job, move)
@@ -272,7 +275,55 @@ def run(args):
             job.cancel()
     desktop.let_sleep(awake)
     screen.clear()
-    return _report(job, dest, args.quiet, time.monotonic() - screen.start)
+    code = _report(job, dest, args.quiet, time.monotonic() - screen.start)
+    return max(code, _checksum_file(job, policy)) if job.sums else code
+
+
+def _checksum_file(job, policy):
+    """The checksum file after the job. Files without a checksum (a move that only renamed them) are read first; a file in the way is decided by
+    the conflict rule, and `ask` asks a terminal (without one the new file is kept beside the old). Returns the exit code."""
+    if job.cancelled or job.fatal or not job.sum_files():
+        return OK
+    if job.sum_gap()[0]:
+        _line(_("Reading checksums…"), INFO)
+    entries = job.sum_entries(True)
+    if not entries:
+        return OK
+    how, existing = "keep_both", job.sum_existing()
+    if existing:
+        how = {"skip": "skip", "keep_both": "keep_both", "overwrite": "overwrite", "newer": "update"}.get(policy) or _ask_sums(existing, len(entries))
+    if how == "skip":
+        return OK
+    try:
+        path = job.write_sums(entries, how)
+    except OSError as e:
+        _line(_("The checksum file could not be written: {error}").format(error=desktop.shown(e.strerror or str(e))), CROSS)
+        return FAILED
+    _line(_("Checksum file") + f": {desktop.shown(path)}", TICK)
+    return OK
+
+
+def _ask_sums(existing, new_entries):
+    """Which way to write a checksum file that is in the way, asked in the terminal: update, keep_both, overwrite or skip."""
+    path, found, mtime = existing
+    if not (sys.stdin.isatty() and sys.stdout.isatty()):
+        return "keep_both"
+    keys = {"u": "update", "k": "keep_both", "o": "overwrite", "s": "skip"}
+    new, old, update, both, over, skip = _("New"), _("Existing"), _("Update"), _("Keep both"), _("Overwrite"), _("Skip")  # _() outside the f-strings: xgettext skips those
+    print()
+    _line(_("Checksum file already exists") + f": {desktop.shown(os.path.basename(path))}", WARN)
+    _line(f"{new:<10}" + _n("{n} entry", "{n} entries", new_entries).format(n=new_entries), indent=6)
+    _line(f"{old:<10}" + _n("{n} entry", "{n} entries", len(found)).format(n=len(found)) + f" · {datetime.fromtimestamp(mtime):%Y-%m-%d %H:%M}", indent=6)
+    print()
+    _line(f"[u] {update}   [k] {both}   [o] {over}   [s] {skip}", indent=6)
+    while True:
+        try:
+            answer = input("      > ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            return "skip"
+        if answer in keys:
+            print()
+            return keys[answer]
 
 
 def _report(job, dest, quiet, seconds):

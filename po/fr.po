@@ -664,3 +664,104 @@ msgstr "Supprimer"
 #, python-brace-format
 msgid "… and {n} more"
 msgstr "… et {n} de plus"
+
+#: src/cli.py
+msgid "Reading checksums…"
+msgstr "Lecture des sommes de contrôle…"
+
+#: src/cli.py src/ui_panel.py
+#, python-brace-format
+msgid "The checksum file could not be written: {error}"
+msgstr "Le fichier de sommes de contrôle n'a pas pu être écrit : {error}"
+
+#: src/cli.py src/ui_panel.py
+msgid "Checksum file"
+msgstr "Fichier de sommes de contrôle"
+
+#: src/cli.py src/ui_dialogs.py
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: src/cli.py src/ui_dialogs.py
+msgid "Checksum file already exists"
+msgstr "Le fichier de sommes de contrôle existe déjà"
+
+#: src/cli.py src/ui_dialogs.py
+#, python-brace-format
+msgid "{n} entry"
+msgid_plural "{n} entries"
+msgstr[0] "{n} entrée"
+msgstr[1] "{n} entrées"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "{n} of {total} file has no checksum yet: it was done before the checksum file was switched on, or only renamed."
+msgid_plural "{n} of {total} files have no checksum yet: they were done before the checksum file was switched on, or only renamed."
+msgstr[0] "{n} fichier sur {total} n'a pas encore de somme de contrôle : il était déjà terminé avant l'activation du fichier de sommes, ou a seulement été renommé."
+msgstr[1] "{n} fichiers sur {total} n'ont pas encore de somme de contrôle : ils étaient déjà terminés avant l'activation du fichier de sommes, ou ont seulement été renommés."
+
+#: src/ui_dialogs.py
+msgid "Checksums for all files?"
+msgstr "Des sommes de contrôle pour tous les fichiers ?"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "Include {n} file"
+msgid_plural "Include all {n} files"
+msgstr[0] "Inclure {n} fichier"
+msgstr[1] "Inclure les {n} fichiers"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "Reads the rest now: {size}"
+msgstr "Lit le reste maintenant : {size}"
+
+#: src/ui_dialogs.py
+msgid "Only those that have one"
+msgstr "Seulement ceux qui en ont une"
+
+#: src/ui_dialogs.py
+msgid "The checksum file is incomplete"
+msgstr "Le fichier de sommes est incomplet"
+
+#: src/ui_dialogs.py
+msgid "No checksum file"
+msgstr "Pas de fichier de sommes"
+
+#: src/ui_dialogs.py
+msgid "Nothing is written"
+msgstr "Rien n'est écrit"
+
+#: src/ui_dialogs.py
+msgid "Replaces the entries of these files and keeps the others"
+msgstr "Remplace les entrées de ces fichiers et garde les autres"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Reading checksums… {percent} %"
+msgstr "Lecture des sommes de contrôle… {percent} %"
+
+#: src/ui_settings.py
+msgid "Write a checksum file"
+msgstr "Écrire un fichier de sommes de contrôle"
+
+#: src/ui_settings.py
+msgid "Lists every copied file with its checksum in the target folder, for HashTally or sha256sum. The files must be read: no fast clone copy, and without verification the sums are those of the source."
+msgstr "Liste chaque fichier copié avec sa somme de contrôle dans le dossier de destination, pour HashTally ou sha256sum. Les fichiers doivent être lus : pas de copie rapide par clonage, et sans vérification les sommes sont celles de la source."
+
+#: src/ui_settings.py
+msgid "Kind"
+msgstr "Type"
+
+#: src/ui_settings.py
+msgid "CRC32 (SFV)"
+msgstr "CRC32 (SFV)"
+
+#: src/ui_panel.py
+msgid "Options"
+msgstr "Options"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Checksum file created: {name}"
+msgstr "Fichier de sommes créé : {name}"

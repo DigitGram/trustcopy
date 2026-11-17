@@ -100,6 +100,57 @@ class _Crc32:
 ALGOS = {"crc32": _Crc32, "blake2b": hashlib.blake2b, "sha256": hashlib.sha256}
 
 
+class _Tee:
+    """Feeds the bytes of a copy to the checksum that verifies it (`main`, may be None) and to the one for the checksum file (`side`)."""
+
+    def __init__(self, main, side):
+        self.main, self.side = main, side
+
+    def update(self, data):
+        if self.main:
+            self.main.update(data)
+        self.side.update(data)
+
+
+# the checksum file: key -> (hasher, name for several items, ending for one, digest length in hex)
+SUM_ALGOS = {
+    "sha256": (hashlib.sha256, "SHA256SUMS", ".sha256", 64),
+    "sha512": (hashlib.sha512, "SHA512SUMS", ".sha512", 128),
+    "md5": (lambda: hashlib.md5(usedforsecurity=False), "MD5SUMS", ".md5", 32),  # not for security: it is the format old mirrors and tools read
+    "crc32": (_Crc32, "checksums.sfv", ".sfv", 8),
+}
+
+
+def format_sums(algo, entries):
+    """The text of a checksum file from {path: hex}: GNU style (`hash  path`, what sha256sum -c reads), or SFV (`path CRC`) for crc32.
+    A name with a backslash or a line break is escaped the GNU way."""
+    lines = []
+    for path, digest in entries.items():
+        if algo == "crc32":
+            lines.append(f"{path} {digest.upper()}")
+        elif "\\" in path or "\n" in path:
+            lines.append("\\" + digest + "  " + path.replace("\\", "\\\\").replace("\n", "\\n"))
+        else:
+            lines.append(f"{digest}  {path}")
+    return "".join(line + "\n" for line in lines)
+
+
+def parse_sums(algo, text):
+    """{path: hex} of a checksum file. Comments (# or ;), empty lines and anything that is no entry are left out."""
+    entries, size = {}, SUM_ALGOS[algo][3]
+    for line in text.splitlines():
+        if algo == "crc32":
+            m = re.match(r"^(.*\S)\s+([0-9A-Fa-f]{8})\s*$", line) if not line.startswith(";") else None
+            if m:
+                entries[m[1]] = m[2].lower()
+            continue
+        m = re.match(r"^(\\?)([0-9A-Fa-f]{%d}) [ *](.+)$" % size, line)
+        if m:
+            path = re.sub(r"\\(.)", lambda e: "\n" if e[1] == "n" else e[1], m[3]) if m[1] else m[3]
+            entries[path] = m[2].lower()
+    return entries
+
+
 @dataclass
 class Result:
     src: str
@@ -213,12 +264,14 @@ class Job:
     """One copy or move. run() blocks, so call it in a thread and poll the
     public fields (done, total, phase, current, results, failed, finished, fatal)."""
 
-    def __init__(self, items, move=False, verify=True, policy="ask", ask=None, workers=None, algo="crc32", replace=(), dirs=()):
+    def __init__(self, items, move=False, verify=True, policy="ask", ask=None, workers=None, algo="crc32", replace=(), dirs=(), sums=None):
         """policy: ask | skip | keep_both | newer | overwrite. algo: a key of ALGOS. replace: targets that are bad copies of an earlier run.
         dirs: source folders of that earlier run, which a move empties and removes.
         ask(src, dst) -> (policy, remember) | None; it runs in a worker thread and may block."""
         self.move, self.verify, self.policy, self.ask = move, verify, policy, ask
         self.algo, self.replace, self.dirs = algo, set(replace), list(dirs)
+        self.sums = sums  # None, or a key of SUM_ALGOS: also hash every file for the checksum file; the window can switch it on while the job runs
+        self._sums, self.sum_read = {}, 0  # temp path -> hex checksum of the file as it was written; bytes read later for files that have none
         self._hasher = ALGOS[algo]
         self.items = self._checked_items(items)
         self.workers = workers or (1 if any(_rotational(s) or _rotational(os.path.dirname(d))
@@ -619,6 +672,74 @@ class Job:
             return (dst, False) if s.st_mtime > d.st_mtime else (None, False)
         return dst, policy == "keep_both"
 
+    # --- the checksum file: collected after the job, the window and the terminal decide what goes in -----------------------------
+    def sum_files(self):
+        """The finished regular files of this job, which a checksum file can list."""
+        return [r for r in self.results if r.status in ("ok", "verified") and os.path.isfile(r.dst) and not os.path.islink(r.dst)]
+
+    def sum_gap(self):
+        """(the finished files that have no checksum for the file, their bytes): copied before it was switched on, or only renamed."""
+        gap = [r for r in self.sum_files() if r.dst + PART not in self._sums]
+        return gap, sum(r.size for r in gap)
+
+    def sum_target(self):
+        """(the folder the paths in the file are relative to, the file's path): in the target folder, named as HashTally names its own."""
+        base = os.path.commonpath([os.path.dirname(dst) for _src, dst in self.items])
+        _hasher, several, ending, _size = SUM_ALGOS[self.sums]
+        return base, os.path.join(base, several if len(self.items) > 1 else os.path.basename(self.items[0][1]) + ending)
+
+    def sum_entries(self, read_gap):
+        """{path relative to the target folder: hex}, sorted: the files that have a checksum, and with `read_gap` the others too, read from their copies
+        (progress in sum_read; a file that cannot be read is left out). Call it from a thread when the gap is big."""
+        base = self.sum_target()[0]
+        files = self.sum_files()
+        found = {os.path.relpath(r.dst, base): self._sums[r.dst + PART] for r in files if r.dst + PART in self._sums}
+        if read_gap:
+            def read(r):
+                try:
+                    return os.path.relpath(r.dst, base), self._sum_of(r.dst)
+                except OSError:
+                    return None
+            with ThreadPoolExecutor(self.workers) as pool:
+                found.update(x for x in pool.map(read, self.sum_gap()[0]) if x)
+        return dict(sorted(found.items(), key=lambda kv: kv[0].casefold()))
+
+    def _sum_of(self, path):
+        h = SUM_ALGOS[self.sums][0]()
+        with open(path, "rb") as f:
+            os.posix_fadvise(f.fileno(), 0, 0, os.POSIX_FADV_DONTNEED)  # from the disk, as a read-back is
+            while data := f.read(CHUNK):
+                h.update(data)
+                with self._progress_lock:
+                    self.sum_read += len(data)
+        return h.digest().hex()
+
+    def sum_existing(self):
+        """(path, {entries}, mtime) of the checksum file that is in the way, else None."""
+        path = self.sum_target()[1]
+        try:
+            st = os.stat(path)
+            return path, parse_sums(self.sums, Path(path).read_text(encoding="utf-8", errors="replace")), st.st_mtime
+        except OSError:
+            return None
+
+    def write_sums(self, entries, how="keep_both"):
+        """Writes the checksum file and returns its path. `how` if one is there already: update (its entries for these files are replaced, the
+        others stay), keep_both (a free name), overwrite. It is written to a temp file and renamed, so a crash leaves the old one."""
+        path = self.sum_target()[1]
+        if os.path.lexists(path):
+            if how == "keep_both":
+                path = free_name(path)
+            elif how == "update":
+                entries = {**parse_sums(self.sums, Path(path).read_text(encoding="utf-8", errors="replace")), **entries}
+        part = path + PART
+        with open(part, "w", encoding="utf-8", newline="\n", errors="surrogateescape") as f:
+            f.write(format_sums(self.sums, entries))
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(part, path)
+        return path
+
     def _transfer(self, src, dst, kind, size, weight, verify):
         """Returns (status, error, digest). Only Cancelled escapes."""
         if self.move:
@@ -736,7 +857,9 @@ class Job:
         return hexdigest
 
     def _write(self, src, part, size, verify, tick):
-        h = self._hasher() if verify else None
+        main = self._hasher() if verify else None
+        side = SUM_ALGOS[self.sums][0]() if self.sums else None  # this file keeps the choice made now
+        h = _Tee(main, side) if side else main  # with a checksum file there is no reflink and no kernel copy: the bytes must be seen
         # created with the source's mode (less the umask), as cp does: a private file must not be readable by others while it is written
         with open(src, "rb") as fi, open(part, "xb", opener=lambda path, flags: os.open(path, flags, stat.S_IMODE(os.fstat(fi.fileno()).st_mode))) as fo:
             if self.move:
@@ -750,10 +873,10 @@ class Job:
                 except OSError:
                     pass  # no reflink here, copy normally
             reserved = _reserve(fo.fileno(), size)
-            self._pump(fi, fo, tick, h)
+            self._pump(fi, fo, tick, h, bool(main or self.move))
             if reserved:
                 fo.truncate()  # the source may have shrunk since it was measured: no zeros at the end
-            if not (h or self.move):  # verifying and moving: _pump has put every byte on the target already, a second flush only costs time
+            if not (main or self.move):  # verifying and moving: _pump has put every byte on the target already, a second flush only costs time
                 with self.writing:  # "done" means on the target: a failing disk must not pass as a copy
                     try:
                         fo.flush()
@@ -762,12 +885,14 @@ class Job:
                         if e.errno not in NO_SYNC:
                             raise
                         # shortcut: a target that cannot flush (some FUSE/SMB mounts) is trusted as unflushed, upgrade if one loses data
-        return h.digest() if h else None
+        if side:
+            self._sums[part] = side.digest().hex()
+        return main.digest() if main else None
 
-    def _pump(self, fi, fo, tick, h):
+    def _pump(self, fi, fo, tick, h, syncing):
         """Copies fi to fo. Verifying and moving flush in small steps and at the end, so a byte counts as done when it is on the target (a move deletes the source next, a verify reads the copy back). A plain copy fills the cache at full speed (the graph shows that) and _write flushes once at the end."""
         kernel = h is None and hasattr(os, "copy_file_range")  # in-kernel copy skips userspace (Linux only); hashing needs to see the bytes
-        syncing = bool(h or self.move)  # _write flushes in these cases anyway
+        # syncing: _write flushes in these cases anyway (verifying, moving)
         pending, step, last = 0, 4 << 20, time.monotonic()
         while True:
             self._checkpoint()

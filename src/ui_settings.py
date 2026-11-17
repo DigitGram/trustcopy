@@ -8,6 +8,7 @@ gi.require_version("Gdk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, GLib, GObject, Gtk
 
+import core
 import desktop
 import i18n
 from i18n import _
@@ -49,6 +50,11 @@ class Settings(Adw.ApplicationWindow):
         # Long explanations go into the group descriptions: next to a drop-down they squeeze its text ("Close on succ…")
         copying = Adw.PreferencesGroup(title=_("Copying"), description=_("CRC32 is fastest and catches accidental corruption; BLAKE2b and SHA-256 are cryptographic."))
         for row in (verify, algo, conflict):
+            copying.add(row)
+        sums = self.switch(_("Write a checksum file"), _("Lists every copied file with its checksum in the target folder, for HashTally or sha256sum. The files must be read: no fast clone copy, and without verification the sums are those of the source."), "sums")
+        kind = self.combo(_("Kind"), "", ["SHA-256", "SHA-512", "MD5", _("CRC32 (SFV)")], tuple(core.SUM_ALGOS), "sums_algo")
+        sums.bind_property("active", kind, "sensitive", GObject.BindingFlags.SYNC_CREATE)
+        for row in (sums, kind):
             copying.add(row)
         return copying
 

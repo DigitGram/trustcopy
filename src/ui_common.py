@@ -21,6 +21,7 @@ APP_ID = "io.github.digitgram.TrustCopy"
 RESULT_ICONS = {"success": "object-select-symbolic", "warning": "dialog-warning-symbolic", "error": "dialog-error-symbolic"}  # as in HashTally
 CONFLICTS, AFTER = desktop.CONFLICTS, desktop.AFTER
 ALGOS = tuple(core.ALGOS)
+SUM_NAMES = {"sha256": "SHA-256", "sha512": "SHA-512", "md5": "MD5", "crc32": "SFV"}  # the kinds of checksum file, as the window names them
 ALGO_NAMES = {"crc32": "CRC32", "blake2b": "BLAKE2b", "sha256": "SHA-256"}
 STATUS = {  # Result.status: (icon, pill class, label, row tint)
     "verified": ("object-select-symbolic", "k-ok", N_("Verified"), ""),  # the usual case: only its word is green, the deviations stand out

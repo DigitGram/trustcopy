@@ -19,6 +19,7 @@ import threading
 import time
 import types
 import unittest
+import zlib
 from pathlib import Path
 from unittest import mock
 
@@ -312,9 +313,9 @@ class ReservationTests(Base):
         modes = []
 
         class Watch(core.Job):
-            def _pump(self, fi, fo, tick, h):
+            def _pump(self, fi, fo, tick, h, syncing):
                 modes.append(stat.S_IMODE(os.fstat(fo.fileno()).st_mode))
-                return super()._pump(fi, fo, tick, h)
+                return super()._pump(fi, fo, tick, h, syncing)
 
         f = self.write("secret.key", b"x" * 1000)
         f.chmod(0o600)
@@ -681,11 +682,147 @@ class TerminalTests(Base):
         file = self.write("plain", b"x")
         self.assertEqual(self.run_cli("copy", "--to", str(file), str(file))[0], cli.USAGE)
 
+    def test_a_checksum_file_is_written_into_the_destination(self):
+        a, b = self.write("a.txt", b"alpha"), self.write("b.txt", b"beta")
+        code, text = self.run_cli("copy", "--checksum-file", "sha256", "--to", str(self.dst), str(a), str(b))
+        self.assertEqual(code, cli.OK)
+        self.assertEqual(core.parse_sums("sha256", (self.dst / "SHA256SUMS").read_text()),
+                         {"a.txt": hashlib.sha256(b"alpha").hexdigest(), "b.txt": hashlib.sha256(b"beta").hexdigest()})
+        self.assertIn("SHA256SUMS", text)
+
+    def test_the_setting_turns_it_on_and_no_checksum_file_turns_it_off(self):
+        a = self.write("a.txt", b"alpha")
+        with_setting = lambda: {**desktop.DEFAULTS, "sums": True, "sums_algo": "md5"}
+        out = io.StringIO()
+        with mock.patch.object(desktop, "load_config", with_setting), contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()), \
+                mock.patch.object(desktop, "keep_awake", lambda: None):
+            cli.run(cli.parser.parse_args(["copy", "--to", str(self.dst), str(a)]))
+            self.assertEqual(sorted(p.name for p in self.dst.iterdir()), ["a.txt", "a.txt.md5"])  # one item: named after it
+            (self.dst / "a.txt.md5").unlink()
+            cli.run(cli.parser.parse_args(["copy", "--no-checksum-file", "--on-conflict", "overwrite", "--to", str(self.dst), str(a)]))
+        self.assertEqual(sorted(p.name for p in self.dst.iterdir()), ["a.txt"])
+
+    def test_a_checksum_file_in_the_way_follows_the_conflict_rule(self):
+        a, b = self.write("a.txt", b"alpha"), self.write("b.txt", b"beta")
+        old_text = f"{'0' * 64}  elsewhere.txt\n"
+        for rule, expected in (("skip", {"SHA256SUMS"}), ("keep_both", {"SHA256SUMS", "SHA256SUMS (2)"}), ("overwrite", {"SHA256SUMS"}), ("newer", {"SHA256SUMS"}), ("ask", {"SHA256SUMS", "SHA256SUMS (2)"})):
+            with self.subTest(rule):
+                for f in self.dst.iterdir():
+                    f.unlink()
+                (self.dst / "SHA256SUMS").write_text(old_text)
+                self.run_cli("copy", "--checksum-file", "sha256", "--on-conflict", rule, "--to", str(self.dst), str(a), str(b))
+                names = {p.name for p in self.dst.iterdir() if p.name.startswith("SHA256SUMS")}
+                self.assertEqual(names, expected)
+                kept = core.parse_sums("sha256", (self.dst / "SHA256SUMS").read_text())
+                self.assertEqual(sorted(kept), {"skip": ["elsewhere.txt"], "keep_both": ["elsewhere.txt"], "overwrite": ["a.txt", "b.txt"],
+                                                "newer": ["a.txt", "b.txt", "elsewhere.txt"], "ask": ["elsewhere.txt"]}[rule])  # newer = update: theirs stay, ours are added
+
+    def test_a_move_that_only_renames_still_gets_its_checksums(self):
+        a = self.write("a.txt", b"alpha")
+        self.dst.joinpath("sub").mkdir()
+        code, text = self.run_cli("move", "--checksum-file", "sha256", "--to", str(self.dst / "sub"), str(a))
+        self.assertEqual(code, cli.OK)
+        self.assertEqual(core.parse_sums("sha256", (self.dst / "sub" / "a.txt.sha256").read_text()), {"a.txt": hashlib.sha256(b"alpha").hexdigest()})
+
     def test_quiet_leaves_out_the_files_that_are_fine(self):
         a = self.write("a.txt", b"alpha")
         code, text = self.run_cli("copy", "-q", "--to", str(self.dst), str(a))
         self.assertEqual(code, cli.OK)
         self.assertNotIn("a.txt", text)
+
+
+class SumsFileTests(Base):
+    """The checksum file: hashed while the files are written, listed by what the job really copied, read later for what it did not hash."""
+
+    def sums(self, algo, sources, **kw):
+        job = self.job(sources, sums=algo, **kw)
+        return job, job.sum_entries(False)
+
+    def test_each_algorithm_gives_the_checksums_of_the_files(self):
+        a = self.write("a.txt", b"alpha")
+        self.write("sub/b.bin", b"beta" * 1000)
+        for algo, make in (("sha256", hashlib.sha256), ("sha512", hashlib.sha512), ("md5", lambda data: hashlib.md5(data, usedforsecurity=False))):
+            with self.subTest(algo):
+                job, entries = self.sums(algo, [a, self.src / "sub"], policy="overwrite")
+                self.assertEqual(entries, {"a.txt": make(b"alpha").hexdigest(), "sub/b.bin": make(b"beta" * 1000).hexdigest()})
+                self.assertEqual(job.sum_gap(), ([], 0))
+        job, entries = self.sums("crc32", [a], policy="overwrite")
+        self.assertEqual(entries, {"a.txt": f"{zlib.crc32(b'alpha'):08x}"})
+
+    def test_a_checksum_file_has_the_name_hashtally_gives_and_sha256sum_reads_it(self):
+        a, b = self.write("a.txt", b"alpha"), self.write("b.txt", b"beta")
+        job, entries = self.sums("sha256", [a])
+        self.assertEqual(Path(job.sum_target()[1]).name, "a.txt.sha256")
+        job, entries = self.sums("sha256", [a, b], policy="overwrite")
+        path = job.write_sums(entries)
+        self.assertEqual(Path(path).name, "SHA256SUMS")
+        self.assertEqual(Path(path).read_text(), f"{hashlib.sha256(b'alpha').hexdigest()}  a.txt\n{hashlib.sha256(b'beta').hexdigest()}  b.txt\n")
+        if shutil.which("sha256sum"):
+            self.assertEqual(subprocess.run(["sha256sum", "-c", "SHA256SUMS"], cwd=self.dst, capture_output=True).returncode, 0)
+        job, entries = self.sums("crc32", [a, b], policy="overwrite")
+        self.assertEqual(Path(job.write_sums(entries)).name, "checksums.sfv")
+        self.assertClean()
+
+    def test_without_verification_the_files_are_still_hashed_and_not_cloned(self):
+        a = self.write("a.txt", b"alpha")
+        with mock.patch.object(core.fcntl, "ioctl", side_effect=AssertionError("a reflink cannot be hashed")):
+            job, entries = self.sums("sha256", [a], verify=False)
+        self.assertEqual(entries, {"a.txt": hashlib.sha256(b"alpha").hexdigest()})
+
+    def test_only_the_files_the_job_copied_are_listed(self):
+        a, b = self.write("a.txt", b"alpha"), self.write("b.txt", b"beta")
+        self.write("a.txt", b"alpha", self.dst)  # identical: skipped
+        job, entries = self.sums("sha256", [a, b], ask=mock.Mock(return_value=("skip", False)))
+        self.assertEqual((self.status(job), list(entries)), ({"a.txt": "skipped", "b.txt": "verified"}, ["b.txt"]))
+
+    def test_switched_on_meanwhile_the_earlier_files_are_a_gap_that_can_be_read(self):
+        a, b = self.write("a.txt", b"alpha"), self.write("b.txt", b"beta" * 5000)
+
+        class Late(core.Job):
+            def _run_item(self, *args):
+                super()._run_item(*args)
+                self.sums = "sha256"  # ticked in the window after the first file
+
+        job = self.job([a, b], job_class=Late, workers=1)
+        gap, size = job.sum_gap()
+        self.assertEqual(([Path(r.src).name for r in gap], size), (["a.txt"], 5))
+        self.assertEqual(list(job.sum_entries(False)), ["b.txt"])
+        entries = job.sum_entries(True)
+        self.assertEqual(entries, {"a.txt": hashlib.sha256(b"alpha").hexdigest(), "b.txt": hashlib.sha256(b"beta" * 5000).hexdigest()})
+        self.assertEqual(job.sum_read, 5)  # only the gap was read
+
+    def test_a_rename_has_no_checksum_until_it_is_read(self):
+        a = self.write("a.txt", b"alpha")
+        job = core.Job(core.items_for([str(a)], str(self.src / "moved")), move=True, sums="sha256")
+        (self.src / "moved").mkdir()
+        job.run()
+        self.assertEqual(self.status(job), {"a.txt": "ok"})  # renamed on one filesystem: nothing was read
+        self.assertEqual((len(job.sum_gap()[0]), job.sum_entries(False)), (1, {}))
+        self.assertEqual(job.sum_entries(True), {"a.txt": hashlib.sha256(b"alpha").hexdigest()})
+
+    def test_a_file_that_is_in_the_way_is_updated_kept_beside_or_overwritten(self):
+        a, b = self.write("a.txt", b"alpha"), self.write("b.txt", b"beta")
+        old = self.dst / "SHA256SUMS"
+        old_text = f"{'0' * 64}  a.txt\n{'1' * 64}  elsewhere/c.txt\n"
+        job, entries = self.sums("sha256", [a, b], policy="overwrite")
+        old.write_text(old_text)
+        path, found, _mtime = job.sum_existing()
+        self.assertEqual((path, found), (str(old), {"a.txt": "0" * 64, "elsewhere/c.txt": "1" * 64}))
+        job.write_sums(entries, "update")  # this job's files replace theirs, the others stay
+        self.assertEqual(core.parse_sums("sha256", old.read_text()), {"a.txt": entries["a.txt"], "elsewhere/c.txt": "1" * 64, "b.txt": entries["b.txt"]})
+        old.write_text(old_text)
+        self.assertEqual(Path(job.write_sums(entries, "keep_both")).name, "SHA256SUMS (2)")
+        self.assertEqual(old.read_text(), old_text)
+        job.write_sums(entries, "overwrite")
+        self.assertEqual(core.parse_sums("sha256", old.read_text()), entries)
+        self.assertClean()
+
+    def test_names_with_odd_characters_survive_the_round_trip(self):
+        entries = {"a b/c  d.txt": "a" * 64, "back\\slash.txt": "b" * 64, "new\nline.txt": "c" * 64, "ü/ß.txt": "d" * 64}
+        self.assertEqual(core.parse_sums("sha256", core.format_sums("sha256", entries)), entries)
+        crc = {"a b/c  d.txt": "deadbeef", "ü.txt": "00000001"}
+        self.assertEqual(core.parse_sums("crc32", core.format_sums("crc32", crc)), crc)
+        self.assertEqual(core.parse_sums("sha256", f"# a comment\n\n; another\nnot a line\n{'e' * 64} *bin.dat\n"), {"bin.dat": "e" * 64})
 
 
 class LeftoverTests(Base):

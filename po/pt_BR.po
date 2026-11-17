@@ -664,3 +664,104 @@ msgstr "Excluir"
 #, python-brace-format
 msgid "… and {n} more"
 msgstr "… e mais {n}"
+
+#: src/cli.py
+msgid "Reading checksums…"
+msgstr "Lendo somas de verificação…"
+
+#: src/cli.py src/ui_panel.py
+#, python-brace-format
+msgid "The checksum file could not be written: {error}"
+msgstr "Não foi possível gravar o arquivo de somas de verificação: {error}"
+
+#: src/cli.py src/ui_panel.py
+msgid "Checksum file"
+msgstr "Arquivo de somas de verificação"
+
+#: src/cli.py src/ui_dialogs.py
+msgid "Update"
+msgstr "Atualizar"
+
+#: src/cli.py src/ui_dialogs.py
+msgid "Checksum file already exists"
+msgstr "O arquivo de somas de verificação já existe"
+
+#: src/cli.py src/ui_dialogs.py
+#, python-brace-format
+msgid "{n} entry"
+msgid_plural "{n} entries"
+msgstr[0] "{n} entrada"
+msgstr[1] "{n} entradas"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "{n} of {total} file has no checksum yet: it was done before the checksum file was switched on, or only renamed."
+msgid_plural "{n} of {total} files have no checksum yet: they were done before the checksum file was switched on, or only renamed."
+msgstr[0] "{n} de {total} arquivo ainda não tem soma de verificação: ele já estava pronto antes de ativar o arquivo de somas, ou foi apenas renomeado."
+msgstr[1] "{n} de {total} arquivos ainda não têm soma de verificação: eles já estavam prontos antes de ativar o arquivo de somas, ou foram apenas renomeados."
+
+#: src/ui_dialogs.py
+msgid "Checksums for all files?"
+msgstr "Somas de verificação para todos os arquivos?"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "Include {n} file"
+msgid_plural "Include all {n} files"
+msgstr[0] "Incluir {n} arquivo"
+msgstr[1] "Incluir todos os {n} arquivos"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "Reads the rest now: {size}"
+msgstr "Lê o restante agora: {size}"
+
+#: src/ui_dialogs.py
+msgid "Only those that have one"
+msgstr "Somente os que já têm uma"
+
+#: src/ui_dialogs.py
+msgid "The checksum file is incomplete"
+msgstr "O arquivo de somas está incompleto"
+
+#: src/ui_dialogs.py
+msgid "No checksum file"
+msgstr "Sem arquivo de somas"
+
+#: src/ui_dialogs.py
+msgid "Nothing is written"
+msgstr "Nada é gravado"
+
+#: src/ui_dialogs.py
+msgid "Replaces the entries of these files and keeps the others"
+msgstr "Substitui as entradas destes arquivos e mantém as demais"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Reading checksums… {percent} %"
+msgstr "Lendo somas de verificação… {percent} %"
+
+#: src/ui_settings.py
+msgid "Write a checksum file"
+msgstr "Gravar um arquivo de somas de verificação"
+
+#: src/ui_settings.py
+msgid "Lists every copied file with its checksum in the target folder, for HashTally or sha256sum. The files must be read: no fast clone copy, and without verification the sums are those of the source."
+msgstr "Lista cada arquivo copiado com sua soma de verificação na pasta de destino, para o HashTally ou sha256sum. Os arquivos precisam ser lidos: sem cópia rápida por clonagem, e sem verificação as somas são as da origem."
+
+#: src/ui_settings.py
+msgid "Kind"
+msgstr "Tipo"
+
+#: src/ui_settings.py
+msgid "CRC32 (SFV)"
+msgstr "CRC32 (SFV)"
+
+#: src/ui_panel.py
+msgid "Options"
+msgstr "Opções"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Checksum file created: {name}"
+msgstr "Arquivo de somas criado: {name}"

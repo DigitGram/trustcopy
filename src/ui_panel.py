@@ -19,8 +19,8 @@ import desktop
 from i18n import _, _n
 from ui_graph import BLUE, GREEN, draw_badge, draw_curve, draw_grid, draw_title, plot, smoothed, soften
 from ui_files import ALL, FilesWindow
-from ui_common import AFTER, ALGO_NAMES, Entry, RESULT_ICONS, after_labels, avg_read, avg_write, fmt_duration, outcome, play_sound, pretty, rate, show_folder, to_paths
-from ui_dialogs import cleanup_dialog, confirm_always, conflict_dialog
+from ui_common import AFTER, ALGO_NAMES, Entry, RESULT_ICONS, SUM_NAMES, after_labels, avg_read, avg_write, fmt_duration, outcome, play_sound, pretty, rate, show_folder, to_paths
+from ui_dialogs import cleanup_dialog, confirm_always, conflict_dialog, sums_conflict_dialog, sums_gap_dialog
 
 
 MAX_POINTS = 1200  # the graph keeps the whole job; beyond this every second sample goes, the written total at the others stays exact
@@ -52,6 +52,7 @@ class Panel(Adw.ApplicationWindow):
         super().__init__(application=app, title="TrustCopy", default_width=640, default_height=BASE_H)
         self.job, self.active, self.closing = None, False, False
         self.paths, self.op, self.paste_dest = [], "copy", None
+        self.sums_reading, self.close_after_sums = False, False  # the read for the checksum file is under way; a window that closes itself waits for it
         self.track, self.marks = [], []  # graph data as (seconds since start, bytes written so far) and failure times
         self.all_written = False  # the graph covers the writing: from here on it stands still
         self.reading, self.saved, self.copy_info = False, None, (0, 0.0)  # step 2: the graph shows the read-back; the copy graph and its (bytes, seconds) wait for the end
@@ -162,7 +163,7 @@ class Panel(Adw.ApplicationWindow):
         self.graph = Gtk.DrawingArea(content_height=110, css_classes=["card"])  # the Overlay around it expands
         self.graph.set_draw_func(self.draw)
         self.big_speed = Gtk.Label(halign=Gtk.Align.END, valign=Gtk.Align.START, margin_top=10, margin_end=14, css_classes=["title-4", "k-num"])
-        graph = Gtk.Overlay(child=self.graph, vexpand=True)
+        graph = self.graph_box = Gtk.Overlay(child=self.graph, vexpand=True)
         graph.add_overlay(self.big_speed)
         self.top = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         bar = Gtk.Overlay(child=self.bar)
@@ -179,7 +180,10 @@ class Panel(Adw.ApplicationWindow):
         self.circle = circle
         self.verdict = Gtk.Label(wrap=True, justify=Gtk.Justification.CENTER, css_classes=["title-2"])
         self.result = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8, margin_top=6, visible=False)
-        for w in (circle, self.verdict):
+        self.sums_label = Gtk.Label(css_classes=["dim-label"], ellipsize=Pango.EllipsizeMode.MIDDLE)  # the checksum file: its name, or "Reading checksums… 40 %"
+        self.sums_row = Gtk.Box(halign=Gtk.Align.CENTER, visible=False)
+        self.sums_row.append(self.sums_label)
+        for w in (circle, self.verdict, self.sums_row):
             self.result.append(w)
         return self.result
 
@@ -222,22 +226,83 @@ class Panel(Adw.ApplicationWindow):
         self.pause.connect("clicked", self.toggle_pause)
         self.cancel.connect("clicked", lambda *a: self.close())  # on_close does the right thing in every state
         self.retry.connect("clicked", self.retry_failed)
-        self.verify = Gtk.CheckButton(label=_("Verify"), active=cfg["verify"])  # takes effect on the running job
-        self.verify.connect("toggled", self.verify_toggled)
-        self.after = Gtk.DropDown.new_from_strings(after_labels())
+        self.verify = Adw.SwitchRow(title=_("Verify"), active=cfg["verify"])  # takes effect on the running job
+        self.verify.connect("notify::active", lambda row, _p: self.verify_toggled(row))
+        self.sums_algo = cfg["sums_algo"]
+        self.sums_check = Adw.SwitchRow(active=cfg["sums"])  # takes effect on the running job: the files done before are asked about at the end
+        self.sums_check.connect("notify::active", lambda row, _p: self.sums_toggled(row))
+        self.name_sums()
+        self.after = Adw.ComboRow(title=_("When finished"), model=Gtk.StringList.new(after_labels()))
         self.after.set_selected(AFTER.index(cfg["after"]))
         confirm_always(self.after, self)
-        self.after_box = Gtk.Box(spacing=6)  # "When finished: Keep open"
-        self.after_box.append(Gtk.Label(label=_("When finished") + ":", css_classes=["dim-label"]))
-        self.after_box.append(self.after)
-        buttons = Gtk.Box(spacing=12)
-        for b in (self.verify, self.after_box, Gtk.Box(hexpand=True), self.pause, self.sweep, self.retry, self.open, self.cancel):
+        card = Gtk.ListBox(css_classes=["boxed-list"], selection_mode=Gtk.SelectionMode.NONE)
+        for row in (self.verify, self.sums_check, self.after):
+            card.append(row)
+        self.options_arrow, self.options_summary = Gtk.Image(icon_name="go-next-symbolic"), Gtk.Label(css_classes=["dim-label"], xalign=0, ellipsize=Pango.EllipsizeMode.END, hexpand=True)
+        head = Gtk.Box(spacing=8)
+        for w in (Gtk.Label(label=_("Options"), css_classes=["heading"]), self.options_summary, self.options_arrow):
+            head.append(w)
+        self.options_fold, self.size_before_options = card, None  # shown and hidden at once, no slide: see fold_options
+        card.set_visible(False)
+        toggle = Gtk.Button(child=head, css_classes=["flat", "k-files-row"])  # the look of the Files row
+        toggle.connect("clicked", self.fold_options)
+        self.options = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)  # one thing to hide when the job is over
+        self.options.append(toggle)
+        self.options.append(self.options_fold)
+        for row in (self.verify, self.sums_check):
+            row.connect("notify::active", lambda *a: self.show_options())
+        self.show_options()
+        buttons = Gtk.Box(spacing=8, halign=Gtk.Align.END)
+        for b in (self.pause, self.sweep, self.retry, self.open, self.cancel):
             buttons.append(b)
-        return buttons
+        column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        column.append(self.options)
+        column.append(buttons)
+        return column
+
+    def fold_options(self, *a):
+        """Open or shut the card of options. The window grows with it and goes back to the size it had when it is shut again (a window does not
+        shrink by itself; not for one the user has maximized or made wider meanwhile: that size is theirs). The speed graph, which takes all the
+        room that is left, keeps its height meanwhile and the card comes without sliding in (a Revealer takes its room even without a slide): a slide would give the graph the room before the
+        window has grown (it shrinks) and after the card is gone but before the window has shrunk (it swells)."""
+        shown = not self.options_fold.get_visible()
+        box = self.graph_box
+        box.set_size_request(-1, box.get_height())
+        box.set_vexpand(False)
+        if shown:
+            self.size_before_options = (self.get_width(), self.get_height())
+        self.options_fold.set_visible(shown)
+        self.options_arrow.set_from_icon_name("go-down-symbolic" if shown else "go-next-symbolic")
+        if not shown and self.size_before_options:
+            width, height = self.size_before_options
+            self.size_before_options = None
+            if self.get_width() == width and not (self.is_maximized() or self.is_fullscreen()):
+                # after the layout without the card: until then the window's least size is still the big one and would refuse
+                GLib.timeout_add(50, lambda: (self.set_default_size(width, height), GLib.SOURCE_REMOVE)[1])
+
+        def release():  # the window has its new size: the graph may take the room again, which is the room it has
+            box.set_size_request(-1, -1)
+            box.set_vexpand(True)
+            return GLib.SOURCE_REMOVE
+
+        GLib.timeout_add(400, release)
+
+    def show_options(self):
+        """What is switched on, beside the fold's title: the state is readable with the card shut."""
+        on = [title for title, row in ((_("Verify"), self.verify), (_("Checksum file"), self.sums_check)) if row.get_active()]
+        self.options_summary.set_label(", ".join(on))
 
     def verify_toggled(self, button):
         if self.job:
             self.job.verify = button.get_active()
+
+    def name_sums(self):
+        self.sums_check.set_title(_("Checksum file"))
+        self.sums_check.set_subtitle(SUM_NAMES[self.sums_algo])
+
+    def sums_toggled(self, button):
+        if self.job:
+            self.job.sums = self.sums_algo if button.get_active() else None
 
     def toggle_files(self, *a):
         self.files_win.show_kind(ALL)
@@ -282,7 +347,8 @@ class Panel(Adw.ApplicationWindow):
 
     def launch(self, dest):
         cfg = desktop.load_config()
-        self.start(core.items_for(self.paths, dest), self.op == "move", verify=self.verify.get_active(), policy=cfg["conflict"], algo=cfg["algo"])
+        self.start(core.items_for(self.paths, dest), self.op == "move", verify=self.verify.get_active(), policy=cfg["conflict"], algo=cfg["algo"],
+                   sums=self.sums_algo if self.sums_check.get_active() else None)
 
     def start(self, items, move, **options):
         try:
@@ -290,6 +356,10 @@ class Panel(Adw.ApplicationWindow):
         except (ValueError, OSError) as e:
             return self.fail(str(e))
         self.verify.set_active(options["verify"])
+        if options.get("sums"):  # a retry keeps the kind of its job
+            self.sums_algo = options["sums"]
+            self.name_sums()
+        self.sums_check.set_active(bool(options.get("sums")))
         self.first_title.set_label(_("Moving") if move else _("Copying"))
         self.title_stack.set_visible_child_name("run")
         self.dest = os.path.commonpath([os.path.dirname(dst) for _src, dst in items])
@@ -602,7 +672,7 @@ class Panel(Adw.ApplicationWindow):
         bad = [r for r in job.results if r.status == "failed"]
         ok = sum(r.status in ("ok", "verified") for r in job.results)
         self.mark_busy({})
-        for w in (self.pause, self.verify, self.after_box, self.top, self.status):
+        for w in (self.pause, self.options, self.top, self.status):
             w.set_visible(False)
         self.cancel.set_label(_("Close"))
         self.retry.set_visible(bool(bad) and not job.fatal)
@@ -636,7 +706,78 @@ class Panel(Adw.ApplicationWindow):
         after = AFTER[self.after.get_selected()]
         closes = self.closing or after == "always" or (after == "clean" and kind == "success")
         self.announce(title, text, kind, folder=self.open.get_visible() and not closes)  # a window that closes takes the app along: the button would lead nowhere
-        if closes:
+        waiting = self.offer_sums(job)  # always asked: `closes and ...` would not call it when the window stays
+        self.close_after_sums = closes and waiting
+        if closes and not waiting:
+            self.close()
+
+    # --- the checksum file ------------------------------------------------------
+    def offer_sums(self, job):
+        """After the job: the checksum file. The files that have no checksum (done before it was switched on, or only renamed) are asked about first.
+        Returns whether it goes on in the background, so a window that closes itself waits for it."""
+        if not job.sums or job.cancelled or job.fatal or not job.sum_files():
+            return False
+        gap, size = job.sum_gap()
+        if gap:
+            sums_gap_dialog(len(gap), len(job.sum_files()), size, self.sums_gap_answered).present(self)
+        else:
+            self.collect_sums(False)
+        return True
+
+    def sums_gap_answered(self, choice):
+        if choice == "none":
+            self.sums_done()
+        else:
+            self.collect_sums(choice == "all")
+
+    def collect_sums(self, read_gap):
+        job, self.sums_reading = self.job, read_gap
+        if read_gap:
+            self.sums_row.set_visible(True)
+            GLib.timeout_add(250, self.sums_progress, job.sum_gap()[1])
+
+        def work():
+            entries = job.sum_entries(read_gap)
+            GLib.idle_add(self.sums_collected, entries)
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def sums_progress(self, total):
+        if not self.sums_reading:  # the last tick after the end must not overwrite the result
+            return False
+        self.sums_label.set_label(_("Reading checksums… {percent} %").format(percent=min(100, int(100 * self.job.sum_read / max(total, 1)))))
+        return self.sums_reading
+
+    def sums_collected(self, entries):
+        self.sums_reading = False
+        job = self.job
+        if not entries:
+            return self.sums_done()
+        existing = job.sum_existing()
+        if existing:
+            path, found, mtime = existing
+            sums_conflict_dialog(path, found, mtime, len(entries), lambda how: self.write_sums(entries, how)).present(self)
+        else:
+            self.write_sums(entries, "keep_both")
+        return GLib.SOURCE_REMOVE
+
+    def write_sums(self, entries, how):
+        if how == "skip":
+            return self.sums_done()
+        try:
+            self.sums_done(self.job.write_sums(entries, how))
+        except OSError as e:
+            self.sums_done(error=e.strerror or str(e))
+
+    def sums_done(self, path="", error=""):
+        """The row under the result: that the file is made and its name (the folder button below opens where it lies), or why there is none;
+        nothing when none was written on purpose."""
+        self.sums_row.set_visible(bool(path or error))
+        if path:
+            self.sums_label.set_label(_("Checksum file created: {name}").format(name=desktop.shown(os.path.basename(path))))
+        elif error:
+            self.sums_label.set_label(_("The checksum file could not be written: {error}").format(error=desktop.shown(error)))
+        if self.close_after_sums:
             self.close()
 
     def _show_summary(self, job):
@@ -704,7 +845,7 @@ class Panel(Adw.ApplicationWindow):
         job = self.job
         panel = Panel(self.get_application())
         panel.present()
-        panel.start([(r.src, r.dst) for r in job.results if r.status == "failed"], job.move, verify=job.verify, policy=job.policy, algo=job.algo,
+        panel.start([(r.src, r.dst) for r in job.results if r.status == "failed"], job.move, verify=job.verify, policy=job.policy, algo=job.algo, sums=job.sums,
                     replace={r.dst for r in job.results if r.kept}, dirs=job.dirs)
         self.retry.set_visible(False)
 

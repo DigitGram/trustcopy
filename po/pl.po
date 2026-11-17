@@ -677,3 +677,107 @@ msgstr "Usuń"
 #, python-brace-format
 msgid "… and {n} more"
 msgstr "… i {n} więcej"
+
+#: src/cli.py
+msgid "Reading checksums…"
+msgstr "Odczytywanie sum kontrolnych…"
+
+#: src/cli.py src/ui_panel.py
+#, python-brace-format
+msgid "The checksum file could not be written: {error}"
+msgstr "Nie udało się zapisać pliku sum kontrolnych: {error}"
+
+#: src/cli.py src/ui_panel.py
+msgid "Checksum file"
+msgstr "Plik sum kontrolnych"
+
+#: src/cli.py src/ui_dialogs.py
+msgid "Update"
+msgstr "Zaktualizuj"
+
+#: src/cli.py src/ui_dialogs.py
+msgid "Checksum file already exists"
+msgstr "Plik sum kontrolnych już istnieje"
+
+#: src/cli.py src/ui_dialogs.py
+#, python-brace-format
+msgid "{n} entry"
+msgid_plural "{n} entries"
+msgstr[0] "{n} wpis"
+msgstr[1] "{n} wpisy"
+msgstr[2] "{n} wpisów"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "{n} of {total} file has no checksum yet: it was done before the checksum file was switched on, or only renamed."
+msgid_plural "{n} of {total} files have no checksum yet: they were done before the checksum file was switched on, or only renamed."
+msgstr[0] "{n} z {total} plików nie ma jeszcze sumy kontrolnej: był już gotowy przed włączeniem pliku sum albo został tylko przemianowany."
+msgstr[1] "{n} z {total} plików nie ma jeszcze sum kontrolnych: były już gotowe przed włączeniem pliku sum albo zostały tylko przemianowane."
+msgstr[2] "{n} z {total} plików nie ma jeszcze sum kontrolnych: były już gotowe przed włączeniem pliku sum albo zostały tylko przemianowane."
+
+#: src/ui_dialogs.py
+msgid "Checksums for all files?"
+msgstr "Sumy kontrolne dla wszystkich plików?"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "Include {n} file"
+msgid_plural "Include all {n} files"
+msgstr[0] "Uwzględnij {n} plik"
+msgstr[1] "Uwzględnij wszystkie {n} pliki"
+msgstr[2] "Uwzględnij wszystkie {n} plików"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "Reads the rest now: {size}"
+msgstr "Odczyta resztę teraz: {size}"
+
+#: src/ui_dialogs.py
+msgid "Only those that have one"
+msgstr "Tylko te, które je mają"
+
+#: src/ui_dialogs.py
+msgid "The checksum file is incomplete"
+msgstr "Plik sum kontrolnych będzie niekompletny"
+
+#: src/ui_dialogs.py
+msgid "No checksum file"
+msgstr "Bez pliku sum kontrolnych"
+
+#: src/ui_dialogs.py
+msgid "Nothing is written"
+msgstr "Nic nie zostanie zapisane"
+
+#: src/ui_dialogs.py
+msgid "Replaces the entries of these files and keeps the others"
+msgstr "Zastępuje wpisy tych plików, pozostałe zostają"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Reading checksums… {percent} %"
+msgstr "Odczytywanie sum kontrolnych… {percent} %"
+
+#: src/ui_settings.py
+msgid "Write a checksum file"
+msgstr "Zapisz plik sum kontrolnych"
+
+#: src/ui_settings.py
+msgid "Lists every copied file with its checksum in the target folder, for HashTally or sha256sum. The files must be read: no fast clone copy, and without verification the sums are those of the source."
+msgstr "Wypisuje każdy skopiowany plik z jego sumą kontrolną w folderze docelowym, dla HashTally lub sha256sum. Pliki trzeba odczytać: bez szybkiego kopiowania przez klonowanie, a bez weryfikacji sumy pochodzą ze źródła."
+
+#: src/ui_settings.py
+msgid "Kind"
+msgstr "Rodzaj"
+
+#: src/ui_settings.py
+msgid "CRC32 (SFV)"
+msgstr "CRC32 (SFV)"
+
+#: src/ui_panel.py
+msgid "Options"
+msgstr "Opcje"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Checksum file created: {name}"
+msgstr "Utworzono plik sum kontrolnych: {name}"
