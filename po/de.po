@@ -500,10 +500,6 @@ msgstr "Ein Ordner mit diesem Namen existiert bereits"
 msgid "Use Ctrl, Alt or Super with the key."
 msgstr "Die Taste mit Strg, Alt oder Super kombinieren."
 
-#: src/ui_gtk.py
-msgid "“Always close” also closes when files failed."
-msgstr "„Immer schließen“ schließt auch, wenn Dateien fehlgeschlagen sind."
-
 #: src/panel.py
 msgid "Not enough data for a reliable speed (it takes 1 MiB or more)"
 msgstr "Zu wenig Daten für ein verlässliches Tempo (ab 1 MiB)"
@@ -750,10 +746,6 @@ msgid "Lists every copied file with its checksum in the target folder, for HashT
 msgstr "Listet jede kopierte Datei mit ihrer Prüfsumme im Zielordner auf, für HashTally oder sha256sum. Die Dateien müssen gelesen werden: keine schnelle Klon-Kopie, und ohne Prüfung sind die Summen die der Quelle."
 
 #: src/ui_settings.py
-msgid "Kind"
-msgstr "Art"
-
-#: src/ui_settings.py
 msgid "CRC32 (SFV)"
 msgstr "CRC32 (SFV)"
 
@@ -822,3 +814,15 @@ msgstr "Der Computer konnte nicht heruntergefahren werden: {error}"
 #, python-brace-format
 msgid "The computer could not be suspended: {error}"
 msgstr "Der Computer konnte nicht in Bereitschaft versetzt werden: {error}"
+
+#: src/ui_settings.py
+msgid "What happens when a file with that name is already in the target."
+msgstr "Was passiert, wenn im Ziel schon eine Datei mit diesem Namen liegt."
+
+#: src/ui_settings.py
+msgid "Algorithm"
+msgstr "Algorithmus"
+
+#: src/ui_settings.py
+msgid "Of the checksum file. SHA-256 is the usual choice; MD5 and SFV are for older tools."
+msgstr "Für die Prüfsummen-Datei. SHA-256 ist die übliche Wahl, MD5 und SFV sind für ältere Programme."

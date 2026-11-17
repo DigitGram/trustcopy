@@ -493,10 +493,6 @@ msgstr "已存在同名文件夹"
 msgid "Use Ctrl, Alt or Super with the key."
 msgstr "请将按键与 Ctrl、Alt 或 Super 组合使用。"
 
-#: src/ui_gtk.py
-msgid "“Always close” also closes when files failed."
-msgstr "“始终关闭”在有文件失败时也会关闭。"
-
 #: src/panel.py
 msgid "Not enough data for a reliable speed (it takes 1 MiB or more)"
 msgstr "数据量太少，无法得出可靠的速度（需要 1 MiB 以上）"
@@ -734,10 +730,6 @@ msgid "Lists every copied file with its checksum in the target folder, for HashT
 msgstr "在目标文件夹中列出每个已复制文件及其校验和，供 HashTally 或 sha256sum 使用。需要读取文件：不使用快速克隆复制，且未验证时校验和来自源文件。"
 
 #: src/ui_settings.py
-msgid "Kind"
-msgstr "类型"
-
-#: src/ui_settings.py
 msgid "CRC32 (SFV)"
 msgstr "CRC32 (SFV)"
 
@@ -804,3 +796,15 @@ msgstr "无法关闭计算机：{error}"
 #, python-brace-format
 msgid "The computer could not be suspended: {error}"
 msgstr "无法挂起计算机：{error}"
+
+#: src/ui_settings.py
+msgid "What happens when a file with that name is already in the target."
+msgstr "目标中已有同名文件时的处理方式。"
+
+#: src/ui_settings.py
+msgid "Algorithm"
+msgstr "算法"
+
+#: src/ui_settings.py
+msgid "Of the checksum file. SHA-256 is the usual choice; MD5 and SFV are for older tools."
+msgstr "用于校验和文件。通常选 SHA-256；MD5 和 SFV 适用于较旧的工具。"

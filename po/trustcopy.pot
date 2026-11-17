@@ -501,10 +501,6 @@ msgstr ""
 msgid "Use Ctrl, Alt or Super with the key."
 msgstr ""
 
-#: src/ui_gtk.py
-msgid "“Always close” also closes when files failed."
-msgstr ""
-
 #: src/panel.py
 msgid "Not enough data for a reliable speed (it takes 1 MiB or more)"
 msgstr ""
@@ -751,10 +747,6 @@ msgid "Lists every copied file with its checksum in the target folder, for HashT
 msgstr ""
 
 #: src/ui_settings.py
-msgid "Kind"
-msgstr ""
-
-#: src/ui_settings.py
 msgid "CRC32 (SFV)"
 msgstr ""
 
@@ -821,4 +813,16 @@ msgstr ""
 #: src/ui_panel.py
 #, python-brace-format
 msgid "The computer could not be suspended: {error}"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "What happens when a file with that name is already in the target."
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Algorithm"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Of the checksum file. SHA-256 is the usual choice; MD5 and SFV are for older tools."
 msgstr ""
