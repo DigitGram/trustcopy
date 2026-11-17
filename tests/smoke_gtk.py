@@ -137,6 +137,31 @@ def child(tmp):
     Panel._start_readback(swap, NS(written=50))
     assert (swap.reading, swap.track, swap.marks, swap.all_written, swap.copy_info) == (True, [(0.0, 0)], [], False, (50, 9.0))
     assert swap.saved == ([(0.0, 0), (9.0, 50)], 2.0, [1.0]) and swap.lead == 11.0, swap.saved  # the copy graph waits, the new one counts its seconds from now
+    folder, rows, more = common.leftover_rows([("/x/y/a.trustpart", 5), ("/x/y/b.trustpart", 7)])  # one folder: said once, the rows carry only the names
+    assert (folder, rows, more) == ("/x/y", [("a.trustpart", None, 5, "/x/y/a.trustpart"), ("b.trustpart", None, 7, "/x/y/b.trustpart")], None), (folder, rows, more)
+    folder, rows, more = common.leftover_rows([("/x/y/a.trustpart", 5), ("/x/z/b.trustpart", 7)])  # several folders: each row says where
+    assert folder is None and [r[:2] for r in rows] == [("a.trustpart", "/x/y"), ("b.trustpart", "/x/z")], rows
+    folder, rows, more = common.leftover_rows([(f"/x/f{n}.trustpart", 10) for n in range(1000)])
+    assert folder == "/x" and len(rows) == 4 and rows[0][0] == "f0.trustpart" and more[:2] == (996, 9960), (len(rows), more[:2])  # a thousand stay four rows and a count with its size
+    assert more[2].split("\n")[0] == "f4.trustpart" and more[2].split("\n")[-1] == "…" and len(more[2].split("\n")) == 21  # its tooltip names the next twenty
+    assert common.leftover_rows([(f"/x/f{n}.trustpart", 1) for n in range(5)])[2] is None and common.leftover_rows([(f"/x/f{n}.trustpart", 1) for n in range(6)])[2][0] == 2  # never "and 1 more"
+    for pairs in ([("/x/a.trustpart", 5)], [(f"/x/f{n}.trustpart", 10) for n in range(40)] + [("/y/z.trustpart", 1)]):  # the dialog builds, one folder or many, few or many
+        answers = []
+        dialogs.cleanup_dialog(pairs, answers.append)
+    with tempfile.TemporaryDirectory() as d:  # the offer to delete the leftovers of a crashed job
+        part = Path(d, "x.bin.trustpart")
+        part.write_bytes(b"half")
+        offer = NS(leftovers=[], sweep=MagicMock(), is_visible=lambda: True, sweep_answered=lambda yes: None)
+        Panel.offer_sweep(offer, [(str(part), 4)])
+        assert offer.leftovers == [(str(part), 4)] and offer.sweep.set_visible.call_args.args[0] is True and "1" in offer.sweep.set_label.call_args.args[0]
+        Panel.offer_sweep(NS(is_visible=lambda: False, sweep=offer.sweep, leftovers=[]), [(str(part), 4)])  # a window that is gone is not asked
+        assert offer.sweep.set_visible.call_count == 1
+        Panel.sweep_answered(offer, False)
+        assert part.exists(), "No must delete nothing"
+        Panel.sweep_answered(offer, True)
+        assert not part.exists() and offer.sweep.set_sensitive.call_args.args[0] is False, "Yes deletes, and the button turns into the answer"
+        busy = NS(get_application=lambda: NS(running=object(), waiting=[]), dest=d)
+        Panel.look_for_leftovers(busy, NS(results=[]))  # another job runs: its own temp files must not be offered (a thread would be started otherwise)
     for active, reading, kept, shown in ((True, True, 0.0, "7 s"), (False, False, 9.0, "9 s"), (True, False, 0.0, "")):  # step 2 counts while it runs, then keeps its time
         rows = [(MagicMock(), MagicMock(), MagicMock()) for _s in range(3)]
         Panel._show_steps(NS(complete=False, picked=None, steps=rows, joins=[MagicMock()], reading=reading, active=active, verify_secs=kept, tile_boxes=[MagicMock() for _t in range(4)], copy_info=(1, 1.0),
@@ -234,6 +259,8 @@ def child(tmp):
         if not (panel and panel.job and panel.job.finished and not panel.active) and time.monotonic() < deadline:
             return True  # the copy is still running (slow machine): look again
         failures.extend(problems(panel))
+        if opened and not panel.sweep.get_visible():  # the thread that looks for them has had a round of 250 ms by now
+            failures.append("the leftover of an earlier job in the target folder is not offered for deletion")
         if not opened:
             before = [d.get_label() for _item, _num, d in panel.steps]
             time.sleep(1.2)
@@ -256,6 +283,8 @@ def child(tmp):
 
     deadline = time.monotonic() + 30
     GLib.timeout_add(250, probe)
+    Path(tmp, "dst").mkdir(exist_ok=True)
+    Path(tmp, "dst", "old.bin.trustpart").write_bytes(b"left by a crash")
     app.run(["trustcopy", "copy", "--to", f"{tmp}/dst", f"{tmp}/file"])
     if failures:
         sys.exit("; ".join(failures))

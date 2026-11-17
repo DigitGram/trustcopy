@@ -8,6 +8,7 @@ Entry point. The menu entries start it as
   trustcopy copy|move [--to FOLDER] [--] FILE...      trustcopy paste [--to FOLDER]
 and the installer runs the GTK-free `integrate` command:
   trustcopy integrate [--remove]
+and, as text too, `trustcopy clean FOLDER... [--yes]` deletes the leftovers of a crashed copy.
 From a terminal, `copy` and `move` with --to answer there, as text (cli.py); --gui asks for the window.
 Without arguments the settings open. ui_gtk.py shows the windows, core.py (copying) and desktop.py (settings, right-click entries) do the work.
 """
@@ -29,6 +30,9 @@ def main():
         if msg:
             print(msg, file=sys.stderr)
         return 1 if msg and not isinstance(msg, desktop.Note) else 0
+    if sys.argv[1:2] == ["clean"]:  # text only, like `integrate`: no window for it
+        import cli
+        return cli.clean(sys.argv[2:])
     if sys.stdout.isatty() and sys.argv[1:2] in (["copy"], ["move"]):  # a menu entry has no terminal: it gets the window
         import cli
         args = cli.parser.parse_intermixed_args(sys.argv[1:])

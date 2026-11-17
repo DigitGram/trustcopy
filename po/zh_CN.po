@@ -598,3 +598,56 @@ msgstr "仅当新文件更新时才替换"
 #: src/ui_dialogs.py
 msgid "Replaces the existing file"
 msgstr "替换现有文件"
+
+#: src/cli.py
+msgid "No leftover files found."
+msgstr "未找到残留文件。"
+
+#: src/cli.py
+#, python-brace-format
+msgid "{n} unfinished copy found"
+msgid_plural "{n} unfinished copies found"
+msgstr[0] "找到 {n} 个未完成的副本"
+
+#: src/cli.py
+msgid "Delete them?"
+msgstr "要删除它们吗？"
+
+#: src/cli.py
+msgid "Nothing was deleted. Run again with --yes to delete them."
+msgstr "未删除任何内容。请加上 --yes 再次运行以删除。"
+
+#: src/cli.py src/ui_panel.py
+#, python-brace-format
+msgid "{n} file deleted"
+msgid_plural "{n} files deleted"
+msgstr[0] "已删除 {n} 个文件"
+
+#: src/core.py
+msgid "Not an unfinished copy"
+msgstr "不是未完成的副本"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Delete {n} unfinished copy…"
+msgid_plural "Delete {n} unfinished copies…"
+msgstr[0] "删除 {n} 个未完成的副本…"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Delete {n} unfinished copy?"
+msgid_plural "Delete {n} unfinished copies?"
+msgstr[0] "删除 {n} 个未完成的副本？"
+
+#: src/ui_panel.py
+msgid "These files end in .trustpart. They are unfinished copies from a job that stopped suddenly, for example by a crash or a power cut. They are <b>of no use</b> any more, so deleting them is <b>safe</b> and recommended. Your original files and everything else stay untouched."
+msgstr "这些文件以 .trustpart 结尾。它们是因崩溃或断电而突然中断的任务留下的未完成副本，已经<b>没有用处</b>，删除是<b>安全</b>的，也建议删除。原始文件和其他内容不会受到影响。"
+
+#: src/ui_panel.py
+msgid "Delete"
+msgstr "删除"
+
+#: src/ui_common.py
+#, python-brace-format
+msgid "… and {n} more"
+msgstr "… 以及另外 {n} 个"

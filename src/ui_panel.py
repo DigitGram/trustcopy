@@ -20,7 +20,7 @@ from i18n import _, _n
 from ui_graph import BLUE, GREEN, draw_badge, draw_curve, draw_grid, draw_title, plot, smoothed, soften
 from ui_files import ALL, FilesWindow
 from ui_common import AFTER, ALGO_NAMES, Entry, RESULT_ICONS, after_labels, avg_read, avg_write, fmt_duration, outcome, play_sound, pretty, rate, show_folder, to_paths
-from ui_dialogs import confirm_always, conflict_dialog
+from ui_dialogs import cleanup_dialog, confirm_always, conflict_dialog
 
 
 MAX_POINTS = 1200  # the graph keeps the whole job; beyond this every second sample goes, the written total at the others stays exact
@@ -217,6 +217,8 @@ class Panel(Adw.ApplicationWindow):
         self.retry = Gtk.Button(label=_("Retry failed"), visible=False, css_classes=["suggested-action"])
         self.open = Gtk.Button(label=_("Open folder"), visible=False)
         self.open.connect("clicked", self.open_folder)
+        self.sweep, self.leftovers = Gtk.Button(visible=False), []  # offered after a job when an earlier, crashed one left unfinished copies in the target folders
+        self.sweep.connect("clicked", self.sweep_asked)
         self.pause.connect("clicked", self.toggle_pause)
         self.cancel.connect("clicked", lambda *a: self.close())  # on_close does the right thing in every state
         self.retry.connect("clicked", self.retry_failed)
@@ -229,7 +231,7 @@ class Panel(Adw.ApplicationWindow):
         self.after_box.append(Gtk.Label(label=_("When finished") + ":", css_classes=["dim-label"]))
         self.after_box.append(self.after)
         buttons = Gtk.Box(spacing=12)
-        for b in (self.verify, self.after_box, Gtk.Box(hexpand=True), self.pause, self.retry, self.open, self.cancel):
+        for b in (self.verify, self.after_box, Gtk.Box(hexpand=True), self.pause, self.sweep, self.retry, self.open, self.cancel):
             buttons.append(b)
         return buttons
 
@@ -605,6 +607,7 @@ class Panel(Adw.ApplicationWindow):
         self.cancel.set_label(_("Close"))
         self.retry.set_visible(bool(bad) and not job.fatal)
         self.open.set_visible(bool(ok) and not job.fatal)
+        self.look_for_leftovers(job)
         if self.pause_t:  # cancelled while paused: that pause still does not count
             self.paused += time.monotonic() - self.pause_t
         self._show_summary(job)
@@ -659,6 +662,43 @@ class Panel(Adw.ApplicationWindow):
             app.send_notification(f"done-{id(self)}", note)
         if cfg["sound"]:
             play_sound(app, kind)
+
+    def look_for_leftovers(self, job):
+        """After a job: unfinished copies (name.trustpart) in the folders it wrote to come from an earlier job that stopped suddenly. Only when no
+        other job runs or waits, whose own temp files look just the same. In a thread: a slow network folder must not hold the window."""
+        app = self.get_application()
+        if app.running or app.waiting:
+            return
+        folders = {os.path.dirname(r.dst) for r in job.results} | {self.dest}
+
+        def scan():
+            if found := core.find_leftovers(folders):
+                GLib.idle_add(self.offer_sweep, found)
+
+        threading.Thread(target=scan, daemon=True).start()
+
+    def offer_sweep(self, found):
+        if self.is_visible():  # a window that closed itself meanwhile has nobody to ask
+            self.leftovers = found
+            self.sweep.set_label(_n("Delete {n} unfinished copy…", "Delete {n} unfinished copies…", len(found)).format(n=len(found)))
+            self.sweep.set_sensitive(True)
+            self.sweep.set_visible(True)
+        return GLib.SOURCE_REMOVE
+
+    def sweep_asked(self, *a):
+        cleanup_dialog(self.leftovers, self.sweep_answered).present(self)
+
+    def sweep_answered(self, yes):
+        if not yes:
+            return
+        gone, errors = core.remove_leftovers([path for path, _size in self.leftovers])
+        if errors:  # what could not go stays offered
+            self.leftovers = [(path, 0) for path, _error in errors]
+            self.offer_sweep(self.leftovers)
+            self.sweep.set_tooltip_text(desktop.shown("\n".join(f"{path}: {error}" for path, error in errors[:8])))
+        else:
+            self.sweep.set_label(_n("{n} file deleted", "{n} files deleted", gone).format(n=gone))  # the button stays as the answer, greyed out
+            self.sweep.set_sensitive(False)
 
     def retry_failed(self, *a):
         job = self.job

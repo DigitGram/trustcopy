@@ -148,6 +148,40 @@ def free_name(path, claimed=()):
     return f"{stem} ({n}){ext}"
 
 
+def find_leftovers(folders, deep=False):
+    """The unfinished copies (`name.trustpart`) a hard stop left in `folders`, as sorted (path, size). `deep`: the folders below them too.
+    Links are never followed, and a folder is never a leftover. Only call it while no job writes there: a running job's temp files look the same."""
+    found, todo = [], list(folders)
+    while todo:
+        try:
+            with os.scandir(todo.pop()) as it:
+                for entry in it:
+                    if entry.is_dir(follow_symlinks=False):
+                        if deep:
+                            todo.append(entry.path)
+                    elif name_key(entry.name).endswith(PART):
+                        found.append((entry.path, entry.stat(follow_symlinks=False).st_size))
+        except OSError:
+            continue  # a folder that cannot be read has nothing to show
+    return sorted(set(found))
+
+
+def remove_leftovers(paths):
+    """Deletes what find_leftovers found, after looking at each again. Returns (how many are gone, [(path, error)])."""
+    gone, errors = 0, []
+    for path in paths:
+        try:
+            if stat.S_ISDIR(os.lstat(path).st_mode) or not name_key(os.path.basename(path)).endswith(PART):
+                raise OSError(errno.EINVAL, _("Not an unfinished copy"))  # changed since it was listed: never delete anything else
+            os.unlink(path)
+            gone += 1
+        except FileNotFoundError:
+            gone += 1  # gone already, which is what was wanted
+        except OSError as e:
+            errors.append((path, e.strerror or str(e)))
+    return gone, errors
+
+
 def _rotational(path):
     """True if path lives on a spinning disk, where parallel copies only add seeks."""
     try:

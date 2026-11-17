@@ -53,6 +53,7 @@ popover.k-cat > contents { background: none; border: none; box-shadow: none; pad
 /* the tile of the graph on show */
 .k-tile-picked { box-shadow: inset 0 0 0 2px alpha(@window_fg_color, 0.3); }
 .k-tile { padding: 10px 14px; border-radius: 14px; background: alpha(@window_fg_color, 0.06); }
+.k-slim row { min-height: 36px; }  /* a card of file names: five rows must fit under the heading in the small job window */
 .k-table cell { padding: 0; }
 .k-hash { font-family: monospace; font-size: 0.9em; }
 .k-row-bad  { background: alpha(@error_bg_color, 0.13); }
@@ -74,6 +75,20 @@ def show_folder(folder, parent=None):
             "ShowFolders", GLib.Variant("(ass)", ([folder.get_uri()], "")), 0, -1, None)
     except GLib.Error:
         Gtk.FileLauncher.new(folder).launch(parent, None, lambda l, res: l.launch_finish(res))
+
+
+def leftover_rows(found, limit=4, hint=20):
+    """What the clean-up dialog lists, from (path, size) pairs: (the folder when they all lie in one, else None; rows of (name, folder to show beside
+    the name, size, real path); None or (how many more, their size, the next `hint` names for a tooltip)). Beyond `limit` (+1: "and 1 more" never
+    stands for one file) the rest is only counted: a thousand leftovers stay five rows."""
+    shown = found if len(found) <= limit + 1 else found[:limit]  # a last row that says "1 more" would take the room of that one file
+    folders = {os.path.dirname(p) for p, _size in found}
+    folder = next(iter(folders)) if len(folders) == 1 else None
+    rows = [(os.path.basename(p), None if folder else pretty(os.path.dirname(p)), size, p) for p, size in shown]
+    rest = found[len(shown):]
+    names = [os.path.basename(p) if folder else pretty(p) for p, _size in rest[:hint]]
+    more = (len(rest), sum(size for _p, size in rest), "\n".join(names) + ("\n…" if len(rest) > hint else "")) if rest else None
+    return folder, rows, more
 
 
 def pretty(path):

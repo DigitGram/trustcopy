@@ -616,3 +616,64 @@ msgstr "Zastępuje go tylko wtedy, gdy nowy plik jest nowszy"
 #: src/ui_dialogs.py
 msgid "Replaces the existing file"
 msgstr "Zastępuje istniejący plik"
+
+#: src/cli.py
+msgid "No leftover files found."
+msgstr "Nie znaleziono pozostałych plików."
+
+#: src/cli.py
+#, python-brace-format
+msgid "{n} unfinished copy found"
+msgid_plural "{n} unfinished copies found"
+msgstr[0] "Znaleziono {n} niedokończoną kopię"
+msgstr[1] "Znaleziono {n} niedokończone kopie"
+msgstr[2] "Znaleziono {n} niedokończonych kopii"
+
+#: src/cli.py
+msgid "Delete them?"
+msgstr "Usunąć je?"
+
+#: src/cli.py
+msgid "Nothing was deleted. Run again with --yes to delete them."
+msgstr "Nic nie usunięto. Uruchom ponownie z --yes, aby je usunąć."
+
+#: src/cli.py src/ui_panel.py
+#, python-brace-format
+msgid "{n} file deleted"
+msgid_plural "{n} files deleted"
+msgstr[0] "Usunięto {n} plik"
+msgstr[1] "Usunięto {n} pliki"
+msgstr[2] "Usunięto {n} plików"
+
+#: src/core.py
+msgid "Not an unfinished copy"
+msgstr "To nie jest niedokończona kopia"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Delete {n} unfinished copy…"
+msgid_plural "Delete {n} unfinished copies…"
+msgstr[0] "Usuń {n} niedokończoną kopię…"
+msgstr[1] "Usuń {n} niedokończone kopie…"
+msgstr[2] "Usuń {n} niedokończonych kopii…"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Delete {n} unfinished copy?"
+msgid_plural "Delete {n} unfinished copies?"
+msgstr[0] "Usunąć {n} niedokończoną kopię?"
+msgstr[1] "Usunąć {n} niedokończone kopie?"
+msgstr[2] "Usunąć {n} niedokończonych kopii?"
+
+#: src/ui_panel.py
+msgid "These files end in .trustpart. They are unfinished copies from a job that stopped suddenly, for example by a crash or a power cut. They are <b>of no use</b> any more, so deleting them is <b>safe</b> and recommended. Your original files and everything else stay untouched."
+msgstr "Te pliki mają rozszerzenie .trustpart. To niedokończone kopie zadania przerwanego nagle, na przykład przez awarię lub utratę zasilania. Nie są już <b>do niczego potrzebne</b>, więc ich usunięcie jest <b>bezpieczne</b> i zalecane. Oryginalne pliki i wszystko inne pozostają nietknięte."
+
+#: src/ui_panel.py
+msgid "Delete"
+msgstr "Usuń"
+
+#: src/ui_common.py
+#, python-brace-format
+msgid "… and {n} more"
+msgstr "… i {n} więcej"

@@ -739,6 +739,76 @@ class TerminalTests(Base):
         self.assertNotIn("a.txt", text)
 
 
+class LeftoverTests(Base):
+    def setUp(self):
+        super().setUp()
+        self.part = self.write("a.bin" + core.PART, b"half", self.dst)
+        self.deep = self.write("sub/deeper/b.bin" + core.PART.upper(), b"123456", self.dst)  # exFAT ignores the case
+        self.write("keep.txt", b"x", self.dst)
+        (self.dst / "folder.trustpart").mkdir()  # a folder is never a leftover
+        os.symlink("keep.txt", self.dst / "link.bin.trustpart")  # a link is, and is never followed
+
+    def paths(self, found):
+        return sorted(Path(p).relative_to(self.dst).as_posix() for p, _size in found)
+
+    def test_a_folder_is_searched_alone_or_with_everything_below(self):
+        self.assertEqual(self.paths(core.find_leftovers([str(self.dst)])), ["a.bin.trustpart", "link.bin.trustpart"])
+        self.assertEqual(self.paths(core.find_leftovers([str(self.dst)], deep=True)),
+                         ["a.bin.trustpart", "link.bin.trustpart", "sub/deeper/b.bin.TRUSTPART"])
+        self.assertEqual(dict(core.find_leftovers([str(self.dst)]))[str(self.part)], 4)
+        self.assertEqual(core.find_leftovers([str(self.dst / "missing")]), [])
+
+    def test_removing_looks_again_and_deletes_nothing_else(self):
+        found = [p for p, _size in core.find_leftovers([str(self.dst)], deep=True)]
+        keep = str(self.dst / "keep.txt")
+        gone, errors = core.remove_leftovers(found + [keep, str(self.dst / "folder.trustpart"), str(self.dst / "vanished.trustpart")])
+        self.assertEqual((gone, sorted(Path(p).name for p, _e in errors)), (4, ["folder.trustpart", "keep.txt"]))  # the vanished one counts as gone
+        self.assertEqual(core.find_leftovers([str(self.dst)], deep=True), [])
+        self.assertTrue(Path(keep).exists() and (self.dst / "folder.trustpart").is_dir())
+
+    def test_a_finished_copy_leaves_none_behind(self):
+        a = self.write("c.txt", b"data")
+        self.job([a])
+        self.assertEqual(self.paths(core.find_leftovers([str(self.dst)], deep=True)),
+                         ["a.bin.trustpart", "link.bin.trustpart", "sub/deeper/b.bin.TRUSTPART"])  # only the planted ones
+
+
+class CleanCommandTests(Base):
+    def run_clean(self, *argv, tty=False, answer=""):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()), \
+                mock.patch.object(sys.stdin, "isatty", lambda: tty), mock.patch("builtins.input", lambda prompt="": answer):
+            return cli.clean(list(argv)), out.getvalue()
+
+    def setUp(self):
+        super().setUp()
+        self.part = self.write("x.bin" + core.PART, b"half", self.dst)
+
+    def test_nothing_to_clean(self):
+        self.part.unlink()
+        code, text = self.run_clean(str(self.dst))
+        self.assertEqual((code, cli.TICK in text), (cli.OK, True))
+
+    def test_yes_deletes_without_asking(self):
+        code, text = self.run_clean("--yes", str(self.dst))
+        self.assertEqual((code, self.part.exists()), (cli.OK, False))
+        self.assertIn(cli.TICK, text)
+
+    def test_without_a_terminal_it_only_lists(self):
+        code, text = self.run_clean(str(self.dst))
+        self.assertEqual((code, self.part.exists()), (cli.FAILED, True))
+        self.assertIn("x.bin" + core.PART, text)
+
+    def test_the_answer_decides_at_a_terminal(self):
+        self.assertEqual(self.run_clean(str(self.dst), tty=True, answer="n")[0], cli.OK)
+        self.assertTrue(self.part.exists())
+        self.assertEqual(self.run_clean(str(self.dst), tty=True, answer="y")[0], cli.OK)
+        self.assertFalse(self.part.exists())
+
+    def test_a_missing_folder_is_a_usage_error(self):
+        self.assertEqual(self.run_clean(str(self.dst / "missing"))[0], cli.USAGE)
+
+
 class SameNameTests(Base):
     """Two sources with one name (search results, clipboard) must keep both, however the workers interleave."""
 
@@ -1754,6 +1824,15 @@ class Translations(unittest.TestCase):
                     self.assertEqual(len(forms), nplurals, f"{po.name}: wrong number of forms in {msgid!r}")
             self.assertIn(f"Project-Id-Version: TrustCopy {core.__version__}\n", catalog[""], po.name)
         self.assertIn(f'"Project-Id-Version: TrustCopy {core.__version__}\\n"', (i18n.PO_DIR / "trustcopy.pot").read_text())
+
+    def test_translations_with_markup_are_valid_and_mark_the_same_tags(self):
+        """The clean-up dialog sets two words in bold (<b>): a broken tag in one language would show up as a blank text there."""
+        import xml.etree.ElementTree as ET
+        tags = lambda text: [e.tag for e in ET.fromstring("<t>" + text + "</t>").iter()][1:]
+        for po in sorted(i18n.PO_DIR.glob("*.po")):
+            for msgid, msgstr in i18n.load_po(po).items():
+                if "<b>" in msgid and msgstr:
+                    self.assertEqual(tags(msgid), tags(msgstr), f"{po.name}: {msgid[:40]!r}")
 
     def test_xgettext_sees_every_string(self):
         """xgettext skips f-strings: a _("...") inside one drops out of the template at the next refresh, and msgmerge then retires its translations."""

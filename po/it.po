@@ -607,3 +607,60 @@ msgstr "Lo sostituisce solo se il nuovo file è più recente"
 #: src/ui_dialogs.py
 msgid "Replaces the existing file"
 msgstr "Sostituisce il file esistente"
+
+#: src/cli.py
+msgid "No leftover files found."
+msgstr "Nessun file residuo trovato."
+
+#: src/cli.py
+#, python-brace-format
+msgid "{n} unfinished copy found"
+msgid_plural "{n} unfinished copies found"
+msgstr[0] "{n} copia incompleta trovata"
+msgstr[1] "{n} copie incomplete trovate"
+
+#: src/cli.py
+msgid "Delete them?"
+msgstr "Eliminarli?"
+
+#: src/cli.py
+msgid "Nothing was deleted. Run again with --yes to delete them."
+msgstr "Non è stato eliminato nulla. Eseguire di nuovo con --yes per eliminarli."
+
+#: src/cli.py src/ui_panel.py
+#, python-brace-format
+msgid "{n} file deleted"
+msgid_plural "{n} files deleted"
+msgstr[0] "{n} file eliminato"
+msgstr[1] "{n} file eliminati"
+
+#: src/core.py
+msgid "Not an unfinished copy"
+msgstr "Non è una copia incompleta"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Delete {n} unfinished copy…"
+msgid_plural "Delete {n} unfinished copies…"
+msgstr[0] "Elimina {n} copia incompleta…"
+msgstr[1] "Elimina {n} copie incomplete…"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Delete {n} unfinished copy?"
+msgid_plural "Delete {n} unfinished copies?"
+msgstr[0] "Eliminare {n} copia incompleta?"
+msgstr[1] "Eliminare {n} copie incomplete?"
+
+#: src/ui_panel.py
+msgid "These files end in .trustpart. They are unfinished copies from a job that stopped suddenly, for example by a crash or a power cut. They are <b>of no use</b> any more, so deleting them is <b>safe</b> and recommended. Your original files and everything else stay untouched."
+msgstr "Questi file terminano con .trustpart. Sono copie incomplete di un'operazione interrotta all'improvviso, ad esempio da un crash o da un'interruzione di corrente. <b>Non servono più a nulla</b>, quindi eliminarle è <b>sicuro</b> e consigliato. I file originali e tutto il resto restano intatti."
+
+#: src/ui_panel.py
+msgid "Delete"
+msgstr "Elimina"
+
+#: src/ui_common.py
+#, python-brace-format
+msgid "… and {n} more"
+msgstr "… e altri {n}"

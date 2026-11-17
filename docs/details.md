@@ -50,7 +50,7 @@ trustcopy integrate --remove                        # remove the right-click ent
 
 ## Limits
 
-- After a hard stop (crash, power cut) a `name.trustpart` can be left behind; delete it, or copy the same file again and it goes (its source is still there: a move removes a source only after its copy's name is on the disk). Files that end in `.trustpart` are never copied or moved (the name is the temp name of the file beside them).
+- After a hard stop (crash, power cut) a `name.trustpart` can be left behind. When a job has finished and no other job runs or waits, the window looks in the folders the job wrote to (not below them) and offers a button to delete such leftovers, after a question that names them. `trustcopy clean FOLDER...` looks in the folders and everything below, lists what it finds with sizes, asks, and deletes (`--yes`: no question; without a terminal it only lists and exits with 1). Only files whose name ends in `.trustpart` are ever deleted, folders never. Copying the same file again also makes its leftover go (its source is still there: a move removes a source only after its copy's name is on the disk). Files that end in `.trustpart` are never copied or moved (the name is the temp name of the file beside them).
 - Linux only. Symlinks are copied as links; devices, sockets and pipes are not copied (listed as failed).
 - Ownership is not preserved (like plain `cp`); permissions, times and xattrs are.
 - Verification reads every copy back from the disk, not from the page cache (each copy is flushed first, then dropped from the cache).

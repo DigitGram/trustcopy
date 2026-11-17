@@ -38,7 +38,7 @@ TAGLINE = "Verified copying for Nautilus  ·  GPL-3.0-or-later"
 ALGO_NAMES = {"crc32": "CRC32", "blake2b": "BLAKE2b", "sha256": "SHA-256"}
 POLICIES = ("ask", "skip", "keep_both", "newer", "overwrite")
 
-parser = argparse.ArgumentParser(prog="trustcopy", usage="%(prog)s copy|move --to DESTINATION SOURCE... [options]\n       %(prog)s paste [--to DESTINATION] | settings | integrate [--remove]")
+parser = argparse.ArgumentParser(prog="trustcopy", usage="%(prog)s copy|move --to DESTINATION SOURCE... [options]\n       %(prog)s paste [--to DESTINATION] | settings | integrate [--remove] | clean FOLDER... [--yes]")
 parser.add_argument("op", nargs="?", choices=["copy", "move", "paste", "settings"])
 parser.add_argument("--to", metavar="FOLDER", help="the destination folder, where the SOURCEs are put (copy/move asks if omitted; paste defaults to the current folder)")
 parser.add_argument("--gui", action="store_true", help="open the window even when started from a terminal")
@@ -110,6 +110,39 @@ def _local(arg):
 def _fail(text):
     print(f"trustcopy: {text}", file=sys.stderr)
     return USAGE
+
+
+# --------------------------------------------------------------------------- clean up
+
+def clean(argv):
+    """`trustcopy clean FOLDER...`: lists the unfinished copies (`.trustpart`) a crash or a power cut left in the folders and below,
+    asks, and deletes them. Returns the exit code."""
+    ap = argparse.ArgumentParser(prog="trustcopy clean", description="Delete the unfinished copies (name.trustpart) that a crash or power cut left behind.")
+    ap.add_argument("folders", nargs="+", metavar="FOLDER", help="the folders to look in, with everything below them")
+    ap.add_argument("-y", "--yes", action="store_true", help="delete without asking")
+    args = ap.parse_args(argv)
+    folders = [_local(f) for f in args.folders]
+    if None in folders or not all(os.path.isdir(f) for f in folders):
+        return _fail(_("The destination is not a folder on this computer."))
+    found = core.find_leftovers(folders, deep=True)
+    if not found:
+        _line(_("No leftover files found."), TICK)
+        return OK
+    for path, size in found:
+        _line(f"{_size(size):>9}  {desktop.shown(path)}")
+    print()
+    _line(_n("{n} unfinished copy found", "{n} unfinished copies found", len(found)).format(n=len(found)), WARN)
+    if not args.yes:
+        if not sys.stdin.isatty():
+            _line(_("Nothing was deleted. Run again with --yes to delete them."), INFO)
+            return FAILED
+        if input("  " + _("Delete them?") + " [y/N] ").strip().lower() not in ("y", "yes", "j", "ja"):
+            return OK
+    gone, errors = core.remove_leftovers([p for p, _size_ in found])
+    for path, error in errors:
+        _line(f"{desktop.shown(path)}: {desktop.shown(error)}", CROSS)
+    _line(_n("{n} file deleted", "{n} files deleted", gone).format(n=gone), TICK)
+    return FAILED if errors else OK
 
 
 # --------------------------------------------------------------------------- the running job

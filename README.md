@@ -129,7 +129,7 @@ Exit code: 0 done, 1 a file failed or the job was cancelled, 2 the command could
 
 - Linux only. Symlinks are copied as links; devices, sockets and pipes are not copied (listed as failed).
 - Ownership is not preserved (like plain `cp`); permissions, times and xattrs are.
-- After a hard stop (crash, power cut) a `name.trustpart` can be left behind; delete it, or copy the same file again.
+- After a hard stop (crash, power cut) a `name.trustpart` can be left behind. After the next copy into that folder the window offers to delete such leftovers, and `trustcopy clean FOLDER` does it from a terminal (it lists them first and asks; `--yes` skips the question).
 - Read-back verification cannot catch a cheap USB stick whose controller confirms a flush it has not done. For a copy that must
   not fail there: eject, plug it in again and check it with a hash file ([HashTally](https://github.com/DigitGram/hashtally)).
 

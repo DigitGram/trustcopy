@@ -7,12 +7,12 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gtk, Pango
+from gi.repository import Adw, GLib, Gtk, Pango
 
 import core
 import desktop
-from i18n import _
-from ui_common import AFTER, describe, differences, key_value_grid
+from i18n import _, _n
+from ui_common import AFTER, describe, differences, key_value_grid, leftover_rows, pretty
 
 
 def conflict_dialog(src, dst, respond):
@@ -59,6 +59,56 @@ def conflict_dialog(src, dst, respond):
     footer.append(cancel)
     box.append(footer)
     dialog.connect("closed", lambda d: respond("cancel", False))  # Escape is the Cancel button, not a skip
+    return dialog
+
+
+def cleanup_dialog(found, on_answer):
+    """Asks whether to delete the unfinished copies (`name.trustpart`) of a job that stopped suddenly, in the look of the conflict dialog:
+    a heading, a few words of reassurance, the files as a card with their sizes. `on_answer(True)` for Delete; Cancel and Escape give False."""
+    folder, rows, more = leftover_rows(found)
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=18, margin_bottom=18, margin_start=18, margin_end=18)
+    box.set_size_request(480, -1)
+    heading = Gtk.Box(spacing=10, halign=Gtk.Align.CENTER)
+    heading.append(Gtk.Image(icon_name="dialog-question-symbolic", pixel_size=28))
+    heading.append(Gtk.Label(label=_n("Delete {n} unfinished copy?", "Delete {n} unfinished copies?", len(found)).format(n=len(found)), css_classes=["title-3"]))
+    box.append(heading)
+    box.append(Gtk.Label(label=_("These files end in .trustpart. They are unfinished copies from a job that stopped suddenly, for example by a crash or a power cut. "
+                                  "They are <b>of no use</b> any more, so deleting them is <b>safe</b> and recommended. Your original files and everything else stay untouched."),
+                         use_markup=True, wrap=True, justify=Gtk.Justification.CENTER, css_classes=["dim-label"]))
+    if folder:  # all in one folder: it is said once, above the card
+        place = Gtk.Box(spacing=6, halign=Gtk.Align.CENTER)
+        place.append(Gtk.Image(icon_name="folder-symbolic", css_classes=["dim-label"]))
+        place.append(Gtk.Label(label=desktop.shown(pretty(folder)), ellipsize=Pango.EllipsizeMode.MIDDLE, max_width_chars=48, tooltip_text=desktop.shown(folder), css_classes=["heading"]))
+        box.append(place)
+    card = Gtk.ListBox(css_classes=["boxed-list", "k-slim"], selection_mode=Gtk.SelectionMode.NONE)
+    for title, subtitle, size, path in rows:
+        row = Adw.ActionRow(title=desktop.shown(title), subtitle=desktop.shown(subtitle) if subtitle else "", use_markup=False, title_lines=1, subtitle_lines=1, tooltip_text=desktop.shown(path))
+        row.add_prefix(Gtk.Image(icon_name="text-x-generic-symbolic", css_classes=["dim-label"]))
+        row.add_suffix(Gtk.Label(label=GLib.format_size(size), css_classes=["dim-label"]))
+        card.append(row)
+    if more:  # the rest is counted, and a tooltip names the next few
+        count, size, names = more
+        row = Adw.ActionRow(title=_("… and {n} more").format(n=count), use_markup=False, tooltip_text=desktop.shown(names))
+        row.add_suffix(Gtk.Label(label=GLib.format_size(size), css_classes=["dim-label"]))
+        card.append(row)
+    box.append(card)
+    answered = []
+    dialog = Adw.Dialog(child=box)
+
+    def answer(widget, yes):
+        answered.append(yes)
+        on_answer(yes)
+        dialog.close()
+
+    cancel, delete = Gtk.Button(label=_("Cancel")), Gtk.Button(label=_("Delete"), css_classes=["destructive-action"])
+    cancel.connect("clicked", answer, False)
+    delete.connect("clicked", answer, True)
+    footer = Gtk.Box(spacing=8, halign=Gtk.Align.END, margin_top=6)
+    footer.append(cancel)
+    footer.append(delete)
+    box.append(footer)
+    dialog.set_focus(cancel)  # Enter is the safe answer
+    dialog.connect("closed", lambda d: on_answer(False) if not answered else None)  # Escape
     return dialog
 
 
