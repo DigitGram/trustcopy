@@ -645,9 +645,16 @@ class TerminalTests(Base):
             self.assertEqual(cli.run(cli.parser.parse_args(["copy", "--to", str(self.dst), str(a)])), cli.OK)
         self.assertEqual(calls, ["lock", ("free", "handle")])
 
+    @staticmethod
+    def keep_awake_with(gio):
+        with mock.patch.object(desktop, "Gio", gio):
+            return desktop.keep_awake()
+
     def test_staying_awake_never_breaks_a_copy(self):
-        with mock.patch.object(desktop.Gio, "bus_get_sync", side_effect=RuntimeError("no bus")):
-            self.assertIsNone(desktop.keep_awake())
+        self.assertIsNone(self.keep_awake_with(None))  # no PyGObject at all (a plain Python, as on the CI's first job)
+        broken = mock.MagicMock()
+        broken.bus_get_sync.side_effect = RuntimeError("no bus")
+        self.assertIsNone(self.keep_awake_with(broken))
         desktop.let_sleep(None)  # nothing to release
 
     def test_copy_is_reported_and_exits_zero(self):
