@@ -160,7 +160,9 @@ def power_dialog(action, on_go, seconds=POWER_COUNTDOWN):
             text = _n("The computer suspends in {n} second.", "The computer suspends in {n} seconds.", left[0])
         else:
             text = _n("The computer shuts down in {n} second.", "The computer shuts down in {n} seconds.", left[0])
-        return text.format(n=left[0])
+        text = text.format(n=left[0])
+        # a suspended computer keeps its programs as they are; a switched-off one closes them, and the session does not ask them to save
+        return text if suspend else text + "\n\n" + _("Programs that are still open are closed. Unsaved work in them can be lost.")
 
     def over(go):
         if not state["over"]:

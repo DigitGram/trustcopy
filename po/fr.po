@@ -826,3 +826,7 @@ msgstr "Algorithme"
 #: src/ui_settings.py
 msgid "Of the checksum file. SHA-256 is the usual choice; MD5 and SFV are for older tools."
 msgstr "Pour le fichier de sommes. SHA-256 est le choix habituel ; MD5 et SFV servent aux anciens outils."
+
+#: src/ui_dialogs.py
+msgid "Programs that are still open are closed. Unsaved work in them can be lost."
+msgstr "Les programmes encore ouverts seront fermés. Le travail non enregistré qu'ils contiennent peut être perdu."
