@@ -73,6 +73,25 @@ def _sync_dir(path):
         os.close(fd)
 
 
+TIME_FUZZ_NS = 2_000_000_000  # FAT keeps the time to two seconds: a copy of a copy there is not "older"
+
+
+def compare(src, dst):
+    """How the new file compares with the existing one, for the conflict question: (text, kind) with kind "same" (a hint that it is the very file, never
+    a proof), "good" (only things in favour of the new one) or "bad" (something speaks against it). Cheap: size and modification time, no reading."""
+    new, old = os.lstat(src), os.lstat(dst)
+    parts = []  # (word, is it in favour of the new file)
+    if abs(new.st_mtime_ns - old.st_mtime_ns) >= TIME_FUZZ_NS:
+        parts.append((_("Newer"), True) if new.st_mtime_ns > old.st_mtime_ns else (_("Older"), False))
+    if new.st_size != old.st_size:
+        parts.append((_("Larger"), True) if new.st_size > old.st_size else (_("Smaller"), False))
+    if not parts:
+        return _("Same size and time"), "same"
+    # TRANSLATORS: the separator between two words of the hint on a conflict, as in "Newer, larger"
+    text = _(", ").join([parts[0][0]] + [word.lower() for word, _good in parts[1:]])
+    return text, "good" if all(good for _word, good in parts) else "bad"
+
+
 def _stamp(st):
     """What tells a source apart from the one that was read: saving a file changes its times (ctime even when a tool sets mtime back), mostly its size too.
     shortcut: a save of the same size within the time resolution of the source's filesystem (2 s on FAT) is not seen; hash the source again if that bites."""

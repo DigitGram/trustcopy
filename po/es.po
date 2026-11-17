@@ -765,3 +765,12 @@ msgstr "Opciones"
 #, python-brace-format
 msgid "Checksum file created: {name}"
 msgstr "Archivo de sumas creado: {name}"
+
+#: src/cli.py src/ui_dialogs.py
+msgid "Same size and time"
+msgstr "Mismo tamaño y fecha"
+
+#. TRANSLATORS: the separator between two words of the hint on a conflict, as in "Newer, larger"
+#: src/core.py
+msgid ", "
+msgstr ", "
