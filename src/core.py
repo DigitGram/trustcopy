@@ -83,6 +83,12 @@ class Cancelled(Exception):
     pass
 
 
+@dataclass
+class Identical:
+    """What _resolve answers when the target already holds the very same content: its checksum, nothing to copy."""
+    digest: str
+
+
 class _Crc32:
     """hashlib-style wrapper so every checksum is used the same way."""
 
@@ -423,7 +429,14 @@ class Job:
                 self._later += weight - size
             self.current = src
             target = self._resolve(src, dst)
-            if target is None:
+            if isinstance(target, Identical):  # nothing to write: the two reads of the comparison were this file's two passes
+                self._advance(weight - 2 * size)  # 0, unless verification was switched meanwhile
+                if self.move:  # the content is proven to be there: the source goes, as after a verified copy
+                    problem = self._release(src, dst)
+                    status, error, digest = ("failed", problem, "") if problem else ("verified", "", target.digest)
+                else:
+                    status, error, digest = "skipped", "", ""
+            elif target is None:
                 self._advance(weight)
                 status, error, digest = "skipped", "", ""
             else:
@@ -546,8 +559,8 @@ class Job:
         """Final target path for src, or None to skip it. Every target is claimed, so two sources with one name
         (search results, clipboard) keep both instead of silently overwriting each other."""
         target, fresh = self._decide(src, dst)
-        if target is None:
-            return None
+        if target is None or isinstance(target, Identical):
+            return target
         with self._claim_lock:
             if fresh or name_key(target) in self._claimed:
                 target = free_name(target, self._claimed)
@@ -568,6 +581,11 @@ class Job:
         if os.path.isdir(dst) and not os.path.islink(dst):
             raise IsADirectoryError(errno.EISDIR, _("A folder with this name already exists"))
         s, d = os.lstat(src), os.lstat(dst)
+        # the same content already there is no conflict. Only with verification on (it is the read that makes the comparison cheap to
+        # justify, and a move may then remove its source), and not under skip (nothing to decide) or overwrite (written anew on purpose)
+        if (self.verify and self.policy in ("ask", "keep_both", "newer") and stat.S_ISREG(s.st_mode) and stat.S_ISREG(d.st_mode)
+                and s.st_size == d.st_size and (digest := self._same(src, dst, s))):
+            return Identical(digest), False
         with self._ask_lock:  # one dialog at a time, and "apply to all" must hold for the next waiter
             self._checkpoint()  # a Cancel while this worker waited for the lock must not open another dialog
             policy = self.policy
@@ -584,6 +602,39 @@ class Job:
         if policy == "newer":
             return (dst, False) if s.st_mtime > d.st_mtime else (None, False)
         return dst, policy == "keep_both"
+
+    def _same(self, src, dst, s):
+        """The hex checksum when dst holds exactly the content of src, else "". Both are read from the disk (the same two reads a verified
+        copy would cost, and counted as such); a move keeps what it read in _stamps, so _release removes the source only if it is unchanged.
+        Anything unreadable just means "not the same": the normal conflict handling follows."""
+        got = [0]
+
+        def tick(n):
+            got[0] += n
+            self._advance(n)
+
+        self.phases[src] = "verify"
+        try:
+            if self._head(src) != self._head(dst):  # most different files of one size part ways here, after 64 KiB
+                return ""
+            with open(dst, "rb") as f:
+                os.fsync(f.fileno())  # a target written moments ago may still be only in the cache: a move must not rely on that
+            a, b = self._hash(src, tick), self._hash(dst, tick)
+        except OSError:
+            a = b = None
+        finally:
+            self.phases.pop(src, None)
+        if a is None or a != b or _stamp(os.lstat(src)) != _stamp(s):  # the source changed while it was read: no proof
+            self._advance(-got[0])  # the file goes on as an ordinary conflict, with its full weight
+            return ""
+        if self.move:
+            self._stamps[dst + PART] = _stamp(s)  # what _release looks up
+        return a.hex()
+
+    @staticmethod
+    def _head(path):
+        with open(path, "rb") as f:
+            return f.read(1 << 16)
 
     def _transfer(self, src, dst, kind, size, weight, verify):
         """Returns (status, error, digest). Only Cancelled escapes."""

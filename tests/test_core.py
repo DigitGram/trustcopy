@@ -386,12 +386,63 @@ class ConflictTests(Base):
         self.job([self.new], policy="newer")
         self.assertEqual(self.old.read_bytes(), b"kept")  # the same age is not newer
 
-    def test_identical_file_is_asked_about_too(self):
-        self.job([self.new], policy="overwrite")  # copystat makes mtime equal
+    def test_identical_file_is_not_asked_about(self):
+        self.job([self.new], policy="overwrite")  # now the target holds the very same content
+        ask = mock.Mock(return_value=("overwrite", False))
+        job = self.job([self.new], ask=ask)
+        ask.assert_not_called()
+        self.assertEqual(self.status(job), {"f.txt": "skipped"})
+        self.assertEqual((job.done, job.total), (8, 8))  # the two reads of the comparison were the file's two passes
+        self.assertClean()
+
+    def test_same_size_other_content_is_still_asked_about(self):
+        self.old.write_bytes(b"nEw!")  # the same size, a different file
         ask = mock.Mock(return_value=("skip", False))
         job = self.job([self.new], ask=ask)
         ask.assert_called_once()
+        self.assertEqual((self.status(job), job.done, job.total), ({"f.txt": "skipped"}, 8, 8))  # the comparison's progress was taken back
+
+    def test_a_difference_after_the_first_64_kib_is_found_too(self):
+        big, other = bytes(200_000), bytearray(200_000)
+        other[-1] = 1
+        src = self.write("big.bin", big)
+        self.write("big.bin", bytes(other), base=self.dst)
+        ask = mock.Mock(return_value=("overwrite", False))
+        self.job([src], ask=ask)
+        ask.assert_called_once()
+        self.assertEqual((self.dst / "big.bin").read_bytes(), big)
+
+    def test_identical_content_follows_the_rules_that_leave_room_for_it(self):
+        self.job([self.new], policy="overwrite")
+        target = self.dst / "f.txt"
+        os.utime(target, (5, 5))
+        os.utime(self.new, (9, 9))  # newer, but the same content
+        for policy in ("newer", "keep_both"):
+            job = self.job([self.new], policy=policy)
+            self.assertEqual(self.status(job), {"f.txt": "skipped"}, policy)
+            self.assertEqual(target.stat().st_mtime, 5, policy)  # not written anew
+        self.assertEqual(sorted(p.name for p in self.dst.iterdir()), ["f.txt"])  # no "f (2).txt"
+        self.job([self.new], policy="overwrite")  # overwrite means what it says
+        self.assertEqual(target.stat().st_mtime, 9)
+
+    def test_without_verification_nothing_is_compared(self):
+        self.job([self.new], policy="overwrite")
+        ask = mock.Mock(return_value=("skip", False))
+        self.job([self.new], ask=ask, verify=False)
+        ask.assert_called_once()
+
+    def test_a_move_removes_the_source_of_identical_content(self):
+        self.job([self.new], policy="overwrite")
+        job = self.job([self.new], move=True, ask=mock.Mock())
+        self.assertEqual(self.status(job), {"f.txt": "verified"})
+        self.assertFalse(self.new.exists())
+        self.assertEqual((self.dst / "f.txt").read_bytes(), b"new!")
+
+    def test_a_move_keeps_the_source_of_other_content(self):
+        self.old.write_bytes(b"nEw!")
+        job = self.job([self.new], move=True, ask=lambda s, d: ("skip", False))
         self.assertEqual(self.status(job), {"f.txt": "skipped"})
+        self.assertTrue(self.new.exists())
 
     def test_ask_with_apply_to_all(self):
         self.write("g.txt", b"new-g")
