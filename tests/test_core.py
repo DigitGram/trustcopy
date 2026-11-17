@@ -864,6 +864,90 @@ class SumsFileTests(Base):
         self.assertEqual(core.parse_sums("sha256", f"# a comment\n\n; another\nnot a line\n{'e' * 64} *bin.dat\n"), {"bin.dat": "e" * 64})
 
 
+class SparseTests(Base):
+    """A sparse file (holes: a VM disk, a preallocated download) stays sparse on the target."""
+    SIZE = 64 << 20
+
+    def make(self, name="s.img", holes_only=False):
+        p = self.src / name
+        with open(p, "wb") as f:
+            f.truncate(self.SIZE)
+            if not holes_only:
+                f.seek(10 << 20)
+                f.write(b"A" * 5000)
+                f.seek(40 << 20)
+                f.write(b"B" * 70000)  # and a hole to the end
+        if p.stat().st_blocks * 512 > self.SIZE // 2:
+            self.skipTest("this filesystem does not keep holes")
+        return p
+
+    @staticmethod
+    def sha(p):
+        return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+    def test_the_extents_are_the_parts_with_data(self):
+        with open(self.make(), "rb") as f:
+            extents, size = core._data_extents(f.fileno())
+        self.assertEqual(size, self.SIZE)
+        self.assertEqual(sum(length for _o, length in extents) < 1 << 20, True)
+        self.assertTrue(any(o <= 10 << 20 < o + length for o, length in extents) and any(o <= 40 << 20 < o + length for o, length in extents))
+        plain = self.write("plain.bin", b"x" * (3 << 20))
+        with open(plain, "rb") as f:
+            self.assertIsNone(core._data_extents(f.fileno()))  # no hole: an ordinary file
+
+    def test_holes_stay_holes_and_the_content_is_the_same(self):
+        src = self.make()
+        for verify in (True, False):
+            with self.subTest(verify=verify):
+                job = self.job([src], verify=verify, policy="overwrite")
+                dst = self.dst / "s.img"
+                self.assertEqual(job.results[0].status, "verified" if verify else "ok")
+                self.assertEqual(dst.stat().st_size, self.SIZE)
+                self.assertLess(dst.stat().st_blocks * 512, 2 << 20)  # a full copy takes the 64 MiB
+                self.assertEqual(self.sha(dst), self.sha(src))
+                self.assertLess(job.written, 1 << 20)  # only the data was written
+                self.assertEqual(job.done, job.total)  # the holes count as done, so the bar ends at 100%
+                self.assertClean()
+
+    def test_a_file_that_is_only_a_hole_is_a_hole_of_its_size(self):
+        src = self.make("empty.img", holes_only=True)
+        job = self.job([src])
+        dst = self.dst / "empty.img"
+        self.assertEqual((job.results[0].status, dst.stat().st_size, dst.stat().st_blocks), ("verified", self.SIZE, 0))
+        self.assertEqual(self.sha(dst), self.sha(src))
+
+    def test_the_checksum_file_sees_the_holes_as_zeros(self):
+        src = self.make()
+        job = self.job([src], sums="sha256")
+        self.assertEqual(job.sum_entries(False), {"s.img": self.sha(src)})
+
+    def test_a_damaged_copy_of_a_sparse_file_is_still_caught(self):
+        src = self.make()
+        Corrupting.bad = 99  # every read-back returns wrong data, so the retries fail too
+        job = self.job([src], job_class=Corrupting, policy="overwrite")
+        self.assertEqual(self.status(job), {"s.img": "failed"})
+
+    def test_the_room_check_counts_what_a_sparse_file_takes_not_its_size(self):
+        sparse, plain = self.make(), self.write("plain.bin", b"x" * (3 << 20))
+        scarce = types.SimpleNamespace(free=10 << 20)  # a target with 10 MiB free
+        with mock.patch.object(core.shutil, "disk_usage", return_value=scarce):
+            job = self.job([sparse], policy="overwrite")  # 64 MiB long, about 80 KB of data
+            self.assertEqual((job.fatal, job.results[0].status), ("", "verified"))
+            job = self.job([self.write("big.bin", b"y" * (12 << 20))], policy="overwrite")  # no holes: 12 MiB do not fit
+            self.assertIn("Not enough space", job.fatal)
+        self.assertEqual(plain.stat().st_size, 3 << 20)
+
+    def test_a_move_that_has_to_copy_keeps_the_holes_and_removes_the_source(self):
+        src = self.make()
+        expected = self.sha(src)
+        with mock.patch.object(core.Job, "_rename", return_value=None):  # as on another filesystem: no rename, a copy
+            job = self.job([src], move=True, policy="overwrite")
+        dst = self.dst / "s.img"
+        self.assertEqual((job.results[0].status, src.exists(), dst.stat().st_size), ("verified", False, self.SIZE))
+        self.assertLess(dst.stat().st_blocks * 512, 2 << 20)
+        self.assertEqual(self.sha(dst), expected)
+
+
 class LeftoverTests(Base):
     def setUp(self):
         super().setUp()

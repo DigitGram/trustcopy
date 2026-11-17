@@ -35,6 +35,7 @@ SYNC_MIN, SYNC_MAX = 1 << 20, 32 << 20  # flush after this much: about 0.2 s of 
 RETRIES = 3
 PART = ".trustpart"  # shortcut: names within 10 bytes of the 255 limit fail (reported as an error), fix if it ever bites
 FICLONE = 0x40049409
+SPARSE_MIN = 1 << 20  # a file is looked at for holes from this size, and when at least this much of it is one
 FALLOC_FL_KEEP_SIZE = 1  # claim the clusters only: mode 0 makes FAT write the whole file full of zeros first
 FULL = {errno.ENOSPC, errno.EDQUOT}  # the disk or the user's quota: every following file would fail too
 NO_SYNC = {errno.EINVAL, errno.ENOTSUP, errno.ENOSYS}  # a file system that cannot flush
@@ -47,18 +48,51 @@ except (OSError, AttributeError):
     _fallocate = None
 
 
-def _reserve(fd, size):
+def _reserve(fd, size, offset=0):
     """Claim the room for a file before writing it: a full target stops a 40 GB file at once, not after 40 GB.
     True if reserved. Only a full target and a file too big for the filesystem (over 4 GiB on FAT32, which would fail after 4 GiB,
     three times) are errors: where the filesystem cannot reserve (exFAT and many network shares refuse KEEP_SIZE), copying goes on as before.
     shortcut: a compressing filesystem (btrfs) reserves the uncompressed size, so a nearly full one may refuse a file that would have fit."""
     if not (size and _fallocate):
         return False
-    if _fallocate(fd, FALLOC_FL_KEEP_SIZE, 0, size) == 0:
+    if _fallocate(fd, FALLOC_FL_KEEP_SIZE, offset, size) == 0:
         return True
     if (code := ctypes.get_errno()) in FULL | {errno.EFBIG}:
         raise OSError(code, os.strerror(code))
     return False
+
+
+def _data_extents(fd):
+    """[(offset, length)] of the parts of an open file that hold data, and its size, when it has holes of 1 MiB or more (a sparse file: a VM disk,
+    a preallocated download); None for an ordinary file and wherever the filesystem cannot say (SEEK_DATA/SEEK_HOLE)."""
+    try:
+        st = os.fstat(fd)
+        if not (stat.S_ISREG(st.st_mode) and st.st_size >= SPARSE_MIN and st.st_blocks * 512 + SPARSE_MIN <= st.st_size):
+            return None  # what the filesystem has allocated is the file, or all but a little of it
+        found, pos = [], 0
+        while pos < st.st_size:
+            try:
+                start = os.lseek(fd, pos, os.SEEK_DATA)
+            except OSError as e:
+                if e.errno == errno.ENXIO:  # no data after pos: the rest is a hole
+                    break
+                raise
+            end = os.lseek(fd, start, os.SEEK_HOLE)
+            found.append((start, end - start))
+            pos = end
+        os.lseek(fd, 0, os.SEEK_SET)
+        return found, st.st_size
+    except (OSError, AttributeError):
+        return None
+
+
+def _room(src, size):
+    """The room a copy of the file takes on the target: its size, or for a sparse file (holes of 1 MiB or more, which stay holes) what it has allocated."""
+    try:
+        allocated = os.lstat(src).st_blocks * 512
+    except OSError:
+        return size
+    return allocated if size >= SPARSE_MIN and allocated + SPARSE_MIN <= size else size
 
 
 def _sync_dir(path):
@@ -433,7 +467,7 @@ class Job:
             there, free = os.stat(target).st_dev, shutil.disk_usage(target).free
             # within one filesystem a move renames, and a copy without verification may be a reflink (btrfs, XFS): neither needs the room
             # shortcut: so such a copy is not checked where there are no reflinks (ext4) either; the per-file reservation stops it, and the files written stay
-            need = sum(size for src, dst, kind, size in files if kind == "file" and not os.path.lexists(dst)
+            need = sum(_room(src, size) for src, dst, kind, size in files if kind == "file" and not os.path.lexists(dst)
                        and not ((self.move or not self.verify) and os.lstat(src).st_dev == there))
         except OSError:
             return ""  # a filesystem that cannot say is not a reason to refuse
@@ -891,10 +925,14 @@ class Job:
                     return None
                 except OSError:
                     pass  # no reflink here, copy normally
-            reserved = _reserve(fo.fileno(), size)
-            self._pump(fi, fo, tick, h, bool(main or self.move))
-            if reserved:
-                fo.truncate()  # the source may have shrunk since it was measured: no zeros at the end
+            sparse = _data_extents(fi.fileno())
+            if sparse:  # holes stay holes: only the parts with data are read and written, each at its place
+                self._pump_sparse(fi, fo, tick, h, bool(main or self.move), *sparse)
+            else:
+                reserved = _reserve(fo.fileno(), size)
+                self._pump(fi, fo, tick, h, bool(main or self.move))
+                if reserved:
+                    fo.truncate()  # the source may have shrunk since it was measured: no zeros at the end
             if not (main or self.move):  # verifying and moving: _pump has put every byte on the target already, a second flush only costs time
                 with self.writing:  # "done" means on the target: a failing disk must not pass as a copy
                     try:
@@ -909,8 +947,36 @@ class Job:
         return main.digest() if main else None
 
     def _pump(self, fi, fo, tick, h, syncing):
-        """Copies fi to fo. Verifying and moving flush in small steps and at the end, so a byte counts as done when it is on the target (a move deletes the source next, a verify reads the copy back). A plain copy fills the cache at full speed (the graph shows that) and _write flushes once at the end."""
-        kernel = h is None and hasattr(os, "copy_file_range")  # in-kernel copy skips userspace (Linux only); hashing needs to see the bytes
+        self._copy_range(fi, fo, tick, h, syncing)
+
+    def _pump_sparse(self, fi, fo, tick, h, syncing, extents, size):
+        """_pump for a file with holes. `extents` are its parts with data; what lies between them is a hole and stays one on the target (the file is
+        cut to its length at the end, which makes the last hole). The checksums see a hole as the zeros it reads as, and the progress takes a hole
+        as done at once, like a skipped part: no byte moves for it."""
+        zeros, pos = bytes(CHUNK), 0
+
+        def hole(n):
+            while n > 0:
+                self._checkpoint()
+                m = min(n, CHUNK)
+                if h:
+                    h.update(zeros[:m])
+                tick(m, True)
+                n -= m
+
+        for start, length in extents:
+            hole(start - pos)
+            _reserve(fo.fileno(), length, start)  # this part only: the holes must not be claimed
+            fi.seek(start)
+            fo.seek(start)
+            self._copy_range(fi, fo, tick, h, syncing, length)
+            pos = start + length
+        hole(size - pos)
+        fo.truncate(size)
+
+    def _copy_range(self, fi, fo, tick, h, syncing, left=None):
+        """Copies fi to fo, to the end of fi or, with `left`, that many bytes. Verifying and moving flush in small steps and at the end, so a byte counts as done when it is on the target (a move deletes the source next, a verify reads the copy back). A plain copy fills the cache at full speed (the graph shows that) and _write flushes once at the end."""
+        kernel = h is None and left is None and hasattr(os, "copy_file_range")  # in-kernel copy skips userspace (Linux only); hashing needs to see the bytes
         # syncing: _write flushes in these cases anyway (verifying, moving)
         pending, step, last = 0, 4 << 20, time.monotonic()
         while True:
@@ -926,13 +992,16 @@ class Job:
                         kernel = False
                         continue
                 else:
-                    data = fi.read(CHUNK)
+                    data = fi.read(CHUNK if left is None else min(CHUNK, left))
                     n = len(data)
                     if h:
                         h.update(data)
                     fo.write(data)
+                if left is not None:
+                    left -= n
+                end = not n or left == 0
                 pending += n
-                if syncing and pending and (pending >= step or not n):
+                if syncing and pending and (pending >= step or end):
                     fo.flush()
                     os.fdatasync(fo.fileno())
                     synced = True
@@ -944,7 +1013,7 @@ class Job:
                 tick(pending)
                 self._written(pending)
                 pending = 0
-            if not n:
+            if end:
                 return
 
     def _written(self, n):
