@@ -353,6 +353,45 @@ class ReservationTests(Base):
             self.assertLess(os.stat(part).st_blocks * 512, 500_000)  # the room reserved beyond the data is given back; half of it also fits 64 KiB blocks
 
 
+class CompareTests(Base):
+    """The hint on a conflict: one word group, by size and time only (no reading of the files)."""
+
+    def pair(self, new_size, new_time, old_size, old_time):
+        a, b = self.write("n.bin", b"x" * new_size), self.write("o.bin", b"x" * old_size, self.dst)
+        os.utime(a, (new_time, new_time))
+        os.utime(b, (old_time, old_time))
+        return core.compare(str(a), str(b))
+
+    def test_the_same_size_and_time_is_a_hint_in_its_own_kind(self):
+        self.addCleanup(i18n.set_language, "en")
+        i18n.set_language("en")
+        self.assertEqual(self.pair(5, 1000, 5, 1000), ("Same size and time", "same"))
+        self.assertEqual(self.pair(5, 1000, 5, 1001)[1], "same")  # FAT keeps the time to two seconds
+        self.assertEqual(self.pair(5, 1003, 5, 1000)[1], "good")  # more than that is a difference
+
+    def test_only_what_speaks_for_the_new_file_is_good(self):
+        self.addCleanup(i18n.set_language, "en")
+        i18n.set_language("en")
+        self.assertEqual(self.pair(9, 2000, 5, 1000), ("Newer, larger", "good"))
+        self.assertEqual(self.pair(5, 2000, 5, 1000), ("Newer", "good"))
+        self.assertEqual(self.pair(9, 1000, 5, 1000), ("Larger", "good"))
+
+    def test_anything_against_it_is_bad_even_with_something_for_it(self):
+        self.addCleanup(i18n.set_language, "en")
+        i18n.set_language("en")
+        self.assertEqual(self.pair(5, 1000, 9, 2000), ("Older, smaller", "bad"))
+        self.assertEqual(self.pair(5, 2000, 9, 1000), ("Newer, smaller", "bad"))
+        self.assertEqual(self.pair(9, 1000, 5, 2000), ("Older, larger", "bad"))
+        self.assertEqual(self.pair(5, 1000, 9, 1000), ("Smaller", "bad"))
+
+    def test_the_words_follow_the_language_and_its_separator(self):
+        self.addCleanup(i18n.set_language, "en")
+        i18n.set_language("de")
+        self.assertEqual(self.pair(9, 2000, 5, 1000), ("Neuer, größer", "good"))
+        i18n.set_language("ja")
+        self.assertIn("、", self.pair(9, 2000, 5, 1000)[0])
+
+
 class ConflictTests(Base):
     def setUp(self):
         super().setUp()

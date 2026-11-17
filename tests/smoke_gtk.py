@@ -105,12 +105,15 @@ def child(tmp):
         new, old = Path(d, "new"), Path(d, "old")
         new.write_bytes(b"x" * 200), old.write_bytes(b"x" * 100)
         os.utime(new, (2000, 2000)), os.utime(old, (1000, 1000))
-        diff = lambda a, b: [css for _text, css in common.differences(str(a), str(b))]
-        assert diff(new, old) == ["success", "success"] and diff(old, new) == ["warning", "warning"], (diff(new, old), diff(old, new))  # newer and larger / older and smaller
+        kind = lambda a, b: sys.modules["core"].compare(str(a), str(b))[1]
+        assert kind(new, old) == "good" and kind(old, new) == "bad", (kind(new, old), kind(old, new))  # newer and larger / older and smaller
         os.utime(old, (2000, 2000))
         old.write_bytes(b"y" * 200)
         os.utime(old, (2000, 2000))
-        assert common.differences(str(new), str(old)) == [], "equal in size and time: nothing to point out"
+        assert kind(new, old) == "same", "equal in size and time"
+        for _kind in ("same", "good", "bad"):  # builds with each of the three hints
+            dialogs.conflict_dialog(str(new), str(old), lambda *a: None)
+            os.utime(old, (1000, 1000)) if _kind == "same" else os.utime(old, (9000, 9000))
     pick = sys.modules["ui_panel"].shown_file
     assert pick({"big.iso": "copy", "a.sfv": "copy"}, "copy", "a.sfv") == "big.iso"  # the last one started is not the one that runs longest
     assert pick({"x.mkv": "verify", "big.iso": "copy"}, "copy", "x.mkv") == "big.iso" and pick({}, "copy", "last.bin") == "last.bin"

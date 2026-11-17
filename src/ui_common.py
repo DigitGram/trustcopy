@@ -115,17 +115,6 @@ def describe(path):
     return f"{GLib.format_size(st.st_size)} · {datetime.fromtimestamp(st.st_mtime):%x %X}"
 
 
-def differences(src, dst):
-    """How the new file compares with the existing one, for the conflict dialog: [(text, style class)] for what differs; none for equal files."""
-    new, old = os.lstat(src), os.lstat(dst)
-    found = []
-    if new.st_mtime != old.st_mtime:
-        found.append((_("Newer"), "success") if new.st_mtime > old.st_mtime else (_("Older"), "warning"))
-    if new.st_size != old.st_size:
-        found.append((_("Larger"), "success") if new.st_size > old.st_size else (_("Smaller"), "warning"))
-    return found
-
-
 def avg(nbytes, clock):
     """Average speed in bytes/s over the I/O seconds in `clock`; 0 when too little was moved to tell (see rate)."""
     return nbytes / clock.secs if nbytes >= 1 << 20 and clock.secs > 0.001 else 0.0

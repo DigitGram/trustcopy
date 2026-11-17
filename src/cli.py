@@ -191,6 +191,8 @@ class Screen:
             _line(exists + f": {desktop.shown(os.path.basename(dst))}", WARN)
             _line(f"{new:<10}{_stamp(src)}", indent=6)
             _line(f"{old:<10}{_stamp(dst)}", indent=6)
+            hint, kind = core.compare(src, dst)
+            _line(f"{'':<10}{hint}", {"same": INFO, "good": TICK, "bad": WARN}[kind], indent=6)
             print()
             _line(f"[k] {both}   [s] {skip}   [n] {newer}   [o] {over}   [c] {cancel}", indent=6)
             _line(f"a capital letter: {every}", indent=6)

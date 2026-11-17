@@ -651,3 +651,12 @@ msgstr "删除"
 #, python-brace-format
 msgid "… and {n} more"
 msgstr "… 以及另外 {n} 个"
+
+#: src/cli.py src/ui_dialogs.py
+msgid "Same size and time"
+msgstr "大小和时间相同"
+
+#. TRANSLATORS: the separator between two words of the hint on a conflict, as in "Newer, larger"
+#: src/core.py
+msgid ", "
+msgstr "，"

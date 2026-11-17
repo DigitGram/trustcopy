@@ -12,7 +12,7 @@ from gi.repository import Adw, GLib, Gtk, Pango
 import core
 import desktop
 from i18n import _, _n
-from ui_common import AFTER, describe, differences, key_value_grid, leftover_rows, pretty
+from ui_common import AFTER, describe, key_value_grid, leftover_rows, pretty
 
 
 def conflict_dialog(src, dst, respond):
@@ -28,8 +28,8 @@ def conflict_dialog(src, dst, respond):
     info.set_halign(Gtk.Align.CENTER)
     new.set_label(describe(src))
     old.set_label(describe(dst))
-    for i, (text, css) in enumerate(differences(src, dst)):  # what sets the new file apart, beside its line
-        info.attach(Gtk.Label(label=text, css_classes=["caption-heading", css]), 2 + i, 0, 1, 1)
+    text, kind = core.compare(src, dst)  # one hint beside the line of the new file: blue (the colour of the verifying step: the accent colour may be orange) the same, green only in its favour, orange if something is against it
+    info.attach(Gtk.Label(label=text, css_classes=["caption-heading", {"same": "k-state-verify", "good": "success", "bad": "warning"}[kind]]), 2, 0, 1, 1)
     box.append(info)
     remember = Gtk.CheckButton(label=_("Apply to all remaining conflicts"), hexpand=True)
     dialog = Adw.Dialog(child=box)
