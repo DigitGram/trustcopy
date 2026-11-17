@@ -8,6 +8,7 @@
 
 **Copies you can trust.** Fast, verified copying and moving from the right-click menu of GNOME Files (Nautilus),
 inspired by the Windows tool TeraCopy. Sister project of [HashTally](https://github.com/DigitGram/hashtally).
+More on the [project website](https://digitgram.github.io/trustcopy/).
 
 Normal copying assumes the copy is fine. TrustCopy checks: every file is hashed while it is read, then the
 copy is flushed, read back from the disk and compared, so a bad copy is reported instead of discovered
