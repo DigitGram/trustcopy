@@ -341,6 +341,31 @@ def install_accels(remove_only=False):
     return Note(_("Already in use, so not set: {keys}").format(keys=", ".join(busy))) if busy else None
 
 
+# --------------------------------------------------------------------------- staying awake
+
+def keep_awake():
+    """Ask systemd-logind not to put the computer to sleep until let_sleep() (or this process) ends. Used by the terminal
+    mode; the windows use the session's own inhibit (Gtk.Application.inhibit). Returns a handle, or None where this is not
+    possible (no PyGObject, no logind, a refusal): the copy then just runs without it."""
+    if Gio is None:
+        return None
+    try:
+        bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+        reply, fds = bus.call_with_unix_fd_list_sync(
+            "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "Inhibit",
+            GLib.Variant("(ssss)", ("sleep", "TrustCopy", "Copying files", "block")), GLib.VariantType("(h)"),
+            Gio.DBusCallFlags.NONE, 2000, None, None)
+        return fds.get(reply.unpack()[0])  # the lock lasts as long as this descriptor is open
+    except Exception:  # GLib.Error and anything odd: staying awake is a courtesy, never a reason to stop a copy
+        return None
+
+
+def let_sleep(handle):
+    if handle is not None:
+        with contextlib.suppress(OSError):
+            os.close(handle)
+
+
 # --------------------------------------------------------------------------- restarting the file managers
 
 FILE_MANAGERS = {"nautilus": "org.gnome.Nautilus", "nemo": "org.Nemo", "caja": "org.mate.Caja"}  # program: its bus name

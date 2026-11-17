@@ -631,8 +631,24 @@ class TerminalTests(Base):
 
     def run_cli(self, *argv):
         out = io.StringIO()
-        with mock.patch.object(desktop, "load_config", lambda: dict(desktop.DEFAULTS)), contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+        with mock.patch.object(desktop, "load_config", lambda: dict(desktop.DEFAULTS)), contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()), \
+                mock.patch.object(desktop, "keep_awake", lambda: None):  # no real sleep lock from the tests
             return cli.run(cli.parser.parse_args(argv)), out.getvalue()
+
+    def test_the_computer_stays_awake_during_the_copy_only(self):
+        a = self.write("a.txt", b"alpha")
+        calls = []
+        with mock.patch.object(desktop, "keep_awake", lambda: calls.append("lock") or "handle"), \
+                mock.patch.object(desktop, "let_sleep", lambda h: calls.append(("free", h))), \
+                mock.patch.object(desktop, "load_config", lambda: dict(desktop.DEFAULTS)), \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(cli.run(cli.parser.parse_args(["copy", "--to", str(self.dst), str(a)])), cli.OK)
+        self.assertEqual(calls, ["lock", ("free", "handle")])
+
+    def test_staying_awake_never_breaks_a_copy(self):
+        with mock.patch.object(desktop.Gio, "bus_get_sync", side_effect=RuntimeError("no bus")):
+            self.assertIsNone(desktop.keep_awake())
+        desktop.let_sleep(None)  # nothing to release
 
     def test_copy_is_reported_and_exits_zero(self):
         a = self.write("a.txt", b"alpha")

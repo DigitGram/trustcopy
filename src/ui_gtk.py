@@ -25,6 +25,7 @@ class App(Adw.Application):
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
         self.running, self.waiting = None, []  # one job at a time: parallel jobs on one disk only slow each other down
         self.settings = None
+        self.awake = 0  # the cookie of the "no sleep" request while a job runs; 0 = none
 
     def do_startup(self):
         Adw.Application.do_startup(self)
@@ -88,12 +89,22 @@ class App(Adw.Application):
             panel.say(_("Waiting for the previous job…"))
         else:
             self.running = panel
+            self.stay_awake(True)
             panel.run()
 
     def next_job(self):
         self.running = self.waiting.pop(0) if self.waiting else None
+        self.stay_awake(bool(self.running))  # kept across queued jobs, released after the last one
         if self.running:
             self.running.run()
+
+    def stay_awake(self, on):
+        """No automatic suspend while jobs run (the screen may still turn off). Nothing to undo when the session offers no inhibit."""
+        if on and not self.awake:
+            self.awake = self.inhibit(None, Gtk.ApplicationInhibitFlags.SUSPEND, "Copying files")
+        elif not on and self.awake:
+            self.uninhibit(self.awake)
+            self.awake = 0
 
     def forget(self, panel):
         if panel in self.waiting:

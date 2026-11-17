@@ -21,6 +21,7 @@ Reference for the things the [README](../README.md) only sums up.
 - **Speed boost**: instant reflink on btrfs/XFS and kernel-side copy when verification is off (it fills the cache at full speed, so the graph can show cache speed at first, and flushes each file once at the end: "done" means on the target, and a failing disk is reported; with Verify it is flushed in small steps and shows the disk's speed); parallel copies on SSD/NAS, a single stream on spinning disks
 - **Errors don't stop the job**: three retries, then the file is listed, and "Retry failed" copies only those
 - Jobs queue up and run one at a time (parallel jobs on one disk only slow each other down)
+- **No sleep during a job**: while a job runs the computer does not suspend by itself (the screen may still turn off). The window asks the session for this, the terminal mode asks systemd-logind; both let go when the last job ends. Where neither is available the copy simply runs without it.
 
 ## Keyboard shortcuts
 

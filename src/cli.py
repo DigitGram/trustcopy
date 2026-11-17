@@ -228,6 +228,7 @@ def run(args):
     _line(f"to    {desktop.shown(dest)}", indent=6)
     print()
 
+    awake = desktop.keep_awake()
     thread = threading.Thread(target=job.run, daemon=True)
     thread.start()
     while thread.is_alive():
@@ -236,6 +237,7 @@ def run(args):
             thread.join(0.15)
         except KeyboardInterrupt:  # one Ctrl+C stops cleanly: temp files go, finished files stay
             job.cancel()
+    desktop.let_sleep(awake)
     screen.clear()
     return _report(job, dest, args.quiet, time.monotonic() - screen.start)
 
