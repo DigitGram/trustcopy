@@ -1029,17 +1029,38 @@ class Job:
             # (measured with mincore on ext4: 0 pages left after fsync, all of them without). Never drop that fsync for speed.
             # shortcut: NFS/SMB/FUSE client caches and a drive's own write cache may still answer; no cure without O_DIRECT, which tmpfs and FUSE refuse
             os.posix_fadvise(f.fileno(), 0, 0, os.POSIX_FADV_DONTNEED)
-            while True:
-                self._checkpoint()
-                if size is not None and not self.verify:
-                    tick(max(size - read, 0))
-                    return None
-                with self.reading:
-                    data = f.read(CHUNK)
-                if not data:
-                    return h.digest()
-                h.update(data)
-                read += len(data)
-                tick(len(data))
-                with self._progress_lock:
-                    self.readback += len(data)
+            sparse = _data_extents(f.fileno())
+            parts, zeros = [(0, None, False)], bytes(CHUNK)  # (where to start, how much (None: to the end), whether it is a hole)
+            if sparse:  # holes are not read: they hash as the zeros they read as, and count as done at once, but not as speed
+                extents, length = sparse
+                parts, pos = [], 0
+                for start, count in extents:
+                    if start > pos:
+                        parts.append((pos, start - pos, True))
+                    parts.append((start, count, False))
+                    pos = start + count
+                if length > pos:
+                    parts.append((pos, length - pos, True))
+            for start, left, is_hole in parts:
+                f.seek(start)
+                while left is None or left > 0:
+                    self._checkpoint()
+                    if size is not None and not self.verify:
+                        tick(max(size - read, 0))
+                        return None
+                    if is_hole:
+                        data = zeros[:min(left, CHUNK)]
+                    else:
+                        with self.reading:
+                            data = f.read(CHUNK if left is None else min(CHUNK, left))
+                        if not data:
+                            break
+                    h.update(data)
+                    read += len(data)
+                    tick(len(data))
+                    if left is not None:
+                        left -= len(data)
+                    if not is_hole:
+                        with self._progress_lock:
+                            self.readback += len(data)
+            return h.digest()

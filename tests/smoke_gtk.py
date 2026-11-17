@@ -158,6 +158,18 @@ def child(tmp):
     assert Panel.sums_progress(still, 1) is False and not still.sums_label.set_label.called
     running = NS(sums_reading=True, sums_label=MagicMock(), job=NS(sum_read=50))
     assert Panel.sums_progress(running, 100) is True and "50" in running.sums_label.set_label.call_args.args[0]
+    due = common.power_due  # the computer is switched off only when it was chosen, everything went well and nothing else follows
+    assert due("poweroff", "success", False) == "poweroff" and due("suspend", "success", False) == "suspend"
+    assert not (due("poweroff", "warning", False) or due("poweroff", "error", False) or due("poweroff", "success", True) or due("keep", "success", False) or due("always", "success", False))
+    went = []
+    cancelled = dialogs.power_dialog("poweroff", lambda: went.append("cancelled"))
+    cancelled.emit("response::cancel", "cancel")
+    cancelled.emit("response::now", "now")  # after a Cancel nothing happens any more
+    pressed = dialogs.power_dialog("suspend", lambda: went.append("pressed"))
+    pressed.emit("response::now", "now")
+    pressed.emit("response::now", "now")  # and only once
+    assert went == ["pressed"], went
+    dialogs.power_dialog("poweroff", lambda: went.append("counted"), seconds=1)  # runs out by itself: looked at in the probe
     with tempfile.TemporaryDirectory() as d:  # the offer to delete the leftovers of a crashed job
         part = Path(d, "x.bin.trustpart")
         part.write_bytes(b"half")
@@ -269,6 +281,8 @@ def child(tmp):
         if not (panel and panel.job and panel.job.finished and not panel.active) and time.monotonic() < deadline:
             return True  # the copy is still running (slow machine): look again
         failures.extend(problems(panel))
+        if opened and "counted" not in went:
+            failures.append("the countdown before the power action does not run out")
         if opened and not (panel.sums_row.get_visible() and "file.sha256" in panel.sums_label.get_label() and os.path.exists(f"{tmp}/dst/file.sha256")):
             failures.append("the checksum file is not written or not shown")
         if opened and not panel.sweep.get_visible():  # the thread that looks for them has had a round of 250 ms by now

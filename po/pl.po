@@ -790,3 +790,53 @@ msgstr "Ten sam rozmiar i czas"
 #: src/core.py
 msgid ", "
 msgstr ", "
+
+#: src/ui_common.py
+msgid "Suspend computer"
+msgstr "Uśpij komputer"
+
+#: src/ui_common.py
+msgid "Shut down computer"
+msgstr "Wyłącz komputer"
+
+#: src/ui_dialogs.py
+msgid "Shutting down"
+msgstr "Wyłączanie"
+
+#: src/ui_dialogs.py
+msgid "Suspending"
+msgstr "Usypianie"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer shuts down in {n} second."
+msgid_plural "The computer shuts down in {n} seconds."
+msgstr[0] "Komputer wyłączy się za {n} sekundę."
+msgstr[1] "Komputer wyłączy się za {n} sekundy."
+msgstr[2] "Komputer wyłączy się za {n} sekund."
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer suspends in {n} second."
+msgid_plural "The computer suspends in {n} seconds."
+msgstr[0] "Komputer uśpi się za {n} sekundę."
+msgstr[1] "Komputer uśpi się za {n} sekundy."
+msgstr[2] "Komputer uśpi się za {n} sekund."
+
+#: src/ui_dialogs.py
+msgid "Shut down now"
+msgstr "Wyłącz teraz"
+
+#: src/ui_dialogs.py
+msgid "Suspend now"
+msgstr "Uśpij teraz"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be shut down: {error}"
+msgstr "Nie udało się wyłączyć komputera: {error}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be suspended: {error}"
+msgstr "Nie udało się uśpić komputera: {error}"

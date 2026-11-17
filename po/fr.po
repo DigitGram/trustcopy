@@ -774,3 +774,51 @@ msgstr "Même taille et même date"
 #: src/core.py
 msgid ", "
 msgstr ", "
+
+#: src/ui_common.py
+msgid "Suspend computer"
+msgstr "Mettre l'ordinateur en veille"
+
+#: src/ui_common.py
+msgid "Shut down computer"
+msgstr "Éteindre l'ordinateur"
+
+#: src/ui_dialogs.py
+msgid "Shutting down"
+msgstr "Arrêt en cours"
+
+#: src/ui_dialogs.py
+msgid "Suspending"
+msgstr "Mise en veille"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer shuts down in {n} second."
+msgid_plural "The computer shuts down in {n} seconds."
+msgstr[0] "L'ordinateur s'éteindra dans {n} seconde."
+msgstr[1] "L'ordinateur s'éteindra dans {n} secondes."
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer suspends in {n} second."
+msgid_plural "The computer suspends in {n} seconds."
+msgstr[0] "L'ordinateur se mettra en veille dans {n} seconde."
+msgstr[1] "L'ordinateur se mettra en veille dans {n} secondes."
+
+#: src/ui_dialogs.py
+msgid "Shut down now"
+msgstr "Éteindre maintenant"
+
+#: src/ui_dialogs.py
+msgid "Suspend now"
+msgstr "Mettre en veille maintenant"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be shut down: {error}"
+msgstr "L'ordinateur n'a pas pu être éteint : {error}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be suspended: {error}"
+msgstr "L'ordinateur n'a pas pu être mis en veille : {error}"

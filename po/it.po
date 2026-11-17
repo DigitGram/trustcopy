@@ -774,3 +774,51 @@ msgstr "Stessa dimensione e data"
 #: src/core.py
 msgid ", "
 msgstr ", "
+
+#: src/ui_common.py
+msgid "Suspend computer"
+msgstr "Sospendi il computer"
+
+#: src/ui_common.py
+msgid "Shut down computer"
+msgstr "Spegni il computer"
+
+#: src/ui_dialogs.py
+msgid "Shutting down"
+msgstr "Spegnimento"
+
+#: src/ui_dialogs.py
+msgid "Suspending"
+msgstr "Sospensione"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer shuts down in {n} second."
+msgid_plural "The computer shuts down in {n} seconds."
+msgstr[0] "Il computer si spegnerà tra {n} secondo."
+msgstr[1] "Il computer si spegnerà tra {n} secondi."
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer suspends in {n} second."
+msgid_plural "The computer suspends in {n} seconds."
+msgstr[0] "Il computer verrà sospeso tra {n} secondo."
+msgstr[1] "Il computer verrà sospeso tra {n} secondi."
+
+#: src/ui_dialogs.py
+msgid "Shut down now"
+msgstr "Spegni ora"
+
+#: src/ui_dialogs.py
+msgid "Suspend now"
+msgstr "Sospendi ora"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be shut down: {error}"
+msgstr "Impossibile spegnere il computer: {error}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be suspended: {error}"
+msgstr "Impossibile sospendere il computer: {error}"

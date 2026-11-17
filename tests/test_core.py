@@ -906,6 +906,7 @@ class SparseTests(Base):
                 self.assertLess(dst.stat().st_blocks * 512, 2 << 20)  # a full copy takes the 64 MiB
                 self.assertEqual(self.sha(dst), self.sha(src))
                 self.assertLess(job.written, 1 << 20)  # only the data was written
+                self.assertLess(job.readback, 1 << 20)  # and only the data was read back: a hole is hashed as zeros, not read, and is no read speed
                 self.assertEqual(job.done, job.total)  # the holes count as done, so the bar ends at 100%
                 self.assertClean()
 
@@ -946,6 +947,21 @@ class SparseTests(Base):
         self.assertEqual((job.results[0].status, src.exists(), dst.stat().st_size), ("verified", False, self.SIZE))
         self.assertLess(dst.stat().st_blocks * 512, 2 << 20)
         self.assertEqual(self.sha(dst), expected)
+
+
+class PowerTests(unittest.TestCase):
+    def test_power_asks_logind_and_reports_what_goes_wrong(self):
+        bus = mock.MagicMock()
+        with mock.patch.object(desktop, "Gio") as gio, mock.patch.object(desktop, "GLib"):
+            gio.bus_get_sync.return_value = bus
+            self.assertIsNone(desktop.power("poweroff"))
+            self.assertEqual(bus.call_sync.call_args.args[3], "PowerOff")
+            self.assertIsNone(desktop.power("suspend"))
+            self.assertEqual(bus.call_sync.call_args.args[3], "Suspend")
+            bus.call_sync.side_effect = RuntimeError("Access denied")
+            self.assertEqual(desktop.power("poweroff"), "Access denied")
+        with mock.patch.object(desktop, "Gio", None):
+            self.assertTrue(desktop.power("poweroff"))  # no PyGObject: a text, no crash
 
 
 class LeftoverTests(Base):

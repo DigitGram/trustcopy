@@ -20,6 +20,7 @@ from i18n import N_, _, _n
 APP_ID = "io.github.digitgram.TrustCopy"
 RESULT_ICONS = {"success": "object-select-symbolic", "warning": "dialog-warning-symbolic", "error": "dialog-error-symbolic"}  # as in HashTally
 CONFLICTS, AFTER = desktop.CONFLICTS, desktop.AFTER
+WHEN = AFTER + ("suspend", "poweroff")  # the job window also offers to switch the computer off; the setting does not: that default would bite someday
 ALGOS = tuple(core.ALGOS)
 SUM_NAMES = {"sha256": "SHA-256", "sha512": "SHA-512", "md5": "MD5", "crc32": "SFV"}  # the kinds of checksum file, as the window names them
 ALGO_NAMES = {"crc32": "CRC32", "blake2b": "BLAKE2b", "sha256": "SHA-256"}
@@ -206,3 +207,13 @@ def play_sound(app, kind):
 
 def after_labels():
     return [_("Keep open"), _("Close on success"), _("Always close")]
+
+
+def when_labels():
+    return after_labels() + [_("Suspend computer"), _("Shut down computer")]
+
+
+def power_due(after, kind, others_follow):
+    """The power action to take after a job ("suspend" or "poweroff"), or "": only when it was chosen, everything went well (kind "success": nobody
+    who sleeps through errors wants the computer off) and no other job runs or waits."""
+    return after if after in ("suspend", "poweroff") and kind == "success" and not others_follow else ""

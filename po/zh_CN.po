@@ -758,3 +758,49 @@ msgstr "大小和时间相同"
 #: src/core.py
 msgid ", "
 msgstr "，"
+
+#: src/ui_common.py
+msgid "Suspend computer"
+msgstr "挂起计算机"
+
+#: src/ui_common.py
+msgid "Shut down computer"
+msgstr "关闭计算机"
+
+#: src/ui_dialogs.py
+msgid "Shutting down"
+msgstr "正在关机"
+
+#: src/ui_dialogs.py
+msgid "Suspending"
+msgstr "正在挂起"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer shuts down in {n} second."
+msgid_plural "The computer shuts down in {n} seconds."
+msgstr[0] "计算机将在 {n} 秒后关机。"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer suspends in {n} second."
+msgid_plural "The computer suspends in {n} seconds."
+msgstr[0] "计算机将在 {n} 秒后挂起。"
+
+#: src/ui_dialogs.py
+msgid "Shut down now"
+msgstr "立即关机"
+
+#: src/ui_dialogs.py
+msgid "Suspend now"
+msgstr "立即挂起"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be shut down: {error}"
+msgstr "无法关闭计算机：{error}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be suspended: {error}"
+msgstr "无法挂起计算机：{error}"

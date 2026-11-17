@@ -790,3 +790,53 @@ msgstr "Той самий розмір і час"
 #: src/core.py
 msgid ", "
 msgstr ", "
+
+#: src/ui_common.py
+msgid "Suspend computer"
+msgstr "Призупинити комп’ютер"
+
+#: src/ui_common.py
+msgid "Shut down computer"
+msgstr "Вимкнути комп’ютер"
+
+#: src/ui_dialogs.py
+msgid "Shutting down"
+msgstr "Вимкнення"
+
+#: src/ui_dialogs.py
+msgid "Suspending"
+msgstr "Призупинення"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer shuts down in {n} second."
+msgid_plural "The computer shuts down in {n} seconds."
+msgstr[0] "Комп’ютер вимкнеться через {n} секунду."
+msgstr[1] "Комп’ютер вимкнеться через {n} секунди."
+msgstr[2] "Комп’ютер вимкнеться через {n} секунд."
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer suspends in {n} second."
+msgid_plural "The computer suspends in {n} seconds."
+msgstr[0] "Комп’ютер призупиниться через {n} секунду."
+msgstr[1] "Комп’ютер призупиниться через {n} секунди."
+msgstr[2] "Комп’ютер призупиниться через {n} секунд."
+
+#: src/ui_dialogs.py
+msgid "Shut down now"
+msgstr "Вимкнути зараз"
+
+#: src/ui_dialogs.py
+msgid "Suspend now"
+msgstr "Призупинити зараз"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be shut down: {error}"
+msgstr "Не вдалося вимкнути комп’ютер: {error}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be suspended: {error}"
+msgstr "Не вдалося призупинити комп’ютер: {error}"

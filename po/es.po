@@ -774,3 +774,51 @@ msgstr "Mismo tamaño y fecha"
 #: src/core.py
 msgid ", "
 msgstr ", "
+
+#: src/ui_common.py
+msgid "Suspend computer"
+msgstr "Suspender el equipo"
+
+#: src/ui_common.py
+msgid "Shut down computer"
+msgstr "Apagar el equipo"
+
+#: src/ui_dialogs.py
+msgid "Shutting down"
+msgstr "Apagando"
+
+#: src/ui_dialogs.py
+msgid "Suspending"
+msgstr "Suspendiendo"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer shuts down in {n} second."
+msgid_plural "The computer shuts down in {n} seconds."
+msgstr[0] "El equipo se apagará en {n} segundo."
+msgstr[1] "El equipo se apagará en {n} segundos."
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer suspends in {n} second."
+msgid_plural "The computer suspends in {n} seconds."
+msgstr[0] "El equipo se suspenderá en {n} segundo."
+msgstr[1] "El equipo se suspenderá en {n} segundos."
+
+#: src/ui_dialogs.py
+msgid "Shut down now"
+msgstr "Apagar ahora"
+
+#: src/ui_dialogs.py
+msgid "Suspend now"
+msgstr "Suspender ahora"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be shut down: {error}"
+msgstr "No se pudo apagar el equipo: {error}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be suspended: {error}"
+msgstr "No se pudo suspender el equipo: {error}"

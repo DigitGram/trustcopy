@@ -366,6 +366,22 @@ def let_sleep(handle):
             os.close(handle)
 
 
+# --------------------------------------------------------------------------- power
+
+def power(action):
+    """Suspend or power off the computer ("suspend" or "poweroff") through systemd-logind. Returns an error text, or None when the request
+    was accepted. interactive: logind may ask for a password where the user has no right to do it."""
+    if Gio is None:
+        return "PyGObject is missing"
+    try:
+        Gio.bus_get_sync(Gio.BusType.SYSTEM, None).call_sync(
+            "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "Suspend" if action == "suspend" else "PowerOff",
+            GLib.Variant("(b)", (True,)), None, Gio.DBusCallFlags.NONE, 10000, None)
+    except Exception as e:  # a refusal, no bus, a timeout
+        return getattr(e, "message", None) or str(e)
+    return None
+
+
 # --------------------------------------------------------------------------- restarting the file managers
 
 FILE_MANAGERS = {"nautilus": "org.gnome.Nautilus", "nemo": "org.Nemo", "caja": "org.mate.Caja"}  # program: its bus name

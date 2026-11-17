@@ -140,6 +140,51 @@ def sums_conflict_dialog(path, entries, mtime, new_entries, respond):
     return dialog
 
 
+POWER_COUNTDOWN = 60
+
+
+def power_dialog(action, on_go, seconds=POWER_COUNTDOWN):
+    """The countdown before the computer is suspended or shut down after a job ("suspend" or "poweroff"). `on_go()` runs once, when the seconds are
+    over or on "now"; Cancel and Escape stop it."""
+    suspend = action == "suspend"
+    dialog = Adw.AlertDialog.new(_("Suspending") if suspend else _("Shutting down"), None)
+    dialog.add_response("cancel", _("Cancel"))
+    dialog.add_response("now", _("Suspend now") if suspend else _("Shut down now"))
+    dialog.set_default_response("cancel")  # Enter is the safe answer
+    dialog.set_close_response("cancel")
+    dialog.set_response_appearance("now", Adw.ResponseAppearance.DESTRUCTIVE)
+    left, state = [seconds], {"over": False}
+
+    def words():
+        if suspend:
+            text = _n("The computer suspends in {n} second.", "The computer suspends in {n} seconds.", left[0])
+        else:
+            text = _n("The computer shuts down in {n} second.", "The computer shuts down in {n} seconds.", left[0])
+        return text.format(n=left[0])
+
+    def over(go):
+        if not state["over"]:
+            state["over"] = True
+            if go:
+                on_go()
+
+    def tick():
+        if state["over"]:
+            return GLib.SOURCE_REMOVE
+        left[0] -= 1
+        if left[0] <= 0:
+            over(True)  # before the dialog closes: its close would count as Cancel
+            dialog.force_close()
+            return GLib.SOURCE_REMOVE
+        dialog.set_body(words())
+        return GLib.SOURCE_CONTINUE
+
+    dialog.set_body(words())
+    dialog.connect("response", lambda d, response: over(response == "now"))
+    GLib.timeout_add_seconds(1, tick)
+    return dialog
+
+
 def cleanup_dialog(found, on_answer):
     """Asks whether to delete the unfinished copies (`name.trustpart`) of a job that stopped suddenly, in the look of the conflict dialog:
     a heading, a few words of reassurance, the files as a card with their sizes. `on_answer(True)` for Delete; Cancel and Escape give False."""

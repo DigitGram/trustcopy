@@ -774,3 +774,51 @@ msgstr "Gleiche Größe und Zeit"
 #: src/core.py
 msgid ", "
 msgstr ", "
+
+#: src/ui_common.py
+msgid "Suspend computer"
+msgstr "Computer in Bereitschaft versetzen"
+
+#: src/ui_common.py
+msgid "Shut down computer"
+msgstr "Computer herunterfahren"
+
+#: src/ui_dialogs.py
+msgid "Shutting down"
+msgstr "Herunterfahren"
+
+#: src/ui_dialogs.py
+msgid "Suspending"
+msgstr "Bereitschaft"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer shuts down in {n} second."
+msgid_plural "The computer shuts down in {n} seconds."
+msgstr[0] "Der Computer wird in {n} Sekunde heruntergefahren."
+msgstr[1] "Der Computer wird in {n} Sekunden heruntergefahren."
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer suspends in {n} second."
+msgid_plural "The computer suspends in {n} seconds."
+msgstr[0] "Der Computer wechselt in {n} Sekunde in den Bereitschaftsmodus."
+msgstr[1] "Der Computer wechselt in {n} Sekunden in den Bereitschaftsmodus."
+
+#: src/ui_dialogs.py
+msgid "Shut down now"
+msgstr "Jetzt herunterfahren"
+
+#: src/ui_dialogs.py
+msgid "Suspend now"
+msgstr "Jetzt in Bereitschaft"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be shut down: {error}"
+msgstr "Der Computer konnte nicht heruntergefahren werden: {error}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be suspended: {error}"
+msgstr "Der Computer konnte nicht in Bereitschaft versetzt werden: {error}"

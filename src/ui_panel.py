@@ -19,8 +19,8 @@ import desktop
 from i18n import _, _n
 from ui_graph import BLUE, GREEN, draw_badge, draw_curve, draw_grid, draw_title, plot, smoothed, soften
 from ui_files import ALL, FilesWindow
-from ui_common import AFTER, ALGO_NAMES, Entry, RESULT_ICONS, SUM_NAMES, after_labels, avg_read, avg_write, fmt_duration, outcome, play_sound, pretty, rate, show_folder, to_paths
-from ui_dialogs import cleanup_dialog, confirm_always, conflict_dialog, sums_conflict_dialog, sums_gap_dialog
+from ui_common import AFTER, ALGO_NAMES, Entry, RESULT_ICONS, SUM_NAMES, WHEN, avg_read, avg_write, fmt_duration, outcome, play_sound, power_due, pretty, rate, show_folder, to_paths, when_labels
+from ui_dialogs import cleanup_dialog, confirm_always, conflict_dialog, power_dialog, sums_conflict_dialog, sums_gap_dialog
 
 
 MAX_POINTS = 1200  # the graph keeps the whole job; beyond this every second sample goes, the written total at the others stays exact
@@ -52,6 +52,7 @@ class Panel(Adw.ApplicationWindow):
         super().__init__(application=app, title="TrustCopy", default_width=640, default_height=BASE_H)
         self.job, self.active, self.closing = None, False, False
         self.paths, self.op, self.paste_dest = [], "copy", None
+        self.power_after = ""  # "suspend" or "poweroff" while it waits for the end of the checksum file
         self.sums_reading, self.close_after_sums = False, False  # the read for the checksum file is under way; a window that closes itself waits for it
         self.track, self.marks = [], []  # graph data as (seconds since start, bytes written so far) and failure times
         self.all_written = False  # the graph covers the writing: from here on it stands still
@@ -232,7 +233,7 @@ class Panel(Adw.ApplicationWindow):
         self.sums_check = Adw.SwitchRow(active=cfg["sums"])  # takes effect on the running job: the files done before are asked about at the end
         self.sums_check.connect("notify::active", lambda row, _p: self.sums_toggled(row))
         self.name_sums()
-        self.after = Adw.ComboRow(title=_("When finished"), model=Gtk.StringList.new(after_labels()))
+        self.after = Adw.ComboRow(title=_("When finished"), model=Gtk.StringList.new(when_labels()))
         self.after.set_selected(AFTER.index(cfg["after"]))
         confirm_always(self.after, self)
         card = Gtk.ListBox(css_classes=["boxed-list"], selection_mode=Gtk.SelectionMode.NONE)
@@ -703,13 +704,17 @@ class Panel(Adw.ApplicationWindow):
         self.result.set_visible(True)
         self.tiles.set_visible(True)
         self.files_win.refresh()
-        after = AFTER[self.after.get_selected()]
+        after = WHEN[self.after.get_selected()]
         closes = self.closing or after == "always" or (after == "clean" and kind == "success")
         self.announce(title, text, kind, folder=self.open.get_visible() and not closes)  # a window that closes takes the app along: the button would lead nowhere
+        app = self.get_application()
+        self.power_after = power_due(after, kind, bool(app.running or app.waiting))
         waiting = self.offer_sums(job)  # always asked: `closes and ...` would not call it when the window stays
         self.close_after_sums = closes and waiting
         if closes and not waiting:
             self.close()
+        elif self.power_after and not waiting:
+            self.confirm_power()
 
     # --- the checksum file ------------------------------------------------------
     def offer_sums(self, job):
@@ -779,6 +784,21 @@ class Panel(Adw.ApplicationWindow):
             self.sums_label.set_label(_("The checksum file could not be written: {error}").format(error=desktop.shown(error)))
         if self.close_after_sums:
             self.close()
+        elif self.power_after:
+            self.confirm_power()
+
+    def confirm_power(self):
+        """Switch the computer off or put it to sleep, as chosen under "When finished": after a countdown that can be cancelled."""
+        action, self.power_after = self.power_after, ""
+
+        def go():
+            if error := desktop.power(action):
+                text = _("The computer could not be suspended: {error}") if action == "suspend" else _("The computer could not be shut down: {error}")
+                alert = Adw.AlertDialog.new(None, text.format(error=desktop.shown(error)))
+                alert.add_response("close", _("Close"))
+                alert.present(self)
+
+        power_dialog(action, go).present(self)
 
     def _show_summary(self, job):
         """The tiles: size, average speeds and checksum of the job."""

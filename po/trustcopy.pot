@@ -774,3 +774,51 @@ msgstr ""
 #: src/core.py
 msgid ", "
 msgstr ""
+
+#: src/ui_common.py
+msgid "Suspend computer"
+msgstr ""
+
+#: src/ui_common.py
+msgid "Shut down computer"
+msgstr ""
+
+#: src/ui_dialogs.py
+msgid "Shutting down"
+msgstr ""
+
+#: src/ui_dialogs.py
+msgid "Suspending"
+msgstr ""
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer shuts down in {n} second."
+msgid_plural "The computer shuts down in {n} seconds."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "The computer suspends in {n} second."
+msgid_plural "The computer suspends in {n} seconds."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ui_dialogs.py
+msgid "Shut down now"
+msgstr ""
+
+#: src/ui_dialogs.py
+msgid "Suspend now"
+msgstr ""
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be shut down: {error}"
+msgstr ""
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "The computer could not be suspended: {error}"
+msgstr ""
