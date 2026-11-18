@@ -169,6 +169,7 @@ class _Tee:
 SUM_ALGOS = {
     "sha256": (hashlib.sha256, "SHA256SUMS", ".sha256", 64),
     "sha512": (hashlib.sha512, "SHA512SUMS", ".sha512", 128),
+    "sha1": (lambda: hashlib.sha1(usedforsecurity=False), "SHA1SUMS", ".sha1", 40),  # not for security either: old mirrors and tools still publish it
     "md5": (lambda: hashlib.md5(usedforsecurity=False), "MD5SUMS", ".md5", 32),  # not for security: it is the format old mirrors and tools read
     "crc32": (_Crc32, "checksums.sfv", ".sfv", 8),
 }

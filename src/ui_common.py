@@ -22,7 +22,7 @@ RESULT_ICONS = {"success": "object-select-symbolic", "warning": "dialog-warning-
 CONFLICTS, AFTER = desktop.CONFLICTS, desktop.AFTER
 WHEN = AFTER + ("suspend", "poweroff")  # the job window also offers to switch the computer off; the setting does not: that default would bite someday
 ALGOS = tuple(core.ALGOS)
-SUM_NAMES = {"sha256": "SHA-256", "sha512": "SHA-512", "md5": "MD5", "crc32": "SFV"}  # the kinds of checksum file, as the window names them
+SUM_NAMES = {"sha256": "SHA-256", "sha512": "SHA-512", "sha1": "SHA-1", "md5": "MD5", "crc32": "SFV"}  # the kinds of checksum file, as the window names them
 ALGO_NAMES = {"crc32": "CRC32", "blake2b": "BLAKE2b", "sha256": "SHA-256"}
 STATUS = {  # Result.status: (icon, pill class, label, row tint)
     "verified": ("object-select-symbolic", "k-ok", N_("Verified"), ""),  # the usual case: only its word is green, the deviations stand out

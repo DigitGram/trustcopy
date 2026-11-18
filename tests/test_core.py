@@ -780,7 +780,7 @@ class SumsFileTests(Base):
     def test_each_algorithm_gives_the_checksums_of_the_files(self):
         a = self.write("a.txt", b"alpha")
         self.write("sub/b.bin", b"beta" * 1000)
-        for algo, make in (("sha256", hashlib.sha256), ("sha512", hashlib.sha512), ("md5", lambda data: hashlib.md5(data, usedforsecurity=False))):
+        for algo, make in (("sha256", hashlib.sha256), ("sha512", hashlib.sha512), ("sha1", lambda data: hashlib.sha1(data, usedforsecurity=False)), ("md5", lambda data: hashlib.md5(data, usedforsecurity=False))):
             with self.subTest(algo):
                 job, entries = self.sums(algo, [a, self.src / "sub"], policy="overwrite")
                 self.assertEqual(entries, {"a.txt": make(b"alpha").hexdigest(), "sub/b.bin": make(b"beta" * 1000).hexdigest()})
@@ -798,6 +798,11 @@ class SumsFileTests(Base):
         self.assertEqual(Path(path).read_text(), f"{hashlib.sha256(b'alpha').hexdigest()}  a.txt\n{hashlib.sha256(b'beta').hexdigest()}  b.txt\n")
         if shutil.which("sha256sum"):
             self.assertEqual(subprocess.run(["sha256sum", "-c", "SHA256SUMS"], cwd=self.dst, capture_output=True).returncode, 0)
+        job, entries = self.sums("sha1", [a, b], policy="overwrite")  # the fifth kind, as in HashTally
+        path = job.write_sums(entries)
+        self.assertEqual((Path(path).name, core.parse_sums("sha1", Path(path).read_text()) == entries), ("SHA1SUMS", True))
+        if shutil.which("sha1sum"):
+            self.assertEqual(subprocess.run(["sha1sum", "-c", "SHA1SUMS"], cwd=self.dst, capture_output=True).returncode, 0)
         job, entries = self.sums("crc32", [a, b], policy="overwrite")
         self.assertEqual(Path(job.write_sums(entries)).name, "checksums.sfv")
         self.assertClean()

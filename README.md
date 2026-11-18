@@ -24,7 +24,7 @@ months later.
 - **Safe moves.** A source is deleted only after its own copy has been verified.
 - **A live view.** Three steps (Copying, Verifying, Done), a speed graph, time remaining, and a file list with a status per file.
 - **No half-written files.** A cancel or a power cut never leaves a damaged file under its real name.
-- **A checksum file, if you want one.** Tick *Checksum file* in the window (or switch it on in the settings) and the target folder gets a `SHA256SUMS` (or SHA-512, MD5, SFV) listing every copied file, ready for [HashTally](https://github.com/DigitGram/hashtally) or `sha256sum -c`.
+- **A checksum file, if you want one.** Tick *Checksum file* in the window (or switch it on in the settings) and the target folder gets a `SHA256SUMS` (or SHA-512, SHA-1, MD5, SFV) listing every copied file, ready for [HashTally](https://github.com/DigitGram/hashtally) or `sha256sum -c`.
 - **Conflicts handled your way.** Ask each time (keep both, skip, overwrite if newer, overwrite), or set a rule.
 - **Pause, resume, queue.** Jobs run one after the other; errors are retried, and "Retry failed" repeats only those files.
 - **Native look.** GTK 4 and libadwaita, light and dark, in ten languages (English, Deutsch, Español, Français, Italiano, 日本語, Polski, Português (Brasil), Українська, 简体中文).
