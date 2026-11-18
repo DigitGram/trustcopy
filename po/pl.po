@@ -838,8 +838,8 @@ msgid "Algorithm"
 msgstr "Algorytm"
 
 #: src/ui_settings.py
-msgid "SHA-256 is the safe standard. CRC32 (SFV) is the fastest but only catches accidental errors. MD5 and SHA-1 are no longer secure."
-msgstr "SHA-256 to bezpieczny standard. CRC32 (SFV) jest najszybszy, ale wykrywa tylko przypadkowe błędy. MD5 i SHA-1 nie są już bezpieczne."
+msgid "SHA-256 is the safe standard, CRC32 the fastest."
+msgstr "SHA-256 to bezpieczny standard, CRC32 jest najszybszy."
 
 #: src/ui_dialogs.py
 msgid "Programs that are still open are closed. Unsaved work in them can be lost."

@@ -83,7 +83,7 @@ msgstr "CRC32（高速）"
 
 #: src/ui_settings.py
 msgid "CRC32 is fastest and catches accidental corruption; SHA-256 is cryptographically secure."
-msgstr "CRC32 は最も高速で、偶発的な破損を検出します。SHA-256 は暗号学的に安全です。"
+msgstr "CRC32 は最速、SHA-256 は暗号学的に安全です。"
 
 #: src/ui_gtk.py
 msgid "Cancel"
@@ -802,8 +802,8 @@ msgid "Algorithm"
 msgstr "アルゴリズム"
 
 #: src/ui_settings.py
-msgid "SHA-256 is the safe standard. CRC32 (SFV) is the fastest but only catches accidental errors. MD5 and SHA-1 are no longer secure."
-msgstr "SHA-256 は安全な標準です。CRC32 (SFV) は最も高速ですが、偶発的なエラーしか検出できません。MD5 と SHA-1 はもはや安全ではありません。"
+msgid "SHA-256 is the safe standard, CRC32 the fastest."
+msgstr "SHA-256 は安全な標準、CRC32 は最速です。"
 
 #: src/ui_dialogs.py
 msgid "Programs that are still open are closed. Unsaved work in them can be lost."

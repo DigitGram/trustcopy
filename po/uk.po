@@ -83,7 +83,7 @@ msgstr "CRC32 (швидкий)"
 
 #: src/ui_settings.py
 msgid "CRC32 is fastest and catches accidental corruption; SHA-256 is cryptographically secure."
-msgstr "CRC32 найшвидший і виявляє випадкові пошкодження; SHA-256 криптографічно безпечний."
+msgstr "CRC32 найшвидший, SHA-256 криптографічно безпечний."
 
 #: src/ui_gtk.py
 msgid "Cancel"
@@ -831,15 +831,15 @@ msgstr "Не вдалося призупинити комп’ютер: {error}"
 
 #: src/ui_settings.py
 msgid "What happens when a file with that name is already in the target."
-msgstr "Що відбувається, коли в місці призначення вже є файл із такою назвою."
+msgstr "Коли файл із такою назвою вже існує."
 
 #: src/ui_settings.py
 msgid "Algorithm"
 msgstr "Алгоритм"
 
 #: src/ui_settings.py
-msgid "SHA-256 is the safe standard. CRC32 (SFV) is the fastest but only catches accidental errors. MD5 and SHA-1 are no longer secure."
-msgstr "SHA-256 — безпечний стандарт. CRC32 (SFV) найшвидший, але виявляє лише випадкові помилки. MD5 і SHA-1 більше не є безпечними."
+msgid "SHA-256 is the safe standard, CRC32 the fastest."
+msgstr "SHA-256 — безпечний стандарт, CRC32 — найшвидший."
 
 #: src/ui_dialogs.py
 msgid "Programs that are still open are closed. Unsaved work in them can be lost."

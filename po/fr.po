@@ -813,15 +813,15 @@ msgstr "L'ordinateur n'a pas pu être mis en veille : {error}"
 
 #: src/ui_settings.py
 msgid "What happens when a file with that name is already in the target."
-msgstr "Ce qui se passe quand un fichier de ce nom existe déjà dans la destination."
+msgstr "Quand un fichier du même nom existe déjà."
 
 #: src/ui_settings.py
 msgid "Algorithm"
 msgstr "Algorithme"
 
 #: src/ui_settings.py
-msgid "SHA-256 is the safe standard. CRC32 (SFV) is the fastest but only catches accidental errors. MD5 and SHA-1 are no longer secure."
-msgstr "SHA-256 est la référence sûre. CRC32 (SFV) est le plus rapide, mais ne détecte que les erreurs accidentelles. MD5 et SHA-1 ne sont plus sûrs."
+msgid "SHA-256 is the safe standard, CRC32 the fastest."
+msgstr "SHA-256 est la référence sûre, CRC32 le plus rapide."
 
 #: src/ui_dialogs.py
 msgid "Programs that are still open are closed. Unsaved work in them can be lost."
