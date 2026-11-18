@@ -191,6 +191,16 @@ def hash_speeds(seconds=0.2):
     return speeds
 
 
+SECURE = ("sha512", "sha256", "blake2b")  # the checksums that hold against deliberate changes; CRC32 only finds accidents, MD5 and SHA-1 are broken
+
+
+def speed_advice(speeds):
+    """(the fastest secure checksum, the fastest one overall if that is not a secure one else None) from `hash_speeds`."""
+    best = max(SECURE, key=speeds.get)
+    fastest = max(speeds, key=speeds.get)
+    return best, (None if fastest in SECURE else fastest)
+
+
 def format_sums(algo, entries):
     """The text of a checksum file from {path: hex}: GNU style (`hash  path`, what sha256sum -c reads), or SFV (`path CRC`) for crc32.
     A name with a backslash or a line break is escaped the GNU way."""

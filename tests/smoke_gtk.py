@@ -302,16 +302,18 @@ def child(tmp):
             width = app.settings.get_visible_dialog().get_extra_child().get_size_request()[0]
             if not 0 < width <= 480:
                 failures.append(f"a question on a window not drawn yet asks for a width of {width}")
-            win = app.settings  # the speed test puts the speeds into the lists without changing what is chosen or saved
-            chosen, saved = [r.get_selected() for r in win.speed_combos], dict(desktop.load_config())
-            win.speed_button.emit("clicked")  # the real way: a thread measures, the window shows it when done
+            win = app.settings  # the speed test opens a window with a bar per checksum and changes no setting
+            saved = dict(desktop.load_config())
+            win.speed_button.emit("clicked")  # the real way: a thread measures, the window opens when done
             end = time.monotonic() + 15
             while not win.speed_button.get_sensitive() and time.monotonic() < end:
                 GLib.MainContext.default().iteration(False)
                 time.sleep(0.01)
-            labels = [r.get_model().get_string(i) for r in win.speed_combos for i in range(r.get_model().get_n_items())]
-            if not all("/s" in label for label in labels) or [r.get_selected() for r in win.speed_combos] != chosen or desktop.load_config() != saved:
-                failures.append(f"the speed test changes the lists wrongly: {labels}")
+            shown = win.get_visible_dialog()
+            if shown is None or desktop.load_config() != saved:
+                failures.append("the speed test shows no window, or changes a setting")
+            win.show_speeds({"crc32": 3000e6, "blake2b": 400e6, "sha256": 1100e6, "sha512": 500e6, "sha1": 1200e6, "md5": 500e6})  # every kind of remark
+            win.show_speeds({"crc32": 900e6, "blake2b": 800e6, "sha256": 300e6, "sha512": 200e6, "sha1": 100e6, "md5": 100e6})
         except Exception as e:  # noqa: BLE001 - whatever breaks it is a failure of this test
             failures.append(f"settings window: {e!r}")
         app.quit()

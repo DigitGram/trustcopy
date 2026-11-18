@@ -13,7 +13,7 @@ from gi.repository import Adw, GLib, Gtk, Pango
 import core
 import desktop
 from i18n import _, _n
-from ui_common import AFTER, describe, key_value_grid, leftover_rows, pretty
+from ui_common import AFTER, SPEED_NAMES, describe, key_value_grid, leftover_rows, pretty
 
 
 def conflict_dialog(src, dst, respond):
@@ -234,6 +234,41 @@ def cleanup_dialog(found, on_answer):
     box.append(footer)
     dialog.set_focus(cancel)  # Enter is the safe answer
     dialog.connect("closed", lambda d: on_answer(False) if not answered else None)  # Escape
+    return dialog
+
+
+def speed_dialog(speeds):
+    """The result of the speed test: a bar per checksum, fastest first, and a recommendation. Only advice, it changes no setting."""
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=18, margin_bottom=18, margin_start=18, margin_end=18)
+    box.set_size_request(520, -1)
+    box.append(Gtk.Label(label=_("Checksum speed"), css_classes=["title-3"]))
+    box.append(Gtk.Label(label=_("How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."),
+                         wrap=True, justify=Gtk.Justification.CENTER, css_classes=["dim-label"]))
+    notes = {"crc32": _("Only finds accidental errors"), "md5": _("No longer secure"), "sha1": _("No longer secure")}
+    card = Gtk.ListBox(css_classes=["boxed-list"], selection_mode=Gtk.SelectionMode.NONE)
+    top = max(speeds.values())
+    for key in sorted(speeds, key=speeds.get, reverse=True):
+        row = Adw.ActionRow(title=SPEED_NAMES[key], subtitle=notes.get(key, _("Secure")), use_markup=False)
+        bar = Gtk.ProgressBar(fraction=speeds[key] / top, valign=Gtk.Align.CENTER, css_classes=["k-speed"] if key in core.SECURE else ["k-speed", "k-weak"])
+        bar.set_size_request(170, -1)
+        row.add_suffix(bar)
+        row.add_suffix(Gtk.Label(label=f"{round(speeds[key] / 1e6)} MB/s", width_chars=9, xalign=1, css_classes=["k-num"]))
+        card.append(row)
+    box.append(card)
+    best, faster = core.speed_advice(speeds)
+    lines = [_("<b>{name}</b> is the fastest secure checksum on this computer.").format(name=SPEED_NAMES[best])]
+    if faster == "crc32":
+        lines.append(_("CRC32 is faster, but it only finds accidental errors, not deliberate changes."))
+    elif faster:
+        lines.append(_("{name} is faster, but it is no longer secure against deliberate changes.").format(name=SPEED_NAMES[faster]))
+    if best == "blake2b":
+        lines.append(_("A checksum file offers SHA-256 and SHA-512 instead."))
+    box.append(Gtk.Label(label=_("Recommendation"), xalign=0, margin_top=6, css_classes=["heading"]))
+    box.append(Gtk.Label(label=" ".join(lines), use_markup=True, wrap=True, xalign=0, selectable=False))
+    close = Gtk.Button(label=_("Close"), halign=Gtk.Align.END, margin_top=6)
+    box.append(close)
+    dialog = Adw.Dialog(child=box)
+    close.connect("clicked", lambda b: dialog.close())
     return dialog
 
 

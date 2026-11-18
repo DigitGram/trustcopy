@@ -836,10 +836,6 @@ msgid "Checksum speed"
 msgstr "Velocidade das somas de verificação"
 
 #: src/ui_settings.py
-msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
-msgstr "Mede a rapidez com que este computador calcula cada soma de verificação e mostra nas listas acima."
-
-#: src/ui_settings.py
 msgid "Test"
 msgstr "Testar"
 
@@ -847,6 +843,42 @@ msgstr "Testar"
 msgid "Testing…"
 msgstr "Testando…"
 
-#: src/ui_settings.py
-msgid "Test again"
-msgstr "Testar novamente"
+#: src/ui_dialogs.py
+msgid "Measures how fast this computer calculates each checksum and recommends one."
+msgstr "Mede a rapidez com que este computador calcula cada soma de verificação e recomenda uma."
+
+#: src/ui_dialogs.py
+msgid "Only finds accidental errors"
+msgstr "Só detecta erros acidentais"
+
+#: src/ui_dialogs.py
+msgid "No longer secure"
+msgstr "Não é mais seguro"
+
+#: src/ui_dialogs.py
+msgid "Secure"
+msgstr "Seguro"
+
+#: src/ui_dialogs.py
+msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
+msgstr "Quantos dados este computador consegue verificar por segundo. Uma barra mais longa é mais rápida. A unidade costuma ser mais lenta e, então, ela define o ritmo."
+
+#: src/ui_dialogs.py
+msgid "<b>{name}</b> is the fastest secure checksum on this computer."
+msgstr "<b>{name}</b> é a soma de verificação segura mais rápida neste computador."
+
+#: src/ui_dialogs.py
+msgid "CRC32 is faster, but it only finds accidental errors, not deliberate changes."
+msgstr "O CRC32 é mais rápido, mas só detecta erros acidentais, não alterações deliberadas."
+
+#: src/ui_dialogs.py
+msgid "{name} is faster, but it is no longer secure against deliberate changes."
+msgstr "O {name} é mais rápido, mas não é mais seguro contra alterações deliberadas."
+
+#: src/ui_dialogs.py
+msgid "A checksum file offers SHA-256 and SHA-512 instead."
+msgstr "O arquivo de somas de verificação oferece SHA-256 e SHA-512 no lugar."
+
+#: src/ui_dialogs.py
+msgid "Recommendation"
+msgstr "Recomendação"

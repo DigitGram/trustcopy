@@ -23,6 +23,7 @@ CONFLICTS, AFTER = desktop.CONFLICTS, desktop.AFTER
 WHEN = AFTER + ("suspend", "poweroff")  # the job window also offers to switch the computer off; the setting does not: that default would bite someday
 ALGOS = tuple(core.ALGOS)
 SUM_NAMES = {"sha512": "SHA-512", "sha256": "SHA-256", "sha1": "SHA-1", "md5": "MD5", "crc32": "SFV"}  # the kinds of checksum file, as the window names them
+SPEED_NAMES = {"sha512": "SHA-512", "sha256": "SHA-256", "blake2b": "BLAKE2b", "sha1": "SHA-1", "md5": "MD5", "crc32": "CRC32"}  # the checksums of the speed test
 ALGO_NAMES = {"crc32": "CRC32", "blake2b": "BLAKE2b", "sha256": "SHA-256"}
 STATUS = {  # Result.status: (icon, pill class, label, row tint)
     "verified": ("object-select-symbolic", "k-ok", N_("Verified"), ""),  # the usual case: only its word is green, the deviations stand out
@@ -47,6 +48,9 @@ popover.k-cat > contents { background: none; border: none; box-shadow: none; pad
 .k-bar-copy progress { background: @green_5; }  /* the step colors of the graph: copying green, verifying blue */
 .k-bar-verify progress { background: @blue_3; }
 .k-bar-paused progress { background: @accent_bg_color; }  /* paused: the system's accent colour (orange on Ubuntu) */
+.k-speed trough, .k-speed progress { min-height: 10px; }  /* the bars of the speed test: green for the secure checksums, orange for the others (not the accent colour: it is red on Ubuntu) */
+.k-speed progress { background: @success_bg_color; }
+.k-weak progress { background: @warning_bg_color; }
 .k-num { font-feature-settings: "tnum"; }
 .k-files-row { padding: 10px 14px; border-radius: 14px; background: alpha(@window_fg_color, 0.06); }
 .k-state-copy { color: mix(@green_5, @window_fg_color, 0.2); }

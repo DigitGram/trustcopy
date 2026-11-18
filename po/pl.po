@@ -854,10 +854,6 @@ msgid "Checksum speed"
 msgstr "Szybkość sum kontrolnych"
 
 #: src/ui_settings.py
-msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
-msgstr "Mierzy, jak szybko ten komputer oblicza każdą sumę kontrolną, i pokazuje wynik na powyższych listach."
-
-#: src/ui_settings.py
 msgid "Test"
 msgstr "Testuj"
 
@@ -865,6 +861,42 @@ msgstr "Testuj"
 msgid "Testing…"
 msgstr "Testowanie…"
 
-#: src/ui_settings.py
-msgid "Test again"
-msgstr "Testuj ponownie"
+#: src/ui_dialogs.py
+msgid "Measures how fast this computer calculates each checksum and recommends one."
+msgstr "Mierzy, jak szybko ten komputer oblicza każdą sumę kontrolną, i poleca jedną z nich."
+
+#: src/ui_dialogs.py
+msgid "Only finds accidental errors"
+msgstr "Wykrywa tylko przypadkowe błędy"
+
+#: src/ui_dialogs.py
+msgid "No longer secure"
+msgstr "Nie jest już bezpieczny"
+
+#: src/ui_dialogs.py
+msgid "Secure"
+msgstr "Bezpieczny"
+
+#: src/ui_dialogs.py
+msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
+msgstr "Ile danych ten komputer może sprawdzić w ciągu sekundy. Dłuższy pasek oznacza szybszą sumę. Dysk jest często wolniejszy i wtedy to on wyznacza tempo."
+
+#: src/ui_dialogs.py
+msgid "<b>{name}</b> is the fastest secure checksum on this computer."
+msgstr "<b>{name}</b> to najszybsza bezpieczna suma kontrolna na tym komputerze."
+
+#: src/ui_dialogs.py
+msgid "CRC32 is faster, but it only finds accidental errors, not deliberate changes."
+msgstr "CRC32 jest szybszy, ale wykrywa tylko przypadkowe błędy, a nie celowe zmiany."
+
+#: src/ui_dialogs.py
+msgid "{name} is faster, but it is no longer secure against deliberate changes."
+msgstr "{name} jest szybszy, ale nie chroni już przed celowymi zmianami."
+
+#: src/ui_dialogs.py
+msgid "A checksum file offers SHA-256 and SHA-512 instead."
+msgstr "Plik sum kontrolnych oferuje zamiast tego SHA-256 i SHA-512."
+
+#: src/ui_dialogs.py
+msgid "Recommendation"
+msgstr "Zalecenie"

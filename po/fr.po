@@ -836,10 +836,6 @@ msgid "Checksum speed"
 msgstr "Vitesse des sommes de contrôle"
 
 #: src/ui_settings.py
-msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
-msgstr "Mesure la rapidité avec laquelle cet ordinateur calcule chaque somme de contrôle et l’affiche dans les listes ci-dessus."
-
-#: src/ui_settings.py
 msgid "Test"
 msgstr "Tester"
 
@@ -847,6 +843,42 @@ msgstr "Tester"
 msgid "Testing…"
 msgstr "Test en cours…"
 
-#: src/ui_settings.py
-msgid "Test again"
-msgstr "Tester à nouveau"
+#: src/ui_dialogs.py
+msgid "Measures how fast this computer calculates each checksum and recommends one."
+msgstr "Mesure la rapidité avec laquelle cet ordinateur calcule chaque somme de contrôle et en recommande une."
+
+#: src/ui_dialogs.py
+msgid "Only finds accidental errors"
+msgstr "Ne détecte que les erreurs accidentelles"
+
+#: src/ui_dialogs.py
+msgid "No longer secure"
+msgstr "N’est plus sûr"
+
+#: src/ui_dialogs.py
+msgid "Secure"
+msgstr "Sûr"
+
+#: src/ui_dialogs.py
+msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
+msgstr "Quantité de données que cet ordinateur peut vérifier par seconde. Une barre plus longue est plus rapide. Le disque est souvent plus lent et donne alors le rythme."
+
+#: src/ui_dialogs.py
+msgid "<b>{name}</b> is the fastest secure checksum on this computer."
+msgstr "<b>{name}</b> est la somme de contrôle sûre la plus rapide sur cet ordinateur."
+
+#: src/ui_dialogs.py
+msgid "CRC32 is faster, but it only finds accidental errors, not deliberate changes."
+msgstr "CRC32 est plus rapide, mais ne détecte que les erreurs accidentelles, pas les modifications délibérées."
+
+#: src/ui_dialogs.py
+msgid "{name} is faster, but it is no longer secure against deliberate changes."
+msgstr "{name} est plus rapide, mais n’est plus sûr contre les modifications délibérées."
+
+#: src/ui_dialogs.py
+msgid "A checksum file offers SHA-256 and SHA-512 instead."
+msgstr "Un fichier de sommes de contrôle propose SHA-256 et SHA-512 à la place."
+
+#: src/ui_dialogs.py
+msgid "Recommendation"
+msgstr "Recommandation"

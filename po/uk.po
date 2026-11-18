@@ -854,10 +854,6 @@ msgid "Checksum speed"
 msgstr "Швидкість контрольних сум"
 
 #: src/ui_settings.py
-msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
-msgstr "Вимірює, як швидко цей комп’ютер обчислює кожну контрольну суму, і показує це у списках вище."
-
-#: src/ui_settings.py
 msgid "Test"
 msgstr "Тестувати"
 
@@ -865,6 +861,42 @@ msgstr "Тестувати"
 msgid "Testing…"
 msgstr "Тестування…"
 
-#: src/ui_settings.py
-msgid "Test again"
-msgstr "Тестувати знову"
+#: src/ui_dialogs.py
+msgid "Measures how fast this computer calculates each checksum and recommends one."
+msgstr "Вимірює, як швидко цей комп’ютер обчислює кожну контрольну суму, і радить одну з них."
+
+#: src/ui_dialogs.py
+msgid "Only finds accidental errors"
+msgstr "Виявляє лише випадкові помилки"
+
+#: src/ui_dialogs.py
+msgid "No longer secure"
+msgstr "Більше не безпечний"
+
+#: src/ui_dialogs.py
+msgid "Secure"
+msgstr "Безпечний"
+
+#: src/ui_dialogs.py
+msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
+msgstr "Скільки даних цей комп’ютер може перевірити за секунду. Довша смуга означає швидше. Накопичувач часто повільніший і тоді саме він визначає швидкість."
+
+#: src/ui_dialogs.py
+msgid "<b>{name}</b> is the fastest secure checksum on this computer."
+msgstr "<b>{name}</b> — найшвидша безпечна контрольна сума на цьому комп’ютері."
+
+#: src/ui_dialogs.py
+msgid "CRC32 is faster, but it only finds accidental errors, not deliberate changes."
+msgstr "CRC32 швидший, але виявляє лише випадкові помилки, а не навмисні зміни."
+
+#: src/ui_dialogs.py
+msgid "{name} is faster, but it is no longer secure against deliberate changes."
+msgstr "{name} швидший, але вже не захищає від навмисних змін."
+
+#: src/ui_dialogs.py
+msgid "A checksum file offers SHA-256 and SHA-512 instead."
+msgstr "Для файлу контрольних сум натомість доступні SHA-256 і SHA-512."
+
+#: src/ui_dialogs.py
+msgid "Recommendation"
+msgstr "Рекомендація"

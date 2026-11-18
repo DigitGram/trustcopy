@@ -776,6 +776,13 @@ class HashSpeedTests(unittest.TestCase):
         self.assertEqual(set(speeds), set(core.ALGOS) | set(core.SUM_ALGOS))
         self.assertTrue(all(v > 0 for v in speeds.values()))
 
+    def test_advice_is_the_fastest_secure_one_and_names_a_faster_weak_one(self):
+        speeds = {"crc32": 3000, "blake2b": 400, "sha256": 1100, "sha512": 500, "sha1": 1200, "md5": 500}
+        self.assertEqual(core.speed_advice(speeds), ("sha256", "crc32"))
+        self.assertEqual(core.speed_advice({**speeds, "crc32": 900, "sha1": 800}), ("sha256", None))  # nothing weak beats it: no remark
+        self.assertEqual(core.speed_advice({**speeds, "sha256": 300}), ("sha512", "crc32"))
+        self.assertEqual(core.speed_advice({**speeds, "sha256": 300, "sha512": 200, "blake2b": 700, "crc32": 600})[0], "blake2b")
+
 
 class SumsFileTests(Base):
     """The checksum file: hashed while the files are written, listed by what the job really copied, read later for what it did not hash."""

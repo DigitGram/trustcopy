@@ -836,10 +836,6 @@ msgid "Checksum speed"
 msgstr "Prüfsummen-Tempo"
 
 #: src/ui_settings.py
-msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
-msgstr "Misst, wie schnell dieser Computer jede Prüfsumme berechnet, und zeigt es in den Listen darüber."
-
-#: src/ui_settings.py
 msgid "Test"
 msgstr "Testen"
 
@@ -847,6 +843,42 @@ msgstr "Testen"
 msgid "Testing…"
 msgstr "Teste …"
 
-#: src/ui_settings.py
-msgid "Test again"
-msgstr "Erneut testen"
+#: src/ui_dialogs.py
+msgid "Measures how fast this computer calculates each checksum and recommends one."
+msgstr "Misst, wie schnell dieser Computer jede Prüfsumme berechnet, und empfiehlt eine."
+
+#: src/ui_dialogs.py
+msgid "Only finds accidental errors"
+msgstr "Erkennt nur zufällige Fehler"
+
+#: src/ui_dialogs.py
+msgid "No longer secure"
+msgstr "Nicht mehr sicher"
+
+#: src/ui_dialogs.py
+msgid "Secure"
+msgstr "Sicher"
+
+#: src/ui_dialogs.py
+msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
+msgstr "Wie viele Daten dieser Computer pro Sekunde prüfen kann. Ein längerer Balken ist schneller. Das Laufwerk ist oft langsamer und bestimmt dann das Tempo."
+
+#: src/ui_dialogs.py
+msgid "<b>{name}</b> is the fastest secure checksum on this computer."
+msgstr "<b>{name}</b> ist die schnellste sichere Prüfsumme auf diesem Computer."
+
+#: src/ui_dialogs.py
+msgid "CRC32 is faster, but it only finds accidental errors, not deliberate changes."
+msgstr "CRC32 ist schneller, erkennt aber nur zufällige Fehler, keine absichtlichen Änderungen."
+
+#: src/ui_dialogs.py
+msgid "{name} is faster, but it is no longer secure against deliberate changes."
+msgstr "{name} ist schneller, bietet aber keinen sicheren Schutz mehr vor absichtlichen Änderungen."
+
+#: src/ui_dialogs.py
+msgid "A checksum file offers SHA-256 and SHA-512 instead."
+msgstr "Für die Prüfsummen-Datei stehen stattdessen SHA-256 und SHA-512 zur Verfügung."
+
+#: src/ui_dialogs.py
+msgid "Recommendation"
+msgstr "Empfehlung"

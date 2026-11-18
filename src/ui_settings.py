@@ -15,7 +15,7 @@ import desktop
 import i18n
 from i18n import _
 from ui_common import AFTER, ALGOS, CONFLICTS, after_labels
-from ui_dialogs import confirm_always, warning_dialog
+from ui_dialogs import confirm_always, speed_dialog, warning_dialog
 
 
 class Settings(Adw.ApplicationWindow):
@@ -58,35 +58,28 @@ class Settings(Adw.ApplicationWindow):
         sums.bind_property("active", kind, "sensitive", GObject.BindingFlags.SYNC_CREATE)
         for row in (sums, kind):
             copying.add(row)
-        copying.add(self._speed_row(algo, kind))
+        copying.add(self._speed_row())
         return copying
 
-    def _speed_row(self, *combos):
-        """A button that measures every checksum on this computer and shows the speed in the lists `combos`."""
-        self.speed_combos = combos
+    def _speed_row(self):
+        """A button that measures every checksum on this computer and shows the result in a window of its own."""
         self.speed_button = Gtk.Button(label=_("Test"), valign=Gtk.Align.CENTER)
-        self.speed_button.connect("clicked", self.test_speeds, combos)
-        row = Adw.ActionRow(title=_("Checksum speed"), subtitle=_("Measures how fast this computer calculates each checksum and shows it in the lists above."))
+        self.speed_button.connect("clicked", self.test_speeds)
+        row = Adw.ActionRow(title=_("Checksum speed"), subtitle=_("Measures how fast this computer calculates each checksum and recommends one."))
         row.add_suffix(self.speed_button)
         row.set_activatable_widget(self.speed_button)
         return row
 
-    def test_speeds(self, button, combos):
+    def test_speeds(self, button):
         button.set_sensitive(False)
         button.set_label(_("Testing…"))
-        threading.Thread(target=lambda: GLib.idle_add(self.show_speeds, core.hash_speeds(), combos), daemon=True).start()
+        threading.Thread(target=lambda: GLib.idle_add(self.show_speeds, core.hash_speeds()), daemon=True).start()
 
-    def show_speeds(self, speeds, combos):
-        """Puts "SHA-256 · 1.1 GB/s" into the lists. The selection is put back without saving: replacing the entries resets it."""
-        for row in combos:
-            chosen = row.get_selected()
-            labels = [f"{label} · {GLib.format_size(int(speeds[key]))}/s" for label, key in zip(row.base_labels, row.keys)]
-            row.handler_block(row.changed_id)
-            row.get_model().splice(0, len(labels), labels)
-            row.set_selected(chosen)
-            row.handler_unblock(row.changed_id)
-        self.speed_button.set_label(_("Test again"))
+    def show_speeds(self, speeds):
+        self.speed_button.set_label(_("Test"))
         self.speed_button.set_sensitive(True)
+        self.speed_dialog = speed_dialog(speeds)
+        self.speed_dialog.present(self)
 
     def _finished_group(self):
         close = self.combo(_("Window"), "", after_labels(), AFTER, "after")
@@ -171,8 +164,7 @@ class Settings(Adw.ApplicationWindow):
     def combo(self, title, subtitle, labels, values, key):
         row = Adw.ComboRow(title=title, subtitle=subtitle, model=Gtk.StringList.new(labels))
         row.set_selected(values.index(self.cfg[key]))
-        row.changed_id = row.connect("notify::selected", lambda r, p: self.apply(key, values[r.get_selected()]))
-        row.keys, row.base_labels = values, list(labels)  # speeds are added to the labels later
+        row.connect("notify::selected", lambda r, p: self.apply(key, values[r.get_selected()]))
         return row
 
     def switch(self, title, subtitle, key):

@@ -818,10 +818,6 @@ msgid "Checksum speed"
 msgstr "校验和速度"
 
 #: src/ui_settings.py
-msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
-msgstr "测量这台电脑计算各种校验和的速度，并显示在上方的列表中。"
-
-#: src/ui_settings.py
 msgid "Test"
 msgstr "测试"
 
@@ -829,6 +825,42 @@ msgstr "测试"
 msgid "Testing…"
 msgstr "正在测试…"
 
-#: src/ui_settings.py
-msgid "Test again"
-msgstr "重新测试"
+#: src/ui_dialogs.py
+msgid "Measures how fast this computer calculates each checksum and recommends one."
+msgstr "测量这台电脑计算各种校验和的速度，并给出推荐。"
+
+#: src/ui_dialogs.py
+msgid "Only finds accidental errors"
+msgstr "只能发现意外错误"
+
+#: src/ui_dialogs.py
+msgid "No longer secure"
+msgstr "已不再安全"
+
+#: src/ui_dialogs.py
+msgid "Secure"
+msgstr "安全"
+
+#: src/ui_dialogs.py
+msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
+msgstr "这台电脑每秒能校验多少数据。条越长越快。驱动器往往更慢，这时由它决定速度。"
+
+#: src/ui_dialogs.py
+msgid "<b>{name}</b> is the fastest secure checksum on this computer."
+msgstr "在这台电脑上，最快的安全校验和是 <b>{name}</b>。"
+
+#: src/ui_dialogs.py
+msgid "CRC32 is faster, but it only finds accidental errors, not deliberate changes."
+msgstr "CRC32 更快，但只能发现意外错误，无法发现蓄意篡改。"
+
+#: src/ui_dialogs.py
+msgid "{name} is faster, but it is no longer secure against deliberate changes."
+msgstr "{name} 更快，但已无法防范蓄意篡改。"
+
+#: src/ui_dialogs.py
+msgid "A checksum file offers SHA-256 and SHA-512 instead."
+msgstr "校验和文件则可选择 SHA-256 和 SHA-512。"
+
+#: src/ui_dialogs.py
+msgid "Recommendation"
+msgstr "推荐"
