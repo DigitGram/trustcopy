@@ -848,3 +848,23 @@ msgstr "SHA-256 — безпечний стандарт. CRC32 (SFV) найшв�
 #: src/ui_dialogs.py
 msgid "Programs that are still open are closed. Unsaved work in them can be lost."
 msgstr "Програми, що залишилися відкритими, буде закрито. Незбережена в них робота може бути втрачена."
+
+#: src/ui_settings.py
+msgid "Checksum speed"
+msgstr "Швидкість контрольних сум"
+
+#: src/ui_settings.py
+msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
+msgstr "Вимірює, як швидко цей комп’ютер обчислює кожну контрольну суму, і показує це у списках вище."
+
+#: src/ui_settings.py
+msgid "Test"
+msgstr "Тестувати"
+
+#: src/ui_settings.py
+msgid "Testing…"
+msgstr "Тестування…"
+
+#: src/ui_settings.py
+msgid "Test again"
+msgstr "Тестувати знову"

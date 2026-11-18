@@ -175,6 +175,22 @@ SUM_ALGOS = {
 }
 
 
+def hash_speeds(seconds=0.2):
+    """{algorithm: bytes per second} of every checksum the app offers on this machine, one core, from memory (no disk involved).
+    Only a guide: a disk is often slower, and several files hash side by side."""
+    makers = {**ALGOS, **{key: item[0] for key, item in SUM_ALGOS.items()}}
+    block, speeds = os.urandom(CHUNK), {}
+    for key, make in makers.items():
+        h = make()
+        h.update(block)  # warm up: the first call pays for the set-up
+        done, start = 0, time.perf_counter()
+        while (spent := time.perf_counter() - start) < seconds:
+            h.update(block)
+            done += CHUNK
+        speeds[key] = done / spent
+    return speeds
+
+
 def format_sums(algo, entries):
     """The text of a checksum file from {path: hex}: GNU style (`hash  path`, what sha256sum -c reads), or SFV (`path CRC`) for crc32.
     A name with a backslash or a line break is escaped the GNU way."""

@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 DigitGram
 """The settings window."""
+import threading
+
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -56,7 +58,35 @@ class Settings(Adw.ApplicationWindow):
         sums.bind_property("active", kind, "sensitive", GObject.BindingFlags.SYNC_CREATE)
         for row in (sums, kind):
             copying.add(row)
+        copying.add(self._speed_row(algo, kind))
         return copying
+
+    def _speed_row(self, *combos):
+        """A button that measures every checksum on this computer and shows the speed in the lists `combos`."""
+        self.speed_combos = combos
+        self.speed_button = Gtk.Button(label=_("Test"), valign=Gtk.Align.CENTER)
+        self.speed_button.connect("clicked", self.test_speeds, combos)
+        row = Adw.ActionRow(title=_("Checksum speed"), subtitle=_("Measures how fast this computer calculates each checksum and shows it in the lists above."))
+        row.add_suffix(self.speed_button)
+        row.set_activatable_widget(self.speed_button)
+        return row
+
+    def test_speeds(self, button, combos):
+        button.set_sensitive(False)
+        button.set_label(_("Testing…"))
+        threading.Thread(target=lambda: GLib.idle_add(self.show_speeds, core.hash_speeds(), combos), daemon=True).start()
+
+    def show_speeds(self, speeds, combos):
+        """Puts "SHA-256 · 1.1 GB/s" into the lists. The selection is put back without saving: replacing the entries resets it."""
+        for row in combos:
+            chosen = row.get_selected()
+            labels = [f"{label} · {GLib.format_size(int(speeds[key]))}/s" for label, key in zip(row.base_labels, row.keys)]
+            row.handler_block(row.changed_id)
+            row.get_model().splice(0, len(labels), labels)
+            row.set_selected(chosen)
+            row.handler_unblock(row.changed_id)
+        self.speed_button.set_label(_("Test again"))
+        self.speed_button.set_sensitive(True)
 
     def _finished_group(self):
         close = self.combo(_("Window"), "", after_labels(), AFTER, "after")
@@ -141,7 +171,8 @@ class Settings(Adw.ApplicationWindow):
     def combo(self, title, subtitle, labels, values, key):
         row = Adw.ComboRow(title=title, subtitle=subtitle, model=Gtk.StringList.new(labels))
         row.set_selected(values.index(self.cfg[key]))
-        row.connect("notify::selected", lambda r, p: self.apply(key, values[r.get_selected()]))
+        row.changed_id = row.connect("notify::selected", lambda r, p: self.apply(key, values[r.get_selected()]))
+        row.keys, row.base_labels = values, list(labels)  # speeds are added to the labels later
         return row
 
     def switch(self, title, subtitle, key):

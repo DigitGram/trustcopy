@@ -66,7 +66,7 @@ def fake_area(tips=None):
 def child(tmp):
     """Runs one copy in a window and checks the window once the copy is over, again with step 2 picked."""
     sys.path.insert(0, str(SRC))
-    import ui_common as common, ui_dialogs as dialogs, ui_graph as graph, ui_gtk
+    import core, desktop, ui_common as common, ui_dialogs as dialogs, ui_graph as graph, ui_gtk
     from ui_panel import Panel
     from gi.repository import GLib
 
@@ -302,6 +302,16 @@ def child(tmp):
             width = app.settings.get_visible_dialog().get_extra_child().get_size_request()[0]
             if not 0 < width <= 480:
                 failures.append(f"a question on a window not drawn yet asks for a width of {width}")
+            win = app.settings  # the speed test puts the speeds into the lists without changing what is chosen or saved
+            chosen, saved = [r.get_selected() for r in win.speed_combos], dict(desktop.load_config())
+            win.speed_button.emit("clicked")  # the real way: a thread measures, the window shows it when done
+            end = time.monotonic() + 15
+            while not win.speed_button.get_sensitive() and time.monotonic() < end:
+                GLib.MainContext.default().iteration(False)
+                time.sleep(0.01)
+            labels = [r.get_model().get_string(i) for r in win.speed_combos for i in range(r.get_model().get_n_items())]
+            if not all("/s" in label for label in labels) or [r.get_selected() for r in win.speed_combos] != chosen or desktop.load_config() != saved:
+                failures.append(f"the speed test changes the lists wrongly: {labels}")
         except Exception as e:  # noqa: BLE001 - whatever breaks it is a failure of this test
             failures.append(f"settings window: {e!r}")
         app.quit()

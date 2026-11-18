@@ -830,3 +830,23 @@ msgstr "SHA-256 é o padrão seguro. CRC32 (SFV) é o mais rápido, mas só dete
 #: src/ui_dialogs.py
 msgid "Programs that are still open are closed. Unsaved work in them can be lost."
 msgstr "Os programas ainda abertos serão fechados. O trabalho não salvo neles pode ser perdido."
+
+#: src/ui_settings.py
+msgid "Checksum speed"
+msgstr "Velocidade das somas de verificação"
+
+#: src/ui_settings.py
+msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
+msgstr "Mede a rapidez com que este computador calcula cada soma de verificação e mostra nas listas acima."
+
+#: src/ui_settings.py
+msgid "Test"
+msgstr "Testar"
+
+#: src/ui_settings.py
+msgid "Testing…"
+msgstr "Testando…"
+
+#: src/ui_settings.py
+msgid "Test again"
+msgstr "Testar novamente"

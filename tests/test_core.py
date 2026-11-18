@@ -770,6 +770,13 @@ class TerminalTests(Base):
         self.assertNotIn("a.txt", text)
 
 
+class HashSpeedTests(unittest.TestCase):
+    def test_every_algorithm_of_both_lists_gets_a_speed(self):
+        speeds = core.hash_speeds(0.01)
+        self.assertEqual(set(speeds), set(core.ALGOS) | set(core.SUM_ALGOS))
+        self.assertTrue(all(v > 0 for v in speeds.values()))
+
+
 class SumsFileTests(Base):
     """The checksum file: hashed while the files are written, listed by what the job really copied, read later for what it did not hash."""
 

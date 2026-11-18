@@ -830,3 +830,23 @@ msgstr ""
 #: src/ui_dialogs.py
 msgid "Programs that are still open are closed. Unsaved work in them can be lost."
 msgstr ""
+
+#: src/ui_settings.py
+msgid "Checksum speed"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Measures how fast this computer calculates each checksum and shows it in the lists above."
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Test"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Testing…"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Test again"
+msgstr ""
