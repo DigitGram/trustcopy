@@ -74,10 +74,6 @@ msgid "Ask every time"
 msgstr "每次询问"
 
 #: src/ui_gtk.py
-msgid "BLAKE2b (medium)"
-msgstr "BLAKE2b（中等）"
-
-#: src/ui_gtk.py
 msgid "Back to the default values."
 msgstr "恢复为默认值。"
 
@@ -85,9 +81,9 @@ msgstr "恢复为默认值。"
 msgid "CRC32 (fast)"
 msgstr "CRC32（快速）"
 
-#: src/ui_gtk.py
-msgid "CRC32 is fastest and catches accidental corruption; BLAKE2b and SHA-256 are cryptographic."
-msgstr "CRC32 速度最快，可发现意外损坏；BLAKE2b 和 SHA-256 为加密哈希。"
+#: src/ui_settings.py
+msgid "CRC32 is fastest and catches accidental corruption; SHA-256 is cryptographically secure."
+msgstr "CRC32 最快，可发现意外损坏；SHA-256 在密码学上是安全的。"
 
 #: src/ui_gtk.py
 msgid "Cancel"
@@ -856,10 +852,6 @@ msgstr "CRC32 更快，但只能发现意外错误，无法发现蓄意篡改。
 #: src/ui_dialogs.py
 msgid "{name} is faster, but it is no longer secure against deliberate changes."
 msgstr "{name} 更快，但已无法防范蓄意篡改。"
-
-#: src/ui_dialogs.py
-msgid "A checksum file offers SHA-256 and SHA-512 instead."
-msgstr "校验和文件则可选择 SHA-256 和 SHA-512。"
 
 #: src/ui_dialogs.py
 msgid "Recommendation"

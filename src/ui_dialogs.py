@@ -261,8 +261,6 @@ def speed_dialog(speeds):
         lines.append(_("CRC32 is faster, but it only finds accidental errors, not deliberate changes."))
     elif faster:
         lines.append(_("{name} is faster, but it is no longer secure against deliberate changes.").format(name=SPEED_NAMES[faster]))
-    if best == "blake2b":
-        lines.append(_("A checksum file offers SHA-256 and SHA-512 instead."))
     box.append(Gtk.Label(label=_("Recommendation"), xalign=0, margin_top=6, css_classes=["heading"]))
     box.append(Gtk.Label(label=" ".join(lines), use_markup=True, wrap=True, xalign=0, selectable=False))
     close = Gtk.Button(label=_("Close"), halign=Gtk.Align.END, margin_top=6)

@@ -74,10 +74,6 @@ msgid "Ask every time"
 msgstr "毎回確認"
 
 #: src/ui_gtk.py
-msgid "BLAKE2b (medium)"
-msgstr "BLAKE2b（標準）"
-
-#: src/ui_gtk.py
 msgid "Back to the default values."
 msgstr "既定値に戻します。"
 
@@ -85,9 +81,9 @@ msgstr "既定値に戻します。"
 msgid "CRC32 (fast)"
 msgstr "CRC32（高速）"
 
-#: src/ui_gtk.py
-msgid "CRC32 is fastest and catches accidental corruption; BLAKE2b and SHA-256 are cryptographic."
-msgstr "CRC32 は最も高速で、偶発的な破損を検出できます。BLAKE2b と SHA-256 は暗号学的ハッシュです。"
+#: src/ui_settings.py
+msgid "CRC32 is fastest and catches accidental corruption; SHA-256 is cryptographically secure."
+msgstr "CRC32 は最も高速で、偶発的な破損を検出します。SHA-256 は暗号学的に安全です。"
 
 #: src/ui_gtk.py
 msgid "Cancel"
@@ -856,10 +852,6 @@ msgstr "CRC32 のほうが高速ですが、偶発的なエラーしか検出で
 #: src/ui_dialogs.py
 msgid "{name} is faster, but it is no longer secure against deliberate changes."
 msgstr "{name} のほうが高速ですが、意図的な改ざんに対してはもう安全ではありません。"
-
-#: src/ui_dialogs.py
-msgid "A checksum file offers SHA-256 and SHA-512 instead."
-msgstr "チェックサムファイルでは代わりに SHA-256 と SHA-512 を選べます。"
 
 #: src/ui_dialogs.py
 msgid "Recommendation"

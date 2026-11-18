@@ -45,7 +45,7 @@ class Settings(Adw.ApplicationWindow):
 
     def _copying_group(self):
         verify = self.switch(_("Verify files after copying"), _("Reads every copy back from the disk and compares checksums."), "verify")
-        algo = self.combo(_("Checksum"), _("CRC32 is fastest and catches accidental corruption; BLAKE2b and SHA-256 are cryptographic."), [_("CRC32 (fast)"), _("BLAKE2b (medium)"), _("SHA-256 (thorough)")], ALGOS, "algo")
+        algo = self.combo(_("Checksum"), _("CRC32 is fastest and catches accidental corruption; SHA-256 is cryptographically secure."), [_("CRC32 (fast)"), _("SHA-256 (thorough)")], ALGOS, "algo")
         verify.bind_property("active", algo, "sensitive", GObject.BindingFlags.SYNC_CREATE)
         conflict = self.combo(_("If a file exists"), _("What happens when a file with that name is already in the target."),
                               [_("Ask every time"), _("Skip"), _("Keep both"), _("Overwrite if newer"), _("Overwrite")], CONFLICTS, "conflict")

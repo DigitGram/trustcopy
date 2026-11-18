@@ -74,10 +74,6 @@ msgid "Ask every time"
 msgstr "Chiedi ogni volta"
 
 #: src/ui_gtk.py
-msgid "BLAKE2b (medium)"
-msgstr "BLAKE2b (medio)"
-
-#: src/ui_gtk.py
 msgid "Back to the default values."
 msgstr "Ripristina i valori predefiniti."
 
@@ -85,9 +81,9 @@ msgstr "Ripristina i valori predefiniti."
 msgid "CRC32 (fast)"
 msgstr "CRC32 (veloce)"
 
-#: src/ui_gtk.py
-msgid "CRC32 is fastest and catches accidental corruption; BLAKE2b and SHA-256 are cryptographic."
-msgstr "CRC32 è il più veloce e rileva i danneggiamenti accidentali; BLAKE2b e SHA-256 sono crittografici."
+#: src/ui_settings.py
+msgid "CRC32 is fastest and catches accidental corruption; SHA-256 is cryptographically secure."
+msgstr "CRC32 è il più veloce e rileva i danni accidentali; SHA-256 è crittograficamente sicuro."
 
 #: src/ui_gtk.py
 msgid "Cancel"
@@ -874,10 +870,6 @@ msgstr "CRC32 è più veloce, ma rileva solo errori accidentali, non modifiche i
 #: src/ui_dialogs.py
 msgid "{name} is faster, but it is no longer secure against deliberate changes."
 msgstr "{name} è più veloce, ma non è più sicuro contro modifiche intenzionali."
-
-#: src/ui_dialogs.py
-msgid "A checksum file offers SHA-256 and SHA-512 instead."
-msgstr "Per il file di checksum sono disponibili invece SHA-256 e SHA-512."
 
 #: src/ui_dialogs.py
 msgid "Recommendation"

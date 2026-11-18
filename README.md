@@ -20,7 +20,7 @@ months later.
 
 ## What you get
 
-- **Verified copies.** Each copy is read back from the disk and compared; a bad one never replaces your old file and is reported. Choose CRC32 (fast, default), BLAKE2b or SHA-256.
+- **Verified copies.** Each copy is read back from the disk and compared; a bad one never replaces your old file and is reported. Choose CRC32 (fast, default) or SHA-256.
 - **Safe moves.** A source is deleted only after its own copy has been verified.
 - **A live view.** Three steps (Copying, Verifying, Done), a speed graph, time remaining, and a file list with a status per file.
 - **No half-written files.** A cancel or a power cut never leaves a damaged file under its real name.

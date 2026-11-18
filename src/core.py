@@ -149,8 +149,8 @@ class _Crc32:
         return self.value.to_bytes(4, "big")
 
 
-# crc32: fastest, catches accidental corruption; blake2b/sha256: cryptographic
-ALGOS = {"crc32": _Crc32, "blake2b": hashlib.blake2b, "sha256": hashlib.sha256}
+# crc32: fastest, catches accidental corruption; sha256: cryptographic. (BLAKE2b was offered up to 1.2: with the SHA instructions of a recent CPU SHA-256 is faster, so "medium" was wrong there)
+ALGOS = {"crc32": _Crc32, "sha256": hashlib.sha256}
 
 
 class _Tee:
@@ -191,7 +191,7 @@ def hash_speeds(seconds=0.2):
     return speeds
 
 
-SECURE = ("sha512", "sha256", "blake2b")  # the checksums that hold against deliberate changes; CRC32 only finds accidents, MD5 and SHA-1 are broken
+SECURE = ("sha512", "sha256")  # the checksums that hold against deliberate changes; CRC32 only finds accidents, MD5 and SHA-1 are broken
 
 
 def speed_advice(speeds):

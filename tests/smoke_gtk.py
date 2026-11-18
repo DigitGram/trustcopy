@@ -312,8 +312,8 @@ def child(tmp):
             shown = win.get_visible_dialog()
             if shown is None or desktop.load_config() != saved:
                 failures.append("the speed test shows no window, or changes a setting")
-            win.show_speeds({"crc32": 3000e6, "blake2b": 400e6, "sha256": 1100e6, "sha512": 500e6, "sha1": 1200e6, "md5": 500e6})  # every kind of remark
-            win.show_speeds({"crc32": 900e6, "blake2b": 800e6, "sha256": 300e6, "sha512": 200e6, "sha1": 100e6, "md5": 100e6})
+            win.show_speeds({"crc32": 3000e6, "sha256": 1100e6, "sha512": 500e6, "sha1": 1200e6, "md5": 500e6})  # every kind of remark
+            win.show_speeds({"crc32": 900e6, "sha256": 300e6, "sha512": 600e6, "sha1": 100e6, "md5": 100e6})
         except Exception as e:  # noqa: BLE001 - whatever breaks it is a failure of this test
             failures.append(f"settings window: {e!r}")
         app.quit()

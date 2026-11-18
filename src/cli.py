@@ -35,7 +35,7 @@ BANNER = r"""
                                      /_/    /____/
 """
 TAGLINE = "Verified copying for Nautilus  ·  GPL-3.0-or-later"
-ALGO_NAMES = {"crc32": "CRC32", "blake2b": "BLAKE2b", "sha256": "SHA-256"}
+ALGO_NAMES = {"crc32": "CRC32", "sha256": "SHA-256"}
 POLICIES = ("ask", "skip", "keep_both", "newer", "overwrite")
 
 parser = argparse.ArgumentParser(prog="trustcopy", usage="%(prog)s copy|move --to DESTINATION SOURCE... [options]\n       %(prog)s paste [--to DESTINATION] | settings | integrate [--remove] | clean FOLDER... [--yes]")

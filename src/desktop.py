@@ -74,6 +74,8 @@ def load_config():
         choices = allowed()
         config.update({k: v for k, v in saved.items()
                        if k in DEFAULTS and type(v) is type(DEFAULTS[k]) and v in choices.get(k, (v,))})
+        if saved.get("algo") == "blake2b":  # offered up to 1.2, no longer: SHA-256 is the next one up
+            config["algo"] = "sha256"
     return config
 
 

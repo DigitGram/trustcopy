@@ -777,11 +777,11 @@ class HashSpeedTests(unittest.TestCase):
         self.assertTrue(all(v > 0 for v in speeds.values()))
 
     def test_advice_is_the_fastest_secure_one_and_names_a_faster_weak_one(self):
-        speeds = {"crc32": 3000, "blake2b": 400, "sha256": 1100, "sha512": 500, "sha1": 1200, "md5": 500}
+        speeds = {"crc32": 3000, "sha256": 1100, "sha512": 500, "sha1": 1200, "md5": 500}
         self.assertEqual(core.speed_advice(speeds), ("sha256", "crc32"))
         self.assertEqual(core.speed_advice({**speeds, "crc32": 900, "sha1": 800}), ("sha256", None))  # nothing weak beats it: no remark
         self.assertEqual(core.speed_advice({**speeds, "sha256": 300}), ("sha512", "crc32"))
-        self.assertEqual(core.speed_advice({**speeds, "sha256": 300, "sha512": 200, "blake2b": 700, "crc32": 600})[0], "blake2b")
+        self.assertEqual(core.speed_advice({**speeds, "sha256": 300, "sha512": 200, "crc32": 600}), ("sha256", "sha1"))  # sha1 is still the fastest overall
 
 
 class SumsFileTests(Base):
@@ -1531,10 +1531,10 @@ class Settings(unittest.TestCase):
         self.assertEqual(json.loads(real.read_text()), {})  # the file behind the link was emptied, not replaced
 
     def test_every_algorithm_hashes_like_its_standard(self):
-        for algo, digest in (("blake2b", "ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923"), ("sha256", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")):
+        for algo, digest in (("crc32", "352441c2"), ("sha256", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")):
             h = core.ALGOS[algo]()
             h.update(b"abc")
-            self.assertEqual(h.hexdigest(), digest)
+            self.assertEqual(h.digest().hex(), digest)
 
     def test_only_deviations_from_the_defaults_are_saved(self):
         desktop.set_option("algo", "sha256")
@@ -1583,9 +1583,15 @@ class Settings(unittest.TestCase):
         real.parent.mkdir()
         desktop.CONFIG_FILE.replace(real)
         desktop.CONFIG_FILE.symlink_to(real)
-        desktop.set_option("algo", "blake2b")
+        desktop.set_option("conflict", "skip")
         self.assertTrue(desktop.CONFIG_FILE.is_symlink())
-        self.assertEqual(json.loads(real.read_text())["algo"], "blake2b")
+        self.assertEqual(json.loads(real.read_text())["conflict"], "skip")
+
+    def test_blake2b_of_an_older_version_reads_as_sha256(self):
+        desktop.CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        desktop.CONFIG_FILE.write_text('{"algo": "blake2b", "verify": false}')
+        cfg = desktop.load_config()
+        self.assertEqual((cfg["algo"], cfg["verify"]), ("sha256", False))
 
     def test_a_save_is_on_the_disk_before_it_gets_its_name(self):
         events, real = [], os.replace
@@ -1597,7 +1603,7 @@ class Settings(unittest.TestCase):
     def test_a_failing_save_keeps_the_old_file_and_leaves_no_part_behind(self):
         desktop.set_option("algo", "sha256")
         with mock.patch("os.replace", side_effect=OSError("disk full")):
-            self.assertIn("disk full", desktop.set_option("algo", "blake2b"))
+            self.assertIn("disk full", desktop.set_option("conflict", "skip"))
         self.assertEqual(json.loads(desktop.CONFIG_FILE.read_text()), {"algo": "sha256"})
         self.assertEqual(os.listdir(desktop.CONFIG_FILE.parent), ["settings.json"])
 

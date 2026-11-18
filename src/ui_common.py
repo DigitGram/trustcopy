@@ -23,8 +23,8 @@ CONFLICTS, AFTER = desktop.CONFLICTS, desktop.AFTER
 WHEN = AFTER + ("suspend", "poweroff")  # the job window also offers to switch the computer off; the setting does not: that default would bite someday
 ALGOS = tuple(core.ALGOS)
 SUM_NAMES = {"sha512": "SHA-512", "sha256": "SHA-256", "sha1": "SHA-1", "md5": "MD5", "crc32": "SFV"}  # the kinds of checksum file, as the window names them
-SPEED_NAMES = {"sha512": "SHA-512", "sha256": "SHA-256", "blake2b": "BLAKE2b", "sha1": "SHA-1", "md5": "MD5", "crc32": "CRC32"}  # the checksums of the speed test
-ALGO_NAMES = {"crc32": "CRC32", "blake2b": "BLAKE2b", "sha256": "SHA-256"}
+SPEED_NAMES = {"sha512": "SHA-512", "sha256": "SHA-256", "sha1": "SHA-1", "md5": "MD5", "crc32": "CRC32"}  # the checksums of the speed test
+ALGO_NAMES = {"crc32": "CRC32", "sha256": "SHA-256"}
 STATUS = {  # Result.status: (icon, pill class, label, row tint)
     "verified": ("object-select-symbolic", "k-ok", N_("Verified"), ""),  # the usual case: only its word is green, the deviations stand out
     "copied": (None, "k-info", N_("Copied"), ""),  # written to its temp file, waiting for the check that gives it its name
