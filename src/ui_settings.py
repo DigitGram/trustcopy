@@ -51,7 +51,7 @@ class Settings(Adw.ApplicationWindow):
         copying = Adw.PreferencesGroup(title=_("Copying"))
         for row in (verify, algo, conflict):
             copying.add(row)
-        sums = self.switch(_("Write a checksum file"), _("Lists every copied file with its checksum in the target folder, for HashTally or sha256sum. The files must be read: no fast clone copy, and without verification the sums are those of the source."), "sums")
+        sums = self.switch(_("Write a checksum file"), _("Saves a list of checksums in the target folder, for HashTally or sha256sum. Slower, because every file is read."), "sums")
         kind = self.combo(_("Algorithm"), _("Of the checksum file. SHA-256 is the usual choice; MD5 and SFV are for older tools."), ["SHA-256", "SHA-512", "SHA-1", "MD5", _("CRC32 (SFV)")], tuple(core.SUM_ALGOS), "sums_algo")
         sums.bind_property("active", kind, "sensitive", GObject.BindingFlags.SYNC_CREATE)
         for row in (sums, kind):

@@ -742,8 +742,8 @@ msgid "Write a checksum file"
 msgstr "Escribir un archivo de sumas de verificación"
 
 #: src/ui_settings.py
-msgid "Lists every copied file with its checksum in the target folder, for HashTally or sha256sum. The files must be read: no fast clone copy, and without verification the sums are those of the source."
-msgstr "Enumera cada archivo copiado con su suma de verificación en la carpeta de destino, para HashTally o sha256sum. Hay que leer los archivos: sin copia rápida por clonación, y sin verificación las sumas son las del origen."
+msgid "Saves a list of checksums in the target folder, for HashTally or sha256sum. Slower, because every file is read."
+msgstr "Guarda una lista de sumas de verificación en la carpeta de destino, para HashTally o sha256sum. Es más lento, porque se lee cada archivo."
 
 #: src/ui_settings.py
 msgid "CRC32 (SFV)"
