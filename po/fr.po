@@ -742,8 +742,8 @@ msgid "Write a checksum file"
 msgstr "Écrire un fichier de sommes de contrôle"
 
 #: src/ui_settings.py
-msgid "Saves a list of checksums in the target folder, for HashTally or sha256sum. Slower, because every file is read."
-msgstr "Enregistre une liste de sommes de contrôle dans le dossier de destination, pour HashTally ou sha256sum. Plus lent, car chaque fichier est lu."
+msgid "Saves a list of checksums in the target folder. Slower, because every file has to be read."
+msgstr "Enregistre une liste de sommes de contrôle dans le dossier de destination. Plus lent, car chaque fichier doit être lu."
 
 #: src/ui_settings.py
 msgid "CRC32 (SFV)"
@@ -824,8 +824,8 @@ msgid "Algorithm"
 msgstr "Algorithme"
 
 #: src/ui_settings.py
-msgid "Of the checksum file. SHA-256 is the usual choice; MD5 and SFV are for older tools."
-msgstr "Pour le fichier de sommes. SHA-256 est le choix habituel ; MD5 et SFV servent aux anciens outils."
+msgid "SHA-256 is the safe standard. CRC32 (SFV) is the fastest but only catches accidental errors. MD5 and SHA-1 are no longer secure."
+msgstr "SHA-256 est la référence sûre. CRC32 (SFV) est le plus rapide, mais ne détecte que les erreurs accidentelles. MD5 et SHA-1 ne sont plus sûrs."
 
 #: src/ui_dialogs.py
 msgid "Programs that are still open are closed. Unsaved work in them can be lost."
