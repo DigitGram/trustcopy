@@ -828,8 +828,8 @@ msgid "Programs that are still open are closed. Unsaved work in them can be lost
 msgstr "Los programas que sigan abiertos se cerrarán. El trabajo sin guardar en ellos se puede perder."
 
 #: src/ui_settings.py
-msgid "Checksum speed"
-msgstr "Velocidad de las sumas de verificación"
+msgid "Algorithm speed"
+msgstr "Velocidad de los algoritmos"
 
 #: src/ui_settings.py
 msgid "Test"
@@ -839,9 +839,9 @@ msgstr "Probar"
 msgid "Testing…"
 msgstr "Probando…"
 
-#: src/ui_dialogs.py
-msgid "Measures how fast this computer calculates each checksum and recommends one."
-msgstr "Mide la rapidez con que este equipo calcula cada suma de verificación y recomienda una."
+#: src/ui_settings.py
+msgid "Measures how fast this computer calculates each algorithm and recommends one."
+msgstr "Mide la rapidez con que este equipo calcula cada algoritmo y recomienda uno."
 
 #: src/ui_dialogs.py
 msgid "Only finds accidental errors"
@@ -859,9 +859,9 @@ msgstr "Seguro"
 msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
 msgstr "Cuántos datos puede comprobar este equipo por segundo. Una barra más larga es más rápida. A menudo la unidad es más lenta y entonces marca el ritmo."
 
-#: src/ui_dialogs.py
-msgid "<b>{name}</b> is the fastest secure checksum on this computer."
-msgstr "<b>{name}</b> es la suma de verificación segura más rápida en este equipo."
+#: src/ui_settings.py
+msgid "<b>{name}</b> is the fastest secure algorithm on this computer."
+msgstr "<b>{name}</b> es el algoritmo seguro más rápido en este equipo."
 
 #: src/ui_dialogs.py
 msgid "CRC32 is faster, but it only finds accidental errors, not deliberate changes."

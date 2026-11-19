@@ -65,7 +65,7 @@ class Settings(Adw.ApplicationWindow):
         """A button that measures every checksum on this computer and shows the result in a window of its own."""
         self.speed_button = Gtk.Button(label=_("Test"), valign=Gtk.Align.CENTER)
         self.speed_button.connect("clicked", self.test_speeds)
-        row = Adw.ActionRow(title=_("Checksum speed"), subtitle=_("Measures how fast this computer calculates each checksum and recommends one."))
+        row = Adw.ActionRow(title=_("Algorithm speed"), subtitle=_("Measures how fast this computer calculates each algorithm and recommends one."))
         row.add_suffix(self.speed_button)
         row.set_activatable_widget(self.speed_button)
         return row

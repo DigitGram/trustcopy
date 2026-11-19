@@ -241,7 +241,7 @@ def speed_dialog(speeds):
     """The result of the speed test: a bar per checksum, fastest first, and a recommendation. Only advice, it changes no setting."""
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=18, margin_bottom=18, margin_start=18, margin_end=18)
     box.set_size_request(520, -1)
-    box.append(Gtk.Label(label=_("Checksum speed"), css_classes=["title-3"]))
+    box.append(Gtk.Label(label=_("Algorithm speed"), css_classes=["title-3"]))
     box.append(Gtk.Label(label=_("How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."),
                          wrap=True, justify=Gtk.Justification.CENTER, css_classes=["dim-label"]))
     notes = {"crc32": _("Only finds accidental errors"), "md5": _("No longer secure"), "sha1": _("No longer secure")}
@@ -256,7 +256,7 @@ def speed_dialog(speeds):
         card.append(row)
     box.append(card)
     best, faster = core.speed_advice(speeds)
-    lines = [_("<b>{name}</b> is the fastest secure checksum on this computer.").format(name=SPEED_NAMES[best])]
+    lines = [_("<b>{name}</b> is the fastest secure algorithm on this computer.").format(name=SPEED_NAMES[best])]
     if faster == "crc32":
         lines.append(_("CRC32 is faster, but it only finds accidental errors, not deliberate changes."))
     elif faster:

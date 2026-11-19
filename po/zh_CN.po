@@ -810,8 +810,8 @@ msgid "Programs that are still open are closed. Unsaved work in them can be lost
 msgstr "仍在运行的程序将被关闭，其中未保存的工作可能会丢失。"
 
 #: src/ui_settings.py
-msgid "Checksum speed"
-msgstr "校验和速度"
+msgid "Algorithm speed"
+msgstr "算法速度"
 
 #: src/ui_settings.py
 msgid "Test"
@@ -821,9 +821,9 @@ msgstr "测试"
 msgid "Testing…"
 msgstr "正在测试…"
 
-#: src/ui_dialogs.py
-msgid "Measures how fast this computer calculates each checksum and recommends one."
-msgstr "测量这台电脑计算各种校验和的速度，并给出推荐。"
+#: src/ui_settings.py
+msgid "Measures how fast this computer calculates each algorithm and recommends one."
+msgstr "测量这台电脑计算各种算法的速度，并给出推荐。"
 
 #: src/ui_dialogs.py
 msgid "Only finds accidental errors"
@@ -841,9 +841,9 @@ msgstr "安全"
 msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
 msgstr "这台电脑每秒能校验多少数据。条越长越快。驱动器往往更慢，这时由它决定速度。"
 
-#: src/ui_dialogs.py
-msgid "<b>{name}</b> is the fastest secure checksum on this computer."
-msgstr "在这台电脑上，最快的安全校验和是 <b>{name}</b>。"
+#: src/ui_settings.py
+msgid "<b>{name}</b> is the fastest secure algorithm on this computer."
+msgstr "在这台电脑上，最快的安全算法是 <b>{name}</b>。"
 
 #: src/ui_dialogs.py
 msgid "CRC32 is faster, but it only finds accidental errors, not deliberate changes."

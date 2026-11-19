@@ -828,7 +828,7 @@ msgid "Programs that are still open are closed. Unsaved work in them can be lost
 msgstr ""
 
 #: src/ui_settings.py
-msgid "Checksum speed"
+msgid "Algorithm speed"
 msgstr ""
 
 #: src/ui_settings.py
@@ -839,8 +839,8 @@ msgstr ""
 msgid "Testing…"
 msgstr ""
 
-#: src/ui_dialogs.py
-msgid "Measures how fast this computer calculates each checksum and recommends one."
+#: src/ui_settings.py
+msgid "Measures how fast this computer calculates each algorithm and recommends one."
 msgstr ""
 
 #: src/ui_dialogs.py
@@ -859,8 +859,8 @@ msgstr ""
 msgid "How much data this computer can check per second. A longer bar is faster. Your drive is often slower, and then it sets the pace."
 msgstr ""
 
-#: src/ui_dialogs.py
-msgid "<b>{name}</b> is the fastest secure checksum on this computer."
+#: src/ui_settings.py
+msgid "<b>{name}</b> is the fastest secure algorithm on this computer."
 msgstr ""
 
 #: src/ui_dialogs.py
