@@ -11,7 +11,7 @@ set -euo pipefail
 [ "$(id -u)" -ne 0 ] || { echo "Run without sudo: the install is per user." >&2; exit 1; }
 
 REPO="DigitGram/trustcopy"   # GitHub owner/name, used by the one-liner
-VERSION="1.1.1"           # equals __version__ (a test checks); the download is this release's tag, never a branch that moves on
+VERSION="1.2"           # equals __version__ (a test checks); the download is this release's tag, never a branch that moves on
 COMMIT=""                 # empty in the repository; the release workflow writes the tag's commit here, into the copy it attaches and that gets signed:
 ARCHIVE_URL="https://github.com/$REPO/archive/${COMMIT:-refs/tags/v$VERSION}.tar.gz"   # a tag can be moved to other code, a commit names exactly one
 PYTHON=/usr/bin/python3   # the system's Python: the GTK bindings are distro packages for it; a conda, pyenv or venv python3 first in PATH has none

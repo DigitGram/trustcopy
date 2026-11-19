@@ -26,7 +26,7 @@ except ImportError:
 
 from i18n import _
 
-__version__ = "1.1.1"
+__version__ = "1.2"
 AUTHOR = "DigitGram"
 COPYRIGHT = "© 2026 DigitGram"
 
