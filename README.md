@@ -15,8 +15,14 @@ copy is flushed, read back from the disk and compared, so a bad copy is reported
 months later.
 
 <p align="center">
-  <img src="docs/screenshots/running-light.png" width="48%" alt="TrustCopy while copying: steps, live speed graph and progress">
-  <img src="docs/screenshots/done-light.png" width="48%" alt="TrustCopy when done: all files verified, with write and read speed">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/running-dark.png">
+    <img src="docs/screenshots/running-light.png" width="48%" alt="TrustCopy while copying: steps, live speed graph and progress">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/done-dark.png">
+    <img src="docs/screenshots/done-light.png" width="48%" alt="TrustCopy when done: all files verified, with write and read speed">
+  </picture>
 </p>
 
 ## What you get
@@ -34,15 +40,17 @@ months later.
 - **Native look.** GTK 4 and libadwaita, light and dark, in ten languages (English, Deutsch, Español, Français, Italiano, 日本語, Polski, Português (Brasil), Українська, 简体中文).
 
 <p align="center">
-  <img src="docs/screenshots/conflict-light.png" width="48%" alt="The dialog for a file that already exists">
-  <img src="docs/screenshots/settings-light.png" width="48%" alt="The settings window">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/conflict-dark.png">
+    <img src="docs/screenshots/conflict-light.png" width="48%" alt="The dialog for a file that already exists, with a comparison of the two files">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/options-dark.png">
+    <img src="docs/screenshots/options-light.png" width="48%" alt="The options of a running job: verify, checksum file and what to do when finished">
+  </picture>
 </p>
 
-<p align="center">
-  <img src="docs/screenshots/options-light.png" width="40%" alt="The options of a running job: verify, checksum file and what to do when finished">
-  <img src="docs/screenshots/speed-light.png" width="38%" alt="The speed test: a bar per algorithm and a recommendation">
-  <img src="docs/screenshots/power-light.png" width="17%" alt="The countdown before the computer shuts down">
-</p>
+<p align="center"><sub>More screenshots on the <a href="https://digitgram.github.io/trustcopy/#gallery">project website</a>.</sub></p>
 
 ## Requirements
 
