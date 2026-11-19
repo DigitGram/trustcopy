@@ -59,7 +59,7 @@ img{max-width:100%;height:auto;display:block}
     radial-gradient(700px 500px at 60% 110%,rgba(23,92,83,.7),transparent 70%),
     linear-gradient(135deg,#081c1e 0%,#0a2b2b 45%,#0f4c48 100%);
 }
-.hero .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:56px;align-items:center}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,5.2fr) minmax(0,5.8fr);gap:56px;align-items:center}
 .app-icon{width:140px;height:auto;filter:drop-shadow(0 22px 26px rgba(0,0,0,.5)) drop-shadow(0 0 40px rgba(87,227,137,.12));margin-bottom:34px}
 h1{margin:0;color:var(--white);font-weight:700;font-size:clamp(46px,7vw,84px);line-height:1;letter-spacing:-.02em}
 .tagline{margin:18px 0 0;font-weight:300;font-size:clamp(24px,3vw,36px);color:var(--tagline);line-height:1.25}
@@ -76,10 +76,29 @@ h1{margin:0;color:var(--white);font-weight:700;font-size:clamp(46px,7vw,84px);li
 .meta{margin-top:30px;color:var(--foot);font-size:16px}
 .meta span+span::before{content:"·";margin:0 .6em}
 
-.shots{position:relative;aspect-ratio:1/0.93}
-.shots img{position:absolute;border-radius:16px;box-shadow:0 28px 60px rgba(0,0,0,.5),0 6px 16px rgba(0,0,0,.3)}
-.shots .back{top:0;right:0;width:84%}
-.shots .front{bottom:0;left:0;width:66%}
+/* the trailer: recordings of the real windows, the scene texts as HTML below */
+.hero-media{max-width:560px;width:100%;margin-inline:auto}
+.player{position:relative;aspect-ratio:960/1000}   /* no card of its own: the video is transparent, the windows float on the page */
+.player video{width:100%;height:100%;object-fit:contain;display:block}
+.player button{
+  position:absolute;right:12px;bottom:12px;display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);
+  background:rgba(8,28,30,.62);backdrop-filter:blur(6px);color:#fff;font:700 14px Lato,sans-serif;cursor:pointer;
+}
+.player .play{inset:0;right:0;bottom:0;margin:auto;width:84px;height:84px;padding:0;justify-content:center;border-radius:50%;
+  background:rgba(87,227,137,.92);color:#04251a;border:0;box-shadow:0 0 50px rgba(87,227,137,.55)}
+.player .play svg{width:34px;height:34px;fill:currentColor}
+.player .play[hidden]{display:none}
+.caption{margin-top:22px;display:flex;align-items:center;gap:18px;min-height:64px}
+.caption .txt{flex:1;min-width:0;transition:opacity .25s}
+.caption .txt.out{opacity:0}
+.caption strong{display:block;color:var(--white);font-size:20px;line-height:1.3}
+.caption span{display:block;color:var(--sub);font-size:16px;line-height:1.4}
+.scenes{display:flex;gap:8px;flex:none}
+.scenes button{width:12px;height:12px;padding:0;border-radius:50%;border:0;background:rgba(150,188,220,.32);cursor:pointer;transition:background .2s,transform .2s}
+.scenes button:hover{background:rgba(150,188,220,.6)}
+.scenes button[aria-current=true]{background:var(--green);transform:scale(1.25);box-shadow:0 0 12px rgba(87,227,137,.7)}
+@media(max-width:520px){.caption{flex-direction:column;align-items:flex-start;gap:12px}}
 
 @media(max-width:900px){
   .hero{padding:120px 0 70px}
@@ -93,17 +112,12 @@ h2{margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px);line-height
 .kicker{color:var(--green);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
 .intro{color:var(--sub);max-width:36em;margin:0 0 48px;font-size:20px}
 
-/* how it works */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
-.step{background:var(--bg2);border:1px solid var(--panel-line);border-radius:var(--radius);padding:28px}
-.step::before{
-  counter-increment:s;content:counter(s);display:grid;place-items:center;width:38px;height:38px;border-radius:50%;
-  background:var(--blue);color:#06223f;font-weight:700;margin-bottom:18px;
-}
-.step:last-child::before{content:"✓";background:var(--green);color:#04251a}
-.step h3{margin:0 0 6px;color:var(--white);font-size:22px}
-.step p{margin:0;color:var(--sub);font-size:17px}
-@media(max-width:800px){.steps{grid-template-columns:1fr}}
+/* why: text next to one big screenshot */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center}
+.split p{color:var(--sub);font-size:19px;margin:0 0 16px}
+.split p b{color:var(--tagline)}
+.split img{border-radius:14px;box-shadow:0 22px 50px rgba(0,0,0,.5),0 0 0 1px var(--panel-line);margin-inline:auto;max-width:560px;width:100%}
+@media(max-width:900px){.split{grid-template-columns:minmax(0,1fr)}}
 
 /* features */
 .features{background:var(--bg2);border-block:1px solid var(--panel-line)}
@@ -121,30 +135,6 @@ h2{margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px);line-height
 .gallery img{border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.4)}
 .gallery figcaption{margin-top:12px;color:var(--sub);font-size:15.5px;text-align:center}
 @media(max-width:800px){.gallery{grid-template-columns:1fr;max-width:460px;margin-inline:auto}}
-
-/* with script: a carousel, the next and previous screenshot peek in from the sides (without script the grid above stays) */
-.gallery.is-slider{display:block;position:relative;max-width:none;margin:0;overflow:hidden;padding:6px 0 4px;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
-.gallery.is-slider .track{display:flex;align-items:flex-start;gap:36px;transition:transform .6s cubic-bezier(.3,.7,.2,1);will-change:transform;touch-action:pan-y}
-.gallery.is-slider figure{flex:none;margin:0;opacity:.35;transform:scale(.93);transform-origin:50% 40%;transition:opacity .5s,transform .5s;cursor:pointer}
-.gallery.is-slider figure.on{opacity:1;transform:none;cursor:default}
-.gallery.is-slider img{width:auto;height:min(560px,68vh);max-width:none;margin-inline:auto}
-.gallery.is-slider figcaption{opacity:0;transition:opacity .4s}
-.gallery.is-slider figure.on figcaption{opacity:1}
-.stage{position:relative}
-.nav-btn{position:absolute;top:calc(50% - 40px);z-index:2;width:46px;height:46px;border-radius:50%;border:1px solid var(--panel-line);background:rgba(8,22,44,.78);color:var(--white);cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);transition:background .2s,border-color .2s}
-.nav-btn:hover{background:rgba(38,162,105,.75);border-color:var(--green)}
-.nav-btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
-.nav-btn svg{width:22px;height:22px}
-.nav-btn.prev{left:max(0px,calc(50% - 400px))}.nav-btn.next{right:max(0px,calc(50% - 400px))}
-@media(max-width:700px){.nav-btn{width:38px;height:38px;top:calc(50% - 36px)}.nav-btn.prev{left:4px}.nav-btn.next{right:4px}}
-.dots{display:flex;justify-content:center;gap:6px;margin-top:22px}
-.dots button{width:30px;height:30px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center;border-radius:50%}
-.dots button::before{content:"";width:12px;height:12px;border-radius:50%;background:rgba(150,188,220,.35);transition:background .25s,transform .25s}
-.dots button:hover::before{background:rgba(150,188,220,.7)}
-.dots button[aria-current=true]::before{background:var(--green);transform:scale(1.2)}
-.dots button:focus-visible{outline:2px solid var(--green);outline-offset:1px}
-@media(prefers-reduced-motion:reduce){.gallery.is-slider .track,.gallery.is-slider figure,.gallery.is-slider figcaption{transition:none}}
 
 /* install */
 .install .box{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
@@ -175,7 +165,7 @@ footer .links{display:flex;flex-wrap:wrap;gap:22px}
   <div class="wrap">
     <a class="brand" href="#top"><img src="img/icon.svg" alt="">TrustCopy</a>
     <ul>
-      <li><a href="#how">How it works</a></li>
+      <li><a href="#why">Why</a></li>
       <li><a href="#features">Features</a></li>
       <li><a href="#install">Install</a></li>
       <li><a href="https://github.com/DigitGram/trustcopy">GitHub</a></li>
@@ -197,23 +187,32 @@ footer .links{display:flex;flex-wrap:wrap;gap:22px}
       </div>
       <p class="meta"><span>GPL-3.0</span><span>GTK 4 + libadwaita</span><span>10 languages</span></p>
     </div>
-    <div class="shots">
-      <img class="back" src="img/running-light.webp" alt="TrustCopy while copying: steps, live speed graph and progress" width="1280" height="940">
-      <img class="front" src="img/done-dark.webp" alt="TrustCopy when done: all files verified, with write and read speed" width="1280" height="1082">
+    <div class="hero-media">
+      <div class="player" id="player">
+        <video id="trailer" muted loop playsinline preload="metadata" poster="media/poster.webp" aria-label="A short trailer of TrustCopy: a copy being verified, a file that already exists, the checksum file and the speed test">
+          <source src="media/trustcopy-web.webm" type="video/webm">
+        </video>
+        <button class="play" id="play" type="button" aria-label="Play the trailer" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+        </button>
+      </div>
+      <div class="caption">
+        <div class="txt" id="cap"><strong>Copy it. Then check it.</strong><span>Every file is hashed while it is read, then read back from the disk and compared.</span></div>
+        <div class="scenes" id="scenes" role="group" aria-label="Trailer scenes"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<section id="how">
-  <div class="wrap">
-    <div class="kicker">How it works</div>
-    <h2>A copy that is checked, not assumed.</h2>
-    <p class="intro">Normal copying assumes the copy is fine. TrustCopy checks, so a bad copy is reported instead of discovered months later.</p>
-    <div class="steps">
-      <div class="step"><h3>Copy</h3><p>Every file is hashed while it is read, so the checksum costs almost no extra time.</p></div>
-      <div class="step"><h3>Verify</h3><p>The copy is flushed, read back from the disk and compared. CRC32 or SHA-256.</p></div>
-      <div class="step"><h3>Done</h3><p>A bad copy never replaces your old file. A moved source goes only after its own copy is verified.</p></div>
+<section id="why">
+  <div class="wrap split">
+    <div>
+      <div class="kicker">Why TrustCopy</div>
+      <h2>A copy that is checked, not assumed.</h2>
+      <p>Normal copying assumes the copy is fine. TrustCopy checks, so a bad copy is reported instead of discovered months later.</p>
+      <p><b>Every file is hashed while it is read,</b> then the copy is flushed, read back from the disk and compared. A bad copy never replaces your old file, and a moved source goes only after its own copy is verified.</p>
     </div>
+    <img src="img/done-light.webp" alt="TrustCopy when done: all files verified, with write and read speed" width="1280" height="1082">
   </div>
 </section>
 
@@ -246,17 +245,13 @@ footer .links{display:flex;flex-wrap:wrap;gap:22px}
     <p class="intro">Follows your system theme, light or dark.</p>
     <div class="gallery">
       <figure><img src="img/running-light.webp" alt="Copying: steps, live speed graph and progress" loading="lazy" width="1280" height="940"><figcaption>Copying, with live speed graph</figcaption></figure>
-      <figure><img src="img/options-light.webp" alt="The options of a running job: verify, checksum file and what to do when finished" loading="lazy" width="1280" height="1284"><figcaption>Options of a running job</figcaption></figure>
-      <figure><img src="img/done-light.webp" alt="Done: all files verified, with write and read speed" loading="lazy" width="1280" height="1082"><figcaption>Done, with write and read speed</figcaption></figure>
-      <figure><img src="img/conflict-light.webp" alt="The dialog for a file that already exists, with a comparison of the two files" loading="lazy" width="1280" height="940"><figcaption>A file that already exists</figcaption></figure>
       <figure><img src="img/settings-light.webp" alt="The settings of the Copying page" loading="lazy" width="1400" height="1520"><figcaption>Settings</figcaption></figure>
-      <figure><img src="img/speed-light.webp" alt="The speed test: a bar per algorithm and a recommendation" loading="lazy" width="1276" height="1073"><figcaption>Which checksum is fastest here</figcaption></figure>
       <figure><img src="img/power-light.webp" alt="The countdown before the computer shuts down" loading="lazy" width="592" height="577"><figcaption>Switching off when done</figcaption></figure>
     </div>
   </div>
 </section>
 
-<section class="install" id="install">
+<section class="features install" id="install">
   <div class="wrap">
     <div class="kicker">Install</div>
     <h2>One line, no root.</h2>
@@ -299,65 +294,45 @@ wget -qO- https://github.com/DigitGram/trustcopy/releases/latest/download/instal
 
 <script>
 (function () {
-  var box = document.querySelector('.gallery'), slides = box ? Array.prototype.slice.call(box.querySelectorAll('figure')) : [];
-  if (slides.length < 2) return;
-  var now = 0, timer = null, paused = false, seen = false;
-  var stage = document.createElement('div'); stage.className = 'stage';
-  var track = document.createElement('div'); track.className = 'track';
-  box.parentNode.insertBefore(stage, box); stage.appendChild(box);
-  slides.forEach(function (f) { track.appendChild(f); });
-  box.appendChild(track); box.classList.add('is-slider');
-  var arrow = 'M14.5 5.5 8 12l6.5 6.5';  // chevron, mirrored for "next"
-  function button(cls, label, flip) {
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'nav-btn ' + cls; b.setAttribute('aria-label', label);
-    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"' + (flip ? ' style="transform:scaleX(-1)"' : '') + '><path d="' + arrow + '"/></svg>';
-    return b;
+  /* trailer (silent): loops while visible; no autoplay if the visitor prefers less motion */
+  var v = document.getElementById('trailer'), play = document.getElementById('play'),
+      reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, wanted = !reduce;
+  function start() { var p = v.play(); if (p && p.catch) p.catch(function () { play.hidden = false; }); }
+  if (reduce) { play.hidden = false; } else { start(); }
+  v.addEventListener('playing', function () { play.hidden = true; });
+  play.addEventListener('click', function () { wanted = true; start(); });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (e) { if (!e[0].isIntersecting) v.pause(); else if (wanted) start(); }, { threshold: 0.25 }).observe(v);
   }
-  var prev = button('prev', 'Previous screenshot', false), next = button('next', 'Next screenshot', true);
-  stage.appendChild(prev); stage.appendChild(next);
-  var dots = document.createElement('div'); dots.className = 'dots'; stage.appendChild(dots);
-  slides.forEach(function (fig, i) {
-    fig.querySelector('img').loading = 'eager';
-    var b = document.createElement('button'); b.type = 'button';
-    b.setAttribute('aria-label', 'Screenshot ' + (i + 1) + ' of ' + slides.length + ': ' + fig.querySelector('figcaption').textContent);
-    b.addEventListener('click', function () { go(i); });
-    dots.appendChild(b);
-    fig.addEventListener('click', function () { if (i !== now) go(i); });  // a click on the peeking neighbour
+  /* the four scenes of the trailer as text under the video; the dots jump to a scene */
+  var scenes = [
+    [0,    'Copy it. Then check it.',          'Every file is hashed while it is read, then read back from the disk and compared.'],
+    [8,    'Conflicts your way.',              'Keep both, skip, overwrite if newer, overwrite. A hint compares the two files for you.'],
+    [13,   'A checksum file, if you want one.', 'SHA256SUMS in the target folder, ready for HashTally or sha256sum -c.'],
+    [18.5, 'Know your fastest checksum.',      'The speed test shows which one is fastest here and recommends the fastest secure one.']
+  ], cap = document.getElementById('cap'), dotbox = document.getElementById('scenes'), cur = 0, swap = 0;
+  scenes.forEach(function (s, i) {
+    var d = document.createElement('button');
+    d.type = 'button'; d.setAttribute('aria-label', s[1]);
+    d.addEventListener('click', function () { v.currentTime = s[0] + 0.05; if (v.paused && wanted) start(); show(i); });
+    dotbox.appendChild(d);
   });
-  function place() {  // slide the track so that the current screenshot sits in the middle
-    var f = slides[now];
-    track.style.transform = 'translateX(' + Math.round(box.clientWidth / 2 - (f.offsetLeft + f.offsetWidth / 2)) + 'px)';
-  }
   function show(i) {
-    now = (i + slides.length) % slides.length;
-    slides.forEach(function (f, k) { f.classList.toggle('on', k === now); f.setAttribute('aria-hidden', k === now ? 'false' : 'true'); });
-    Array.prototype.forEach.call(dots.childNodes, function (d, k) { d.setAttribute('aria-current', k === now ? 'true' : 'false'); });
-    place();
+    if (i === cur && cap.dataset.ready) return;
+    cur = i; cap.dataset.ready = '1';
+    [].forEach.call(dotbox.children, function (d, k) { d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+    cap.classList.add('out'); clearTimeout(swap);
+    swap = setTimeout(function () {
+      cap.innerHTML = ''; var a = document.createElement('strong'), b = document.createElement('span');
+      a.textContent = scenes[i][1]; b.textContent = scenes[i][2]; cap.appendChild(a); cap.appendChild(b);
+      cap.classList.remove('out');
+    }, 180);
   }
-  function restart() { clearInterval(timer); if (!paused && seen) timer = setInterval(function () { show(now + 1); }, 5000); }
-  function go(i) { show(i); restart(); }
-  prev.addEventListener('click', function () { go(now - 1); });
-  next.addEventListener('click', function () { go(now + 1); });
-  document.addEventListener('keydown', function (e) {  // left and right arrow while the gallery is in view
-    if (!seen || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-    var t = e.target && e.target.tagName;
-    if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return;
-    if (e.key === 'ArrowRight') { go(now + 1); e.preventDefault(); }
-    else if (e.key === 'ArrowLeft') { go(now - 1); e.preventDefault(); }
+  v.addEventListener('timeupdate', function () {
+    var i = 0; while (i + 1 < scenes.length && v.currentTime >= scenes[i + 1][0]) i++;
+    show(i);
   });
-  var x0 = null;  // swipe
-  box.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; paused = true; }, { passive: true });
-  box.addEventListener('touchend', function (e) {
-    if (x0 !== null) { var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) go(now + (dx < 0 ? 1 : -1)); }
-    x0 = null; paused = false; restart();
-  });
-  window.addEventListener('resize', place);
-  window.addEventListener('load', place);  // the widths are known once the pictures are in
-  if (window.ResizeObserver) new ResizeObserver(place).observe(track);
-  slides.forEach(function (f) { f.querySelector('img').addEventListener('load', place); });
-  if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { seen = en[0].isIntersecting; restart(); }).observe(stage);
-  else seen = true;
-  show(0); restart();
+  show(0);
 })();
 document.querySelector('.copy').addEventListener('click', function () {
   var b = this, text = 'curl -fsSL https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash';
