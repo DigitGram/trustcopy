@@ -122,6 +122,30 @@ h2{margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px);line-height
 .gallery figcaption{margin-top:12px;color:var(--sub);font-size:15.5px;text-align:center}
 @media(max-width:800px){.gallery{grid-template-columns:1fr;max-width:460px;margin-inline:auto}}
 
+/* with script: a carousel, the next and previous screenshot peek in from the sides (without script the grid above stays) */
+.gallery.is-slider{display:block;position:relative;max-width:none;margin:0;overflow:hidden;padding:6px 0 4px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+.gallery.is-slider .track{display:flex;align-items:flex-start;gap:36px;transition:transform .6s cubic-bezier(.3,.7,.2,1);will-change:transform;touch-action:pan-y}
+.gallery.is-slider figure{flex:none;margin:0;opacity:.35;transform:scale(.93);transform-origin:50% 40%;transition:opacity .5s,transform .5s;cursor:pointer}
+.gallery.is-slider figure.on{opacity:1;transform:none;cursor:default}
+.gallery.is-slider img{width:auto;height:min(560px,68vh);max-width:none;margin-inline:auto}
+.gallery.is-slider figcaption{opacity:0;transition:opacity .4s}
+.gallery.is-slider figure.on figcaption{opacity:1}
+.stage{position:relative}
+.nav-btn{position:absolute;top:calc(50% - 40px);z-index:2;width:46px;height:46px;border-radius:50%;border:1px solid var(--panel-line);background:rgba(8,22,44,.78);color:var(--white);cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);transition:background .2s,border-color .2s}
+.nav-btn:hover{background:rgba(38,162,105,.75);border-color:var(--green)}
+.nav-btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.nav-btn svg{width:22px;height:22px}
+.nav-btn.prev{left:max(0px,calc(50% - 400px))}.nav-btn.next{right:max(0px,calc(50% - 400px))}
+@media(max-width:700px){.nav-btn{width:38px;height:38px;top:calc(50% - 36px)}.nav-btn.prev{left:4px}.nav-btn.next{right:4px}}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:22px}
+.dots button{width:30px;height:30px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center;border-radius:50%}
+.dots button::before{content:"";width:12px;height:12px;border-radius:50%;background:rgba(150,188,220,.35);transition:background .25s,transform .25s}
+.dots button:hover::before{background:rgba(150,188,220,.7)}
+.dots button[aria-current=true]::before{background:var(--green);transform:scale(1.2)}
+.dots button:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+@media(prefers-reduced-motion:reduce){.gallery.is-slider .track,.gallery.is-slider figure,.gallery.is-slider figcaption{transition:none}}
+
 /* install */
 .install .box{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
 .codewrap{position:relative}
@@ -187,7 +211,7 @@ footer .links{display:flex;flex-wrap:wrap;gap:22px}
     <p class="intro">Normal copying assumes the copy is fine. TrustCopy checks, so a bad copy is reported instead of discovered months later.</p>
     <div class="steps">
       <div class="step"><h3>Copy</h3><p>Every file is hashed while it is read, so the checksum costs almost no extra time.</p></div>
-      <div class="step"><h3>Verify</h3><p>The copy is flushed, read back from the disk and compared. CRC32, BLAKE2b or SHA-256.</p></div>
+      <div class="step"><h3>Verify</h3><p>The copy is flushed, read back from the disk and compared. CRC32 or SHA-256.</p></div>
       <div class="step"><h3>Done</h3><p>A bad copy never replaces your old file. A moved source goes only after its own copy is verified.</p></div>
     </div>
   </div>
@@ -199,12 +223,15 @@ footer .links{display:flex;flex-wrap:wrap;gap:22px}
     <h2>Everything a file copy should do.</h2>
     <p class="intro">Small, native and out of your way until you need it.</p>
     <div class="grid">
-      <div class="card"><h3><i>✔</i>Verified copies</h3><p>Each copy is read back from the disk and compared. Pick CRC32 (fast, default), BLAKE2b or SHA-256.</p></div>
+      <div class="card"><h3><i>✔</i>Verified copies</h3><p>Each copy is read back from the disk and compared. Pick CRC32 (fast, default) or SHA-256.</p></div>
       <div class="card"><h3><i>➜</i>Safe moves</h3><p>A source is deleted only after its own copy has been verified.</p></div>
       <div class="card"><h3><i>◔</i>A live view</h3><p>Three steps, a speed graph, time remaining and a status for every file.</p></div>
       <div class="card"><h3><i>⛨</i>No half-written files</h3><p>A cancel or a power cut never leaves a damaged file under its real name.</p></div>
       <div class="card"><h3><i>≡</i>Checksum file</h3><p>Optional <code>SHA256SUMS</code> in the target folder, ready for HashTally or <code>sha256sum -c</code>.</p></div>
-      <div class="card"><h3><i>⚖</i>Conflicts your way</h3><p>Ask each time (keep both, skip, overwrite if newer, overwrite) or set a rule.</p></div>
+      <div class="card"><h3><i>⚖</i>Conflicts your way</h3><p>Ask each time (keep both, skip, overwrite if newer, overwrite) or set a rule. A colour-coded hint compares the two files for you.</p></div>
+      <div class="card"><h3><i>◌</i>Sparse files stay sparse</h3><p>A VM disk or a preallocated download keeps its holes on the target; only its data is read and written.</p></div>
+      <div class="card"><h3><i>⏻</i>Switch off when done</h3><p>After a long job the computer can suspend or shut down, after a countdown you can cancel.</p></div>
+      <div class="card"><h3><i>⏱</i>Speed test</h3><p>Shows which checksum is fastest on your computer and recommends the fastest secure one.</p></div>
       <div class="card"><h3><i>❚❚</i>Pause, resume, queue</h3><p>Jobs run one after the other. Errors are retried, and “Retry failed” repeats only those files.</p></div>
       <div class="card"><h3><i>◐</i>Native look</h3><p>GTK 4 and libadwaita, light and dark, in ten languages.</p></div>
       <div class="card"><h3><i>›_</i>Command line too</h3><p><code>trustcopy copy --to /media/usb ~/Pictures</code>, with plain-text output and clear exit codes.</p></div>
@@ -218,9 +245,13 @@ footer .links{display:flex;flex-wrap:wrap;gap:22px}
     <h2>Looks like it belongs.</h2>
     <p class="intro">Follows your system theme, light or dark.</p>
     <div class="gallery">
-      <figure><img src="img/running-light.webp" alt="Copying" loading="lazy" width="1280" height="940"><figcaption>Copying, with live speed graph</figcaption></figure>
-      <figure><img src="img/conflict-light.webp" alt="File already exists dialog" loading="lazy" width="1280" height="940"><figcaption>A file that already exists</figcaption></figure>
-      <figure><img src="img/settings-light.webp" alt="Settings window" loading="lazy" width="1400" height="1010"><figcaption>Settings</figcaption></figure>
+      <figure><img src="img/running-light.webp" alt="Copying: steps, live speed graph and progress" loading="lazy" width="1280" height="940"><figcaption>Copying, with live speed graph</figcaption></figure>
+      <figure><img src="img/options-light.webp" alt="The options of a running job: verify, checksum file and what to do when finished" loading="lazy" width="1280" height="1284"><figcaption>Options of a running job</figcaption></figure>
+      <figure><img src="img/done-light.webp" alt="Done: all files verified, with write and read speed" loading="lazy" width="1280" height="1082"><figcaption>Done, with write and read speed</figcaption></figure>
+      <figure><img src="img/conflict-light.webp" alt="The dialog for a file that already exists, with a comparison of the two files" loading="lazy" width="1280" height="940"><figcaption>A file that already exists</figcaption></figure>
+      <figure><img src="img/settings-light.webp" alt="The settings of the Copying page" loading="lazy" width="1400" height="1520"><figcaption>Settings</figcaption></figure>
+      <figure><img src="img/speed-light.webp" alt="The speed test: a bar per algorithm and a recommendation" loading="lazy" width="1276" height="1073"><figcaption>Which checksum is fastest here</figcaption></figure>
+      <figure><img src="img/power-light.webp" alt="The countdown before the computer shuts down" loading="lazy" width="592" height="577"><figcaption>Switching off when done</figcaption></figure>
     </div>
   </div>
 </section>
@@ -267,6 +298,67 @@ wget -qO- https://github.com/DigitGram/trustcopy/releases/latest/download/instal
 </footer>
 
 <script>
+(function () {
+  var box = document.querySelector('.gallery'), slides = box ? Array.prototype.slice.call(box.querySelectorAll('figure')) : [];
+  if (slides.length < 2) return;
+  var now = 0, timer = null, paused = false, seen = false;
+  var stage = document.createElement('div'); stage.className = 'stage';
+  var track = document.createElement('div'); track.className = 'track';
+  box.parentNode.insertBefore(stage, box); stage.appendChild(box);
+  slides.forEach(function (f) { track.appendChild(f); });
+  box.appendChild(track); box.classList.add('is-slider');
+  var arrow = 'M14.5 5.5 8 12l6.5 6.5';  // chevron, mirrored for "next"
+  function button(cls, label, flip) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'nav-btn ' + cls; b.setAttribute('aria-label', label);
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"' + (flip ? ' style="transform:scaleX(-1)"' : '') + '><path d="' + arrow + '"/></svg>';
+    return b;
+  }
+  var prev = button('prev', 'Previous screenshot', false), next = button('next', 'Next screenshot', true);
+  stage.appendChild(prev); stage.appendChild(next);
+  var dots = document.createElement('div'); dots.className = 'dots'; stage.appendChild(dots);
+  slides.forEach(function (fig, i) {
+    fig.querySelector('img').loading = 'eager';
+    var b = document.createElement('button'); b.type = 'button';
+    b.setAttribute('aria-label', 'Screenshot ' + (i + 1) + ' of ' + slides.length + ': ' + fig.querySelector('figcaption').textContent);
+    b.addEventListener('click', function () { go(i); });
+    dots.appendChild(b);
+    fig.addEventListener('click', function () { if (i !== now) go(i); });  // a click on the peeking neighbour
+  });
+  function place() {  // slide the track so that the current screenshot sits in the middle
+    var f = slides[now];
+    track.style.transform = 'translateX(' + Math.round(box.clientWidth / 2 - (f.offsetLeft + f.offsetWidth / 2)) + 'px)';
+  }
+  function show(i) {
+    now = (i + slides.length) % slides.length;
+    slides.forEach(function (f, k) { f.classList.toggle('on', k === now); f.setAttribute('aria-hidden', k === now ? 'false' : 'true'); });
+    Array.prototype.forEach.call(dots.childNodes, function (d, k) { d.setAttribute('aria-current', k === now ? 'true' : 'false'); });
+    place();
+  }
+  function restart() { clearInterval(timer); if (!paused && seen) timer = setInterval(function () { show(now + 1); }, 5000); }
+  function go(i) { show(i); restart(); }
+  prev.addEventListener('click', function () { go(now - 1); });
+  next.addEventListener('click', function () { go(now + 1); });
+  document.addEventListener('keydown', function (e) {  // left and right arrow while the gallery is in view
+    if (!seen || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    var t = e.target && e.target.tagName;
+    if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return;
+    if (e.key === 'ArrowRight') { go(now + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft') { go(now - 1); e.preventDefault(); }
+  });
+  var x0 = null;  // swipe
+  box.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; paused = true; }, { passive: true });
+  box.addEventListener('touchend', function (e) {
+    if (x0 !== null) { var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) go(now + (dx < 0 ? 1 : -1)); }
+    x0 = null; paused = false; restart();
+  });
+  window.addEventListener('resize', place);
+  window.addEventListener('load', place);  // the widths are known once the pictures are in
+  if (window.ResizeObserver) new ResizeObserver(place).observe(track);
+  slides.forEach(function (f) { f.querySelector('img').addEventListener('load', place); });
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { seen = en[0].isIntersecting; restart(); }).observe(stage);
+  else seen = true;
+  show(0); restart();
+})();
 document.querySelector('.copy').addEventListener('click', function () {
   var b = this, text = 'curl -fsSL https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash';
   (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () {
