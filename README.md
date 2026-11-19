@@ -29,12 +29,19 @@ months later.
 - **Conflicts handled your way.** Ask each time (keep both, skip, overwrite if newer, overwrite), or set a rule. The dialog compares the two files for you (same size and time, newer or older, larger or smaller).
 - **Sparse files stay sparse.** A VM disk or a preallocated download keeps its holes on the target, and only its data is read and written.
 - **Switch off when done.** In the job window, *When finished* can also suspend or shut down the computer, after a countdown you can cancel.
+- **Speed test.** In the settings, *Test* shows which checksum algorithm is fastest on your computer and recommends the fastest secure one.
 - **Pause, resume, queue.** Jobs run one after the other; errors are retried, and "Retry failed" repeats only those files.
 - **Native look.** GTK 4 and libadwaita, light and dark, in ten languages (English, Deutsch, Español, Français, Italiano, 日本語, Polski, Português (Brasil), Українська, 简体中文).
 
 <p align="center">
   <img src="docs/screenshots/conflict-light.png" width="48%" alt="The dialog for a file that already exists">
   <img src="docs/screenshots/settings-light.png" width="48%" alt="The settings window">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/options-light.png" width="40%" alt="The options of a running job: verify, checksum file and what to do when finished">
+  <img src="docs/screenshots/speed-light.png" width="38%" alt="The speed test: a bar per algorithm and a recommendation">
+  <img src="docs/screenshots/power-light.png" width="17%" alt="The countdown before the computer shuts down">
 </p>
 
 ## Requirements
