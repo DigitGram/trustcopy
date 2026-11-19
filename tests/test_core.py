@@ -875,6 +875,35 @@ class SumsFileTests(Base):
         self.assertEqual(core.parse_sums("sha256", old.read_text()), entries)
         self.assertClean()
 
+    def test_an_update_keeps_what_it_cannot_read_and_never_touches_a_file_of_the_job(self):
+        a, b = self.write("a.txt", b"alpha"), self.write("b.txt", b"beta")
+        job, entries = self.sums("sha256", [a, b], policy="overwrite")
+        old = self.dst / "SHA256SUMS"
+        # a name that is no UTF-8 stays byte for byte, one with a carriage return or a form feed stays one entry
+        old.write_bytes(b"1" * 64 + b"  caf\xe9.txt\n" + b"\\" + b"2" * 64 + b"  a\\rb\n" + b"3" * 64 + b"  x\x0cy\r\n")
+        job.write_sums(entries, "update")
+        kept = old.read_bytes()
+        self.assertIn(b"  caf\xe9.txt\n", kept)
+        self.assertEqual(core.parse_sums("sha256", kept.decode("utf-8", "surrogateescape")),
+                         {"caf\udce9.txt": "1" * 64, "a\rb": "2" * 64, "x\x0cy": "3" * 64, **entries})
+        # a line that is no entry (BSD style): a file of its own, the old one is untouched
+        bsd = f"SHA256 (tagged.iso) = {'4' * 64}\n"
+        old.write_text(bsd)
+        self.assertEqual(Path(job.write_sums(entries, "update")).name, "SHA256SUMS (2)")
+        self.assertEqual(old.read_text(), bsd)
+        # a planted link at the temp name is not written through
+        victim = self.src / "victim"
+        victim.write_text("IMPORTANT")
+        os.symlink(victim, str(self.dst / "SHA256SUMS") + core.PART)
+        job.write_sums(entries, "overwrite")
+        self.assertEqual(victim.read_text(), "IMPORTANT")
+        # the job copied a file with the name of the checksum file: it is not replaced, whatever the policy
+        self.write("SHA256SUMS", b"the user's own list")
+        job, entries = self.sums("sha256", [a, self.src / "SHA256SUMS"], policy="overwrite")
+        for how in ("overwrite", "update"):
+            self.assertNotEqual(Path(job.write_sums(entries, how)).name, "SHA256SUMS")
+            self.assertEqual((self.dst / "SHA256SUMS").read_bytes(), b"the user's own list")
+
     def test_names_with_odd_characters_survive_the_round_trip(self):
         entries = {"a b/c  d.txt": "a" * 64, "back\\slash.txt": "b" * 64, "new\nline.txt": "c" * 64, "ü/ß.txt": "d" * 64}
         self.assertEqual(core.parse_sums("sha256", core.format_sums("sha256", entries)), entries)
@@ -928,6 +957,13 @@ class SparseTests(Base):
                 self.assertLess(job.readback, 1 << 20)  # and only the data was read back: a hole is hashed as zeros, not read, and is no read speed
                 self.assertEqual(job.done, job.total)  # the holes count as done, so the bar ends at 100%
                 self.assertClean()
+
+    def test_a_source_that_shrank_gets_no_zeros_at_the_end(self):
+        src = self.src / "shrunk.img"
+        src.write_bytes(b"x" * (1 << 20))  # the parts were found when it was bigger: 2 MiB of data and a size of 9 MiB
+        with mock.patch.object(core, "_data_extents", return_value=([(0, 2 << 20)], 9 << 20)):
+            job = self.job([src], verify=False)
+        self.assertEqual((job.results[0].status, (self.dst / "shrunk.img").stat().st_size), ("ok", 1 << 20))
 
     def test_a_file_that_is_only_a_hole_is_a_hole_of_its_size(self):
         src = self.make("empty.img", holes_only=True)

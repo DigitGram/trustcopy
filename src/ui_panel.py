@@ -792,6 +792,9 @@ class Panel(Adw.ApplicationWindow):
         action, self.power_after = self.power_after, ""
 
         def go():
+            app = self.get_application()
+            if app.running or app.waiting:  # another job started during the countdown: its window decides when the computer goes off
+                return
             if error := desktop.power(action):
                 text = _("The computer could not be suspended: {error}") if action == "suspend" else _("The computer could not be shut down: {error}")
                 alert = Adw.AlertDialog.new(None, text.format(error=desktop.shown(error)))

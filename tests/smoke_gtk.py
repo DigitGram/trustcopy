@@ -66,7 +66,7 @@ def fake_area(tips=None):
 def child(tmp):
     """Runs one copy in a window and checks the window once the copy is over, again with step 2 picked."""
     sys.path.insert(0, str(SRC))
-    import core, desktop, ui_common as common, ui_dialogs as dialogs, ui_graph as graph, ui_gtk
+    import desktop, ui_common as common, ui_dialogs as dialogs, ui_graph as graph, ui_gtk
     from ui_panel import Panel
     from gi.repository import GLib
 

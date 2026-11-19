@@ -208,26 +208,35 @@ def format_sums(algo, entries):
     for path, digest in entries.items():
         if algo == "crc32":
             lines.append(f"{path} {digest.upper()}")
-        elif "\\" in path or "\n" in path:
-            lines.append("\\" + digest + "  " + path.replace("\\", "\\\\").replace("\n", "\\n"))
+        elif "\\" in path or "\n" in path or "\r" in path:  # as coreutils escapes: \r too, or a reader that splits at it would cut the name
+            lines.append("\\" + digest + "  " + path.replace("\\", "\\\\").replace("\n", "\\n").replace("\r", "\\r"))
         else:
             lines.append(f"{digest}  {path}")
     return "".join(line + "\n" for line in lines)
 
 
-def parse_sums(algo, text):
-    """{path: hex} of a checksum file. Comments (# or ;), empty lines and anything that is no entry are left out."""
+def parse_sums(algo, text, strict=False):
+    """{path: hex} of a checksum file. Comments (# or ;), empty lines and anything that is no entry are left out; with `strict` a line that is
+    none of these gives None instead (BSD style, armor, ...: a file that cannot be rewritten without losing it). Split at "\n" only: splitlines() also
+    cuts at \r, \x0c, U+2028 and more, which can be part of a name."""
     entries, size = {}, SUM_ALGOS[algo][3]
-    for line in text.splitlines():
+    for line in text.split("\n"):
+        line = line[:-1] if line.endswith("\r") else line
+        if not line.strip() or line[0] in "#;":
+            continue
         if algo == "crc32":
-            m = re.match(r"^(.*\S)\s+([0-9A-Fa-f]{8})\s*$", line) if not line.startswith(";") else None
+            m = re.match(r"^(.*\S)\s+([0-9A-Fa-f]{8})\s*$", line)
             if m:
                 entries[m[1]] = m[2].lower()
+            elif strict:
+                return None
             continue
         m = re.match(r"^(\\?)([0-9A-Fa-f]{%d}) [ *](.+)$" % size, line)
         if m:
-            path = re.sub(r"\\(.)", lambda e: "\n" if e[1] == "n" else e[1], m[3]) if m[1] else m[3]
+            path = re.sub(r"\\(.)", lambda e: {"n": "\n", "r": "\r"}.get(e[1], e[1]), m[3]) if m[1] else m[3]
             entries[path] = m[2].lower()
+        elif strict:
+            return None
     return entries
 
 
@@ -799,7 +808,7 @@ class Job:
         path = self.sum_target()[1]
         try:
             st = os.stat(path)
-            return path, parse_sums(self.sums, Path(path).read_text(encoding="utf-8", errors="replace")), st.st_mtime
+            return path, parse_sums(self.sums, Path(path).read_text(encoding="utf-8", errors="surrogateescape")), st.st_mtime
         except OSError:
             return None
 
@@ -808,12 +817,20 @@ class Job:
         others stay), keep_both (a free name), overwrite. It is written to a temp file and renamed, so a crash leaves the old one."""
         path = self.sum_target()[1]
         if os.path.lexists(path):
+            if path in {r.dst for r in self.sum_files()}:  # a file this job copied or moved is in the way: it is the user's, whatever the policy says
+                how = "keep_both"
+            if how == "update":
+                old = parse_sums(self.sums, Path(path).read_text(encoding="utf-8", errors="surrogateescape"), strict=True)
+                if old is None:  # a line that is no entry (BSD style, armor, ...) would be lost: a file of its own instead
+                    how = "keep_both"
+                else:
+                    entries = {**old, **entries}
             if how == "keep_both":
                 path = free_name(path)
-            elif how == "update":
-                entries = {**parse_sums(self.sums, Path(path).read_text(encoding="utf-8", errors="replace")), **entries}
         part = path + PART
-        with open(part, "w", encoding="utf-8", newline="\n", errors="surrogateescape") as f:
+        with contextlib.suppress(FileNotFoundError):
+            os.unlink(part)  # a stale part or a planted link: never write through it
+        with open(part, "x", encoding="utf-8", newline="\n", errors="surrogateescape") as f:
             f.write(format_sums(self.sums, entries))
             f.flush()
             os.fsync(f.fileno())
@@ -998,8 +1015,14 @@ class Job:
             fo.seek(start)
             self._copy_range(fi, fo, tick, h, syncing, length)
             pos = start + length
+            if fo.tell() < pos:  # the source shrank since its parts were found: no zeros for what was not there
+                pos = size = fo.tell()
+                break
         hole(size - pos)
         fo.truncate(size)
+        if syncing:  # the last hole is made here, after the last flush: a move deletes the source next
+            fo.flush()
+            os.fdatasync(fo.fileno())
 
     def _copy_range(self, fi, fo, tick, h, syncing, left=None):
         """Copies fi to fo, to the end of fi or, with `left`, that many bytes. Verifying and moving flush in small steps and at the end, so a byte counts as done when it is on the target (a move deletes the source next, a verify reads the copy back). A plain copy fills the cache at full speed (the graph shows that) and _write flushes once at the end."""
