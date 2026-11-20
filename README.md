@@ -1,29 +1,52 @@
 <p align="center">
-  <img src="docs/banner.png" alt="TrustCopy: copies you can trust, from the GNOME Files context menu">
+  <img src="data/icons/hicolor/scalable/apps/trustcopy.svg" width="96" height="96" alt="TrustCopy icon">
 </p>
 
-# TrustCopy
+<h1 align="center">TrustCopy</h1>
 
-[![tests](https://github.com/DigitGram/trustcopy/actions/workflows/test.yml/badge.svg)](https://github.com/DigitGram/trustcopy/actions/workflows/test.yml)
+<p align="center">
+  <b>Copies you can trust.</b> Fast, verified copying and moving from the right-click menu of GNOME Files (Nautilus).<br>
+  Every copy is read back from the disk and compared. Installs for your user, no root needed.
+</p>
 
-**Copies you can trust.** Fast, verified copying and moving from the right-click menu of GNOME Files (Nautilus),
-inspired by the Windows tool TeraCopy. Sister project of [HashTally](https://github.com/DigitGram/hashtally).
-More on the [project website](https://digitgram.github.io/trustcopy/).
+<p align="center">
+  <a href="https://github.com/DigitGram/trustcopy/actions/workflows/test.yml"><img src="https://github.com/DigitGram/trustcopy/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
+  <a href="https://github.com/DigitGram/trustcopy/releases/latest"><img src="https://img.shields.io/github/v/release/DigitGram/trustcopy" alt="Latest release"></a>
+</p>
+
+<p align="center">
+  <a href="#install"><b>Install</b></a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#verify-the-download">Verify the download</a> ·
+  <a href="https://digitgram.github.io/trustcopy/">Website</a> ·
+  <a href="#support">Support</a>
+</p>
+
+<p align="center">
+  <img src="docs/media/trustcopy-tour.webp" width="100%" alt="A tour of TrustCopy: a copy that is read back and verified, the dialog for a file that already exists, a checksum file switched on while a job runs, and the speed test of the checksum algorithms">
+</p>
+
+Inspired by the Windows tool TeraCopy. Sister project of [HashTally](https://github.com/DigitGram/hashtally).
 
 Normal copying assumes the copy is fine. TrustCopy checks: every file is hashed while it is read, then the
 copy is flushed, read back from the disk and compared, so a bad copy is reported instead of discovered
 months later.
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/running-dark.png">
-    <img src="docs/screenshots/running-light.png" width="48%" alt="TrustCopy while copying: steps, live speed graph and progress">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/done-dark.png">
-    <img src="docs/screenshots/done-light.png" width="48%" alt="TrustCopy when done: all files verified, with write and read speed">
-  </picture>
-</p>
+## Contents
+
+- [What you get](#what-you-get)
+- [Requirements](#requirements)
+- [Install](#install)
+- [Verify the download](#verify-the-download)
+- [Usage](#usage)
+- [Command line](#command-line)
+- [Good to know](#good-to-know)
+- [Translating](#translating)
+- [Development](#development)
+- [How it was made](#how-it-was-made)
+- [Support](#support)
+- [License](#license)
 
 ## What you get
 
@@ -64,20 +87,23 @@ Older systems are not supported; the installer stops with an install hint.
 
 ## Install
 
-One line (installs for the current user only, no root):
+TrustCopy installs for the current user only. It needs no root and refuses to run under `sudo`. The installer
+downloads exactly the version it belongs to, and releases are [signed](#verify-the-download).
+
+Read it first, then run it:
+
+```sh
+curl -fsSLO https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh
+less install.sh && bash install.sh
+```
+
+Or the short way, if you trust the signed release:
 
 ```sh
 curl -fsSL https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash
 
 # no curl (e.g. a fresh Ubuntu)? wget does the same:
 wget -qO- https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash
-```
-
-Prefer to read the script first? Download it, inspect it, then run it:
-
-```sh
-curl -fsSLO https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh
-less install.sh && bash install.sh
 ```
 
 Or from a checkout: `git clone https://github.com/DigitGram/trustcopy && cd trustcopy && ./install.sh`.
