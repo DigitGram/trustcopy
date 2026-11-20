@@ -899,3 +899,7 @@ msgstr "リリースノート"
 #, python-brace-format
 msgid "Update available: {version}"
 msgstr "アップデートがあります: {version}"
+
+#: src/ui_settings.py
+msgid "Other"
+msgstr "その他"

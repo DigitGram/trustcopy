@@ -935,3 +935,7 @@ msgstr "Примітки до випуску"
 #, python-brace-format
 msgid "Update available: {version}"
 msgstr "Доступне оновлення: {version}"
+
+#: src/ui_settings.py
+msgid "Other"
+msgstr "Інше"

@@ -899,3 +899,7 @@ msgstr "发行说明"
 #, python-brace-format
 msgid "Update available: {version}"
 msgstr "有可用更新:{version}"
+
+#: src/ui_settings.py
+msgid "Other"
+msgstr "其他"

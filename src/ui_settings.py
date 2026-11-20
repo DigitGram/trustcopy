@@ -198,7 +198,7 @@ class Settings(Adw.ApplicationWindow):
         about = Adw.ActionRow(title=_("About TrustCopy"), activatable=True)
         about.add_suffix(Gtk.Image.new_from_icon_name("go-next-symbolic"))
         about.connect("activated", lambda *a: self.get_application().about())
-        info = Adw.PreferencesGroup()
+        info = Adw.PreferencesGroup(title=_("Other"))
         info.add(reset_row)
         info.add(about)
         return info

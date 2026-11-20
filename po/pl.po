@@ -935,3 +935,7 @@ msgstr "Informacje o wydaniu"
 #, python-brace-format
 msgid "Update available: {version}"
 msgstr "Dostępna aktualizacja: {version}"
+
+#: src/ui_settings.py
+msgid "Other"
+msgstr "Inne"

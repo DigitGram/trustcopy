@@ -917,3 +917,7 @@ msgstr "Novedades"
 #, python-brace-format
 msgid "Update available: {version}"
 msgstr "Actualización disponible: {version}"
+
+#: src/ui_settings.py
+msgid "Other"
+msgstr "Otros"
