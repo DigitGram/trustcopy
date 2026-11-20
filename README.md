@@ -174,7 +174,7 @@ The code is open, the test suite is available in `tests/`, and issues and pull r
 
 ## Support
 
-TrustCopy is free and stays free. If it is useful to you, you can support its development on [Liberapay](https://liberapay.com/DigitGram). Donations are voluntary and unlock nothing.
+TrustCopy is free and stays free. If it is useful to you, you can support its development on [GitHub Sponsors](https://github.com/sponsors/DigitGram) or [Liberapay](https://liberapay.com/DigitGram). Donations are voluntary and unlock nothing.
 
 ## License
 
