@@ -14,6 +14,7 @@ import core
 from cli import parser  # the command line is shared with the terminal mode
 from i18n import _
 from ui_common import APP_ID, CSS, show_folder, to_paths
+from ui_dialogs import weekly_update_check
 from ui_panel import Panel
 from ui_settings import Settings
 
@@ -75,6 +76,7 @@ class App(Adw.Application):
         dest = next(iter(to_paths([args.to], cwd)), None) if args.to else None
         panel = Panel(self)
         panel.present()
+        weekly_update_check(panel)
         if args.to and dest is None:  # trash, recent, a place without a local path: never fall back to the current folder
             panel.fail(_("The destination is not a folder on this computer."))
         elif args.op == "paste":

@@ -25,7 +25,7 @@ class Settings(Adw.ApplicationWindow):
         super().__init__(application=app, title=_("Settings"), default_width=700, default_height=760)
         self.cfg = desktop.load_config()
         stack = Adw.ViewStack()
-        for title, icon, groups in ((_("General"), "preferences-system-symbolic", (self._general_group(), self._context_group(), self._info_group())),
+        for title, icon, groups in ((_("General"), "preferences-system-symbolic", (self._general_group(), self._context_group(), *self._update_groups(), self._info_group())),
                                     (_("Copying"), "edit-copy-symbolic", (self._copying_group(), self._finished_group()))):
             page = Adw.PreferencesPage()
             for group in groups:
@@ -147,6 +147,48 @@ class Settings(Adw.ApplicationWindow):
         chosen = {**desktop.shortcut_keys(), op: accel}
         self.key_labels[op].set_accelerator(accel)
         self.apply("keys", {o: a for o, a in chosen.items() if a != desktop.ACCEL_DEFAULTS[o]})
+
+    def _update_groups(self):
+        """A switch for the weekly check at start (off by default) and a row that checks right now and then says what it found."""
+        if not desktop.update_check_offered():
+            return ()
+        group = Adw.PreferencesGroup(title=_("Updates"))
+        group.add(self.switch(_("Check for updates weekly"), _("Asks GitHub once a week for the newest version. Nothing is sent and nothing is installed."), "update_check"))
+        self.update_page = None  # set once a newer release is found: the button then opens its page
+        self.update_row = Adw.ActionRow(title=_("Installed version: {version}").format(version=core.__version__))
+        self.update_button = Gtk.Button(label=_("Check now"), valign=Gtk.Align.CENTER)
+        self.update_button.connect("clicked", self.check_update)
+        self.update_row.add_suffix(self.update_button)
+        self.update_row.set_activatable_widget(self.update_button)
+        group.add(self.update_row)
+        return (group,)
+
+    def check_update(self, button):
+        if self.update_page:
+            Gtk.UriLauncher(uri=self.update_page).launch(self, None, None)
+            return
+        button.set_sensitive(False)
+
+        def work():
+            try:
+                found, error = desktop.newer_release(), None
+            except (OSError, ValueError, KeyError) as e:
+                found, error = None, e
+            GLib.idle_add(self.show_update, found, error)
+        threading.Thread(target=work, daemon=True).start()
+
+    def show_update(self, found, error):
+        self.update_button.set_sensitive(True)
+        if error:
+            self.toast(_("Could not check for updates. Are you online?"))
+            return
+        if found:  # the row itself says it, and its button leads to the release notes and the way to update
+            self.update_page = found[1]
+            self.update_row.set_title(_("Update available: {version}").format(version=found[0]))
+            self.update_button.set_label(_("Release notes"))
+        else:
+            self.update_row.set_title(_("TrustCopy is up to date."))
+        self.update_row.set_subtitle(_("Installed version: {version}").format(version=core.__version__))
 
     def _info_group(self):
         reset = Gtk.Button(label=_("Reset"), valign=Gtk.Align.CENTER, css_classes=["destructive-action"])

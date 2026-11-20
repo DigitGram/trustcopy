@@ -79,7 +79,8 @@ class Panel(Adw.ApplicationWindow):
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=12, margin_bottom=18, margin_start=18, margin_end=18)
         for w in parts:
             body.append(w)
-        view = Adw.ToolbarView(content=body)
+        self.toasts = Adw.ToastOverlay(child=body)
+        view = Adw.ToolbarView(content=self.toasts)
         view.add_top_bar(header)
         self.set_content(view)
         self.files_win = FilesWindow(self)

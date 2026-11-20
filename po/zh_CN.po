@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: TrustCopy 1.2\n"
+"Project-Id-Version: TrustCopy 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: 2026-10-24\n"
 "Last-Translator: AI-generated, not reviewed by a native speaker\n"
@@ -856,3 +856,46 @@ msgstr "{name} 更快，但已无法防范蓄意篡改。"
 #: src/ui_dialogs.py
 msgid "Recommendation"
 msgstr "推荐"
+
+#: src/ui_settings.py
+msgid "Check for updates weekly"
+msgstr "每周检查更新"
+
+#: src/ui_settings.py
+msgid "Asks GitHub once a week for the newest version. Nothing is sent and nothing is installed."
+msgstr "每周向 GitHub 询问一次最新版本。不会发送任何内容,也不会安装任何内容。"
+
+#: src/ui_settings.py
+msgid "Updates"
+msgstr "更新"
+
+#: src/ui_settings.py
+#, python-brace-format
+msgid "Installed version: {version}"
+msgstr "已安装版本:{version}"
+
+#: src/ui_settings.py
+msgid "Check now"
+msgstr "立即检查"
+
+#: src/ui_settings.py
+msgid "Could not check for updates. Are you online?"
+msgstr "无法检查更新。您是否在线?"
+
+#: src/ui_settings.py
+msgid "TrustCopy is up to date."
+msgstr "TrustCopy 已是最新版本。"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "TrustCopy {version} is available"
+msgstr "TrustCopy {version} 现已可用"
+
+#: src/ui_dialogs.py
+msgid "Release notes"
+msgstr "发行说明"
+
+#: src/ui_settings.py
+#, python-brace-format
+msgid "Update available: {version}"
+msgstr "有可用更新:{version}"

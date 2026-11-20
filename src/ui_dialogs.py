@@ -2,6 +2,8 @@
 # Copyright (C) 2026 DigitGram
 """Questions the job window asks: a file that already exists, and yes/no warnings."""
 import os
+import threading
+import time
 from datetime import datetime
 
 import gi
@@ -309,3 +311,27 @@ def confirm_always(selector, window):
                        _("No"), _("Yes"), answered, css="error")
 
     selector.connect("notify::selected", changed)  # connect after the initial set_selected
+
+
+def update_toast(window, version, page):
+    """A toast that stays until dismissed, with a button that opens the release page in the browser."""
+    toast = Adw.Toast(title=_("TrustCopy {version} is available").format(version=version), button_label=_("Release notes"), timeout=0)
+    toast.connect("button-clicked", lambda t: Gtk.UriLauncher(uri=page).launch(window, None, None))
+    window.toasts.add_toast(toast)
+
+
+def weekly_update_check(window):
+    """At start, if the user switched the weekly check on and it is due: look in the background, say so only when there is news.
+    The date is saved whatever the answer, so an offline start does not retry on every launch."""
+    if not desktop.update_due():
+        return
+    desktop.set_option("update_last", int(time.time()))
+
+    def work():
+        try:
+            found = desktop.newer_release()
+        except (OSError, ValueError, KeyError):
+            return
+        if found:
+            GLib.idle_add(update_toast, window, *found)
+    threading.Thread(target=work, daemon=True).start()

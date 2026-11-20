@@ -1533,6 +1533,30 @@ class Settings(unittest.TestCase):
             self.addCleanup(patcher.stop)
         self.addCleanup(i18n.set_language, "en")
 
+    def test_update_check(self):
+        """Versions compare as numbers, a bad answer is refused, the weekly check is off by default and waits a week."""
+        self.assertGreater(desktop.version_tuple("v1.10"), desktop.version_tuple("1.9"))
+        self.assertIsNone(desktop.version_tuple("latest"))
+        self.assertIsNone(desktop.version_tuple("1.2-beta"))
+
+        def answer(tag, url="https://github.com/DigitGram/trustcopy/releases/tag/v9"):
+            return contextlib.nullcontext(io.BytesIO(json.dumps({"tag_name": tag, "html_url": url}).encode()))
+        with mock.patch("urllib.request.urlopen", return_value=answer("v99.0")):
+            self.assertEqual(desktop.newer_release()[0], "99.0")
+        with mock.patch("urllib.request.urlopen", return_value=answer("v" + core.__version__)):
+            self.assertIsNone(desktop.newer_release())  # the same version is not news
+        for bad in (answer("nightly"), answer("v99", "https://evil.example/")):
+            with mock.patch("urllib.request.urlopen", return_value=bad), self.assertRaises(ValueError):
+                desktop.newer_release()
+        self.assertFalse(desktop.update_due())  # off by default
+        desktop.set_option("update_check", True)
+        self.assertTrue(desktop.update_due())
+        desktop.set_option("update_last", int(time.time()))
+        self.assertFalse(desktop.update_due())
+        self.assertTrue(desktop.update_due(time.time() + desktop.UPDATE_INTERVAL + 1))
+        with mock.patch("os.path.exists", return_value=True):  # in a Flatpak the store updates
+            self.assertFalse(desktop.update_due(time.time() + 10 * desktop.UPDATE_INTERVAL))
+
     def test_reset_returns_to_the_defaults(self):
         desktop.set_option("algo", "sha256")
         desktop.set_option("verify", False)

@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: TrustCopy 1.2\n"
+"Project-Id-Version: TrustCopy 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: 2026-10-24\n"
 "Last-Translator: AI-generated, not reviewed by a native speaker\n"
@@ -856,3 +856,46 @@ msgstr "{name} のほうが高速ですが、意図的な改ざんに対して�
 #: src/ui_dialogs.py
 msgid "Recommendation"
 msgstr "おすすめ"
+
+#: src/ui_settings.py
+msgid "Check for updates weekly"
+msgstr "毎週アップデートを確認"
+
+#: src/ui_settings.py
+msgid "Asks GitHub once a week for the newest version. Nothing is sent and nothing is installed."
+msgstr "週に一度、GitHub に最新バージョンを問い合わせます。何も送信せず、何もインストールしません。"
+
+#: src/ui_settings.py
+msgid "Updates"
+msgstr "アップデート"
+
+#: src/ui_settings.py
+#, python-brace-format
+msgid "Installed version: {version}"
+msgstr "インストール済みのバージョン: {version}"
+
+#: src/ui_settings.py
+msgid "Check now"
+msgstr "今すぐ確認"
+
+#: src/ui_settings.py
+msgid "Could not check for updates. Are you online?"
+msgstr "アップデートを確認できませんでした。オンラインですか?"
+
+#: src/ui_settings.py
+msgid "TrustCopy is up to date."
+msgstr "TrustCopy は最新です。"
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "TrustCopy {version} is available"
+msgstr "TrustCopy {version} が利用可能です"
+
+#: src/ui_dialogs.py
+msgid "Release notes"
+msgstr "リリースノート"
+
+#: src/ui_settings.py
+#, python-brace-format
+msgid "Update available: {version}"
+msgstr "アップデートがあります: {version}"

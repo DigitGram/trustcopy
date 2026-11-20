@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: TrustCopy 1.2\n"
+"Project-Id-Version: TrustCopy 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: 2026-10-24\n"
 "Last-Translator: AI-generated, not reviewed by a native speaker\n"
@@ -892,3 +892,46 @@ msgstr "{name} jest szybszy, ale nie chroni już przed celowymi zmianami."
 #: src/ui_dialogs.py
 msgid "Recommendation"
 msgstr "Zalecenie"
+
+#: src/ui_settings.py
+msgid "Check for updates weekly"
+msgstr "Sprawdzaj aktualizacje co tydzień"
+
+#: src/ui_settings.py
+msgid "Asks GitHub once a week for the newest version. Nothing is sent and nothing is installed."
+msgstr "Raz w tygodniu pyta GitHub o najnowszą wersję. Nic nie jest wysyłane i nic nie jest instalowane."
+
+#: src/ui_settings.py
+msgid "Updates"
+msgstr "Aktualizacje"
+
+#: src/ui_settings.py
+#, python-brace-format
+msgid "Installed version: {version}"
+msgstr "Zainstalowana wersja: {version}"
+
+#: src/ui_settings.py
+msgid "Check now"
+msgstr "Sprawdź teraz"
+
+#: src/ui_settings.py
+msgid "Could not check for updates. Are you online?"
+msgstr "Nie udało się sprawdzić aktualizacji. Czy jesteś online?"
+
+#: src/ui_settings.py
+msgid "TrustCopy is up to date."
+msgstr "TrustCopy jest aktualny."
+
+#: src/ui_dialogs.py
+#, python-brace-format
+msgid "TrustCopy {version} is available"
+msgstr "Dostępny jest TrustCopy {version}"
+
+#: src/ui_dialogs.py
+msgid "Release notes"
+msgstr "Informacje o wydaniu"
+
+#: src/ui_settings.py
+#, python-brace-format
+msgid "Update available: {version}"
+msgstr "Dostępna aktualizacja: {version}"

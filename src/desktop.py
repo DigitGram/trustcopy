@@ -9,6 +9,7 @@ import os
 import re
 import shlex
 import shutil
+import time
 from pathlib import Path
 
 try:
@@ -17,7 +18,7 @@ except ImportError:
     Gio = GLib = None
 
 import i18n
-from core import ALGOS, SUM_ALGOS
+from core import ALGOS, SUM_ALGOS, __version__
 from i18n import N_, _
 
 # --------------------------------------------------------------------------- settings
@@ -26,7 +27,8 @@ CONFIG_FILE = Path(os.environ.get("XDG_CONFIG_HOME") or "~/.config").expanduser(
 CONFLICTS = ("ask", "skip", "keep_both", "newer", "overwrite")
 AFTER = ("keep", "clean", "always")  # what the window does when the job is over
 DEFAULTS = {"verify": True, "algo": "crc32", "conflict": "ask", "after": "keep", "sums": False, "sums_algo": "sha256",
-            "notify": True, "sound": False, "menu": "scripts", "shortcuts": False, "keys": {}, "language": "auto"}
+            "notify": True, "sound": False, "menu": "scripts", "shortcuts": False, "keys": {}, "language": "auto",
+            "update_check": False, "update_last": 0}  # weekly check at start: off until the user switches it on
 
 
 def shown(text):
@@ -107,6 +109,47 @@ def reset_config():
         return str(e)
     i18n.set_language("auto")
     return install_scripts()  # the entries follow the language
+
+
+# --------------------------------------------------------------------------- update check
+# Opt-in and never automatic beyond a notice: one GET to GitHub's "latest release", no data sent, nothing downloaded or installed.
+# Updating stays "run the signed install.sh again". Not offered in a Flatpak: its store brings the updates.
+RELEASES_API = "https://api.github.com/repos/DigitGram/trustcopy/releases/latest"
+UPDATE_INTERVAL = 7 * 24 * 3600
+
+
+def update_check_offered():
+    return not os.path.exists("/.flatpak-info")
+
+
+def version_tuple(text):
+    """"v1.2.1" -> (1, 2, 1); None if it does not look like a version."""
+    parts = re.fullmatch(r"v?(\d+(?:\.\d+)*)", text.strip())
+    return tuple(int(n) for n in parts[1].split(".")) if parts else None
+
+
+def latest_release(timeout=5):
+    """(version, page) of the newest release, or raises OSError/ValueError (offline, rate limit, odd answer)."""
+    import urllib.request
+    request = urllib.request.Request(RELEASES_API, headers={"Accept": "application/vnd.github+json", "User-Agent": f"TrustCopy/{__version__}"})
+    with urllib.request.urlopen(request, timeout=timeout) as answer:
+        data = json.load(answer)
+    tag, page = data["tag_name"], data["html_url"]
+    if not isinstance(tag, str) or version_tuple(tag) is None or not str(page).startswith("https://github.com/DigitGram/"):
+        raise ValueError("unexpected answer")
+    return tag.lstrip("v"), page
+
+
+def newer_release():
+    """(version, page) if a newer release exists, else None; raises like latest_release()."""
+    version, page = latest_release()
+    return (version, page) if version_tuple(version) > version_tuple(__version__) else None
+
+
+def update_due(now=None):
+    """True when the weekly check is switched on and the last one is over a week ago."""
+    config = load_config()
+    return update_check_offered() and config["update_check"] and (now or time.time()) - config["update_last"] >= UPDATE_INTERVAL
 
 
 # --------------------------------------------------------------------------- Files (Nautilus) integration
