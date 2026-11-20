@@ -116,6 +116,7 @@ def reset_config():
 # Updating stays "run the signed install.sh again". Not offered in a Flatpak: its store brings the updates.
 RELEASES_API = "https://api.github.com/repos/DigitGram/trustcopy/releases/latest"
 UPDATE_INTERVAL = 7 * 24 * 3600
+update_found = None  # (version, page) of a newer release, once one was found: the settings show it at once
 
 
 def update_check_offered():

@@ -161,6 +161,8 @@ class Settings(Adw.ApplicationWindow):
         self.update_row.add_suffix(self.update_button)
         self.update_row.set_activatable_widget(self.update_button)
         group.add(self.update_row)
+        if desktop.update_found:  # the weekly check at start already found one
+            self._show_found(desktop.update_found)
         return (group,)
 
     def check_update(self, button):
@@ -182,13 +184,19 @@ class Settings(Adw.ApplicationWindow):
         if error:
             self.toast(_("Could not check for updates. Are you online?"))
             return
-        if found:  # the row itself says it, and its button leads to the release notes and the way to update
-            self.update_page = found[1]
-            self.update_row.set_title(_("Update available: {version}").format(version=found[0]))
-            self.update_button.set_label(_("Release notes"))
+        if found:
+            desktop.update_found = found
+            self._show_found(found)
         else:
             self.update_row.set_title(_("TrustCopy is up to date."))
+            self.update_row.set_subtitle(_("Installed version: {version}").format(version=core.__version__))
+
+    def _show_found(self, found):
+        """The row says it, and its button leads to the release notes and the way to update."""
+        self.update_page = found[1]
+        self.update_row.set_title(_("Update available: {version}").format(version=found[0]))
         self.update_row.set_subtitle(_("Installed version: {version}").format(version=core.__version__))
+        self.update_button.set_label(_("Release notes"))
 
     def _info_group(self):
         reset = Gtk.Button(label=_("Reset"), valign=Gtk.Align.CENTER, css_classes=["destructive-action"])

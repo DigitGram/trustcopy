@@ -333,5 +333,6 @@ def weekly_update_check(window):
         except (OSError, ValueError, KeyError):
             return
         if found:
+            desktop.update_found = found
             GLib.idle_add(update_toast, window, *found)
     threading.Thread(target=work, daemon=True).start()
