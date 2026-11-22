@@ -234,8 +234,9 @@ class Panel(Adw.ApplicationWindow):
         self.sums_check = Adw.SwitchRow(active=cfg["sums"])  # takes effect on the running job: the files done before are asked about at the end
         self.sums_check.connect("notify::active", lambda row, _p: self.sums_toggled(row))
         self.name_sums()
-        self.after = Adw.ComboRow(title=_("When finished"), model=Gtk.StringList.new(when_labels()))
+        self.after = Adw.ComboRow(title=_("When finished"), model=Gtk.StringList.new(when_labels()), use_subtitle=True)  # the choice under the title: beside it the long ones were cut off
         self.after.set_selected(AFTER.index(cfg["after"]))
+        self.after.set_subtitle(when_labels()[self.after.get_selected()])  # use_subtitle only follows a change: the first item (the default) would show none
         confirm_always(self.after, self)
         card = Gtk.ListBox(css_classes=["boxed-list"], selection_mode=Gtk.SelectionMode.NONE)
         for row in (self.verify, self.sums_check, self.after):
