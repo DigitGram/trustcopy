@@ -107,7 +107,7 @@ wget -qO- https://github.com/DigitGram/trustcopy/releases/latest/download/instal
 ```
 
 Or from a checkout: `git clone https://github.com/DigitGram/trustcopy && cd trustcopy && ./install.sh`.
-Running the one-line installer of a newer release updates an existing installation. If the entries do not show up,
+Running the one-line installer of a newer release updates an existing installation. The settings can also check for a newer version once a week, if you switch that on; nothing is sent or installed. If the entries do not show up,
 restart the file manager (`nautilus -q`, `nemo -q` or `caja -q`); log out and in once if the launcher or icon is missing.
 
 To remove it:
