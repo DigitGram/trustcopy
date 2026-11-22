@@ -699,6 +699,8 @@ class Panel(Adw.ApplicationWindow):
             self._fade_steps()
         title, text, kind = outcome(job, ok, bad)
         self.heading.set_title(title)
+        # the total time, which the "Done" step showed before it faded: under the title, "Done" / "in 2 min 13 s"
+        self.heading.set_subtitle(_("in {t}").format(t=fmt_duration(max(self.clock() - self.paused, 0))) if self.complete else "")
         self.title_stack.set_visible_child_name("done")
         self.verdict.set_label(desktop.shown(text))
         self.badge.set_from_icon_name(RESULT_ICONS[kind])

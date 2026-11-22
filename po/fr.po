@@ -921,3 +921,9 @@ msgstr "Mise à jour disponible : {version}"
 #: src/ui_settings.py
 msgid "Other"
 msgstr "Autre"
+
+#. The total time of a finished job, under its result ("Done"). {t} is a duration such as "2 min 13 s".
+#: src/ui_panel.py
+#, python-brace-format
+msgid "in {t}"
+msgstr "en {t}"

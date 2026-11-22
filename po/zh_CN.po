@@ -903,3 +903,9 @@ msgstr "有可用更新:{version}"
 #: src/ui_settings.py
 msgid "Other"
 msgstr "其他"
+
+#. The total time of a finished job, under its result ("Done"). {t} is a duration such as "2 min 13 s".
+#: src/ui_panel.py
+#, python-brace-format
+msgid "in {t}"
+msgstr "用时 {t}"
