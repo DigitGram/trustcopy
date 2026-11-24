@@ -3,10 +3,11 @@
 # Usage: scripts/release-notes.sh <previous-tag> [end-ref]     e.g.  gh release create v1.1 --notes "$(scripts/release-notes.sh v1.0)"
 set -euo pipefail
 from=${1:?"usage: $0 <previous-tag> [end-ref]"}
-log=$(git log --no-merges --pretty='%s' "$from..${2:-HEAD}")
-BREAKING='^[a-z]+(\([^)]*\))?!:'
-FEAT='^feat(\([^)]*\))?:'
-FIX='^fix(\([^)]*\))?:'
+log=$(git log --no-merges --pretty='%H: %s' "$from..${2:-HEAD}")
+H='^[0-9a-f]{40}: '
+BREAKING="$H[a-z]+(\([^)]*\))?!:"
+FEAT="${H}feat(\([^)]*\))?:"
+FIX="${H}fix(\([^)]*\))?:"
 
 section() {  # title, lines
   [ -n "$2" ] || return 0
