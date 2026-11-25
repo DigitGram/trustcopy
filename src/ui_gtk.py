@@ -11,6 +11,7 @@ gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
 import core
+import desktop
 from cli import parser  # the command line is shared with the terminal mode
 from i18n import _
 from ui_common import APP_ID, CSS, show_folder, to_paths
@@ -26,10 +27,12 @@ class App(Adw.Application):
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
         self.running, self.waiting = None, []  # one job at a time: parallel jobs on one disk only slow each other down
         self.settings = None
+        self.fresh = False  # the right-click entries were created by this start (.deb): the settings offer the restart
         self.awake = 0  # the cookie of the "no sleep" request while a job runs; 0 = none
 
     def do_startup(self):
         Adw.Application.do_startup(self)
+        self.fresh = desktop.first_run_entries()
         css = Gtk.CssProvider()
         css.load_from_string(CSS)
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
@@ -47,6 +50,10 @@ class App(Adw.Application):
             self.settings = Settings(self)
             self.settings.connect("close-request", self.settings_closed)
         self.settings.present()
+        if self.fresh:
+            self.fresh = False
+            if running := desktop.files_running(list(desktop.files_setup())):
+                self.settings.offer_restart(running)
 
     def settings_closed(self, *a):
         self.settings = None  # a closed window is gone; the next request builds a new one

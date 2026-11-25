@@ -28,7 +28,8 @@ CONFLICTS = ("ask", "skip", "keep_both", "newer", "overwrite")
 AFTER = ("keep", "clean", "always")  # what the window does when the job is over
 DEFAULTS = {"verify": True, "algo": "crc32", "conflict": "ask", "after": "keep", "sums": False, "sums_algo": "sha256",
             "notify": True, "sound": False, "menu": "scripts", "shortcuts": False, "keys": {}, "language": "auto",
-            "update_check": False, "update_last": 0}  # weekly check at start: off until the user switches it on
+            "update_check": False, "update_last": 0,  # weekly check at start: off until the user switches it on
+            "integrated": False}  # the .deb creates the right-click entries at the first start (see first_run_entries)
 
 
 def shown(text):
@@ -119,6 +120,9 @@ UPDATE_INTERVAL = 7 * 24 * 3600
 update_found = None  # (version, page) of a newer release, once one was found: the settings show it at once
 
 
+PACKAGED = Path(__file__).resolve().is_relative_to("/usr")  # the .deb: the program sits below /usr, not in the user's home
+
+
 def update_check_offered():
     return not os.path.exists("/.flatpak-info")
 
@@ -183,7 +187,7 @@ _VARS = dict(uris="${NAUTILUS_SCRIPT_SELECTED_URIS:-${NEMO_SCRIPT_SELECTED_URIS:
 
 # Never change this text: older entries are recognised only by this line, so a new wording would orphan them all.
 MARKER = "# Written by TrustCopy from its settings, replaced or deleted whenever they change"
-LAUNCHER = Path("~/.local/bin/trustcopy").expanduser()  # where install.sh puts it: a run from a checkout must not bind the menu to itself
+LAUNCHER = Path("/usr/bin/trustcopy") if PACKAGED else Path("~/.local/bin/trustcopy").expanduser()  # where the .deb or install.sh puts it: a run from a checkout must not bind the menu to itself
 
 
 def script_text(op):
@@ -250,6 +254,14 @@ def install_scripts(remove_only=False):
     except (OSError, RuntimeError) as e:  # RuntimeError: resolve() on a symlink loop
         return str(e)
     return install_accels(remove_only)
+
+
+def first_run_entries():
+    """The .deb cannot write into the users' homes, so its first start creates the right-click entries, once.
+    True if it did now (the file managers then need a restart to show them)."""
+    if not PACKAGED or load_config()["integrated"]:
+        return False
+    return install_scripts() is None and set_option("integrated", True) is None
 
 
 # --------------------------------------------------------------------------- shortcuts

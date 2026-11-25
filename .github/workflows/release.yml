@@ -28,3 +28,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
         run: gh release upload "$TAG" install.sh --clobber
+      # the .deb for everyone who would rather click than use a terminal; SHA256SUMS and SHA256SUMS.asc are made by hand once all assets are there
+      - name: build and attach the .deb
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          scripts/build-deb.sh "$RUNNER_TEMP"
+          gh release upload "$TAG" "$RUNNER_TEMP"/trustcopy_*_all.deb --clobber
