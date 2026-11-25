@@ -1749,6 +1749,59 @@ class Integration(unittest.TestCase):
             self.assertEqual(len(self.names()), 3)
             self.assertTrue(desktop.ACCELS_FILE.is_file())  # the shortcuts are back
 
+    def test_a_file_that_is_not_ours_is_never_replaced_by_the_extension(self):
+        with mock.patch.object(desktop, "extension_available", lambda: True):
+            desktop.EXTENSION_FILE.parent.mkdir(parents=True)
+            desktop.EXTENSION_FILE.write_text("# somebody else's extension\n")
+            error = desktop.set_option("extension", True)
+            self.assertTrue(error and str(desktop.EXTENSION_FILE) in error)
+            self.assertEqual(desktop.EXTENSION_FILE.read_text(), "# somebody else's extension\n")
+            self.assertFalse(desktop.MENU_FILE.exists())
+            self.assertFalse(desktop.load_config()["extension"])  # the setting does not claim what did not happen
+            self.assertEqual(len(self.names()), 3)  # the Scripts entries stay
+
+    def test_when_python3_nautilus_goes_away_the_scripts_come_back(self):
+        with mock.patch.object(desktop, "extension_available", lambda: True):
+            desktop.set_option("extension", True)
+            self.assertTrue(desktop.EXTENSION_FILE.is_file())
+            self.assertEqual(list(desktop.SCRIPTS_DIR.glob("*")), [])  # nothing in the Scripts folder (it may not even exist)
+        with mock.patch.object(desktop, "extension_available", lambda: False):
+            desktop.sync_entries()
+            self.assertEqual(len(self.names()), 3)
+            self.assertFalse(desktop.EXTENSION_FILE.exists() or desktop.MENU_FILE.exists())
+            desktop.sync_entries()  # nothing left to do
+            self.assertEqual(len(self.names()), 3)
+
+    def test_a_fork_linked_to_the_files_folder_keeps_its_entries_with_the_extension_on(self):
+        desktop.SCRIPTS_DIR.mkdir()
+        desktop.FORKS["nemo"].symlink_to(desktop.SCRIPTS_DIR)
+        with mock.patch.object(desktop, "extension_available", lambda: True), \
+                mock.patch.object(desktop.shutil, "which", lambda name: "/usr/bin/nemo" if name == "nemo" else None):
+            self.assertIsNone(desktop.set_option("extension", True))
+            self.assertEqual(len(self.names()), 3)  # Nemo has no extension: it needs them
+
+    def test_a_hand_edited_menu_name_is_tidied_when_it_is_read(self):
+        desktop.CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        desktop.CONFIG_FILE.write_text(json.dumps({"menu_name": "  a \n  b " + "x" * 100}))
+        name = desktop.load_config()["menu_name"]
+        self.assertTrue(name.startswith("a b x") and len(name) == 40)
+
+    def test_the_extension_survives_a_bad_menu_file_and_shows_a_plain_underscore(self):
+        import nautilus_ext
+        if nautilus_ext.Nautilus is None:  # CI without python3-nautilus
+            self.skipTest("no python3-nautilus")
+        menu_file = desktop.MENU_FILE
+        menu_file.parent.mkdir(parents=True, exist_ok=True)
+        with mock.patch.object(nautilus_ext, "MENU_FILE", menu_file):
+            menu = nautilus_ext.TrustCopyMenu()
+            self.assertEqual(menu._menu(["file:///a"], False, lambda op: [op]), [])  # not written yet
+            for text in ("[]", "{}", "not json", '{"name": 1, "labels": []}'):
+                menu_file.write_text(text)
+                self.assertEqual(menu._menu(["file:///a"], False, lambda op: [op]), [], text)
+            menu_file.write_text(json.dumps({"launcher": "/bin/true", "name": "My_copy", "labels": {"copy": "c", "move": "m", "paste": "p"}}))
+            items = menu._menu(["file:///a"], False, lambda op: [op])
+            self.assertEqual([i.props.label for i in items], ["My__copy"])  # "__" is a plain underscore in a GTK menu
+
     def test_without_python3_nautilus_the_extension_setting_changes_nothing(self):
         with mock.patch.object(desktop, "extension_available", lambda: False):
             self.assertIsNone(desktop.set_option("extension", True))

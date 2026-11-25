@@ -391,10 +391,16 @@ def waiting_problems(app, tmp):
             found.append(f"the waiting cards are wrong: {[p.wait_card.get_visible() for p in panels]}")
         elif not panels[1].wait_text.get_text().startswith("Place 2 of 3") or not panels[2].wait_text.get_text().startswith("Place 3 of 3") or "Copying to" not in panels[1].wait_text.get_text():
             found.append(f"a waiting job does not say its place and what runs: {panels[1].wait_text.get_text()!r}")
+        if any(p.status.get_visible() for p in panels[1:]):
+            found.append("a waiting job still shows the line of the time before it was queued")
+        panels[2].close()  # the user closes a window that waits: it leaves the queue, its timer stops, the places move up
+        pump(0.2)
+        if panels[2] in app.waiting or panels[2].wait_timer or not panels[1].wait_text.get_text().startswith("Place 2 of 2"):
+            found.append(f"a closed waiting job stays in the queue or keeps its timer: {panels[1].wait_text.get_text()!r}")
         gate.set()
-        pump(20, lambda: app.running is None and not any(p.wait_card.get_visible() for p in panels))
-        if any(p.wait_card.get_visible() for p in panels) or not all(Path(tmp, f"q{n}", "file").exists() for n in (1, 2, 3)):
-            found.append("the queue did not run every job, or a card stayed")
+        pump(20, lambda: app.running is None and not any(p.wait_card.get_visible() for p in panels[:2]))
+        if any(p.wait_card.get_visible() for p in panels[:2]) or not all(Path(tmp, f"q{n}", "file").exists() for n in (1, 2)) or Path(tmp, "q3", "file").exists():
+            found.append("the queue did not run the jobs left, ran the closed one, or a card stayed")
     finally:
         core.Job.run = original
         gate.set()

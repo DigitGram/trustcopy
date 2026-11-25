@@ -49,18 +49,29 @@ if Nautilus:
                 return True
 
         def _menu(self, selected, background, args):
-            config = self._config()
-            ops = entries_for(selected, background, self._clipboard_has_files()) if config else []
-            if not ops:
-                return []
-            top = Nautilus.MenuItem(name="TrustCopy::menu", label=config["name"])
-            sub = Nautilus.Menu()
-            top.set_submenu(sub)
-            for op in ops:
-                item = Nautilus.MenuItem(name=f"TrustCopy::{op}", label=config["labels"][op])
-                item.connect("activate", lambda _item, op=op: subprocess.Popen([config["launcher"], *args(op)], start_new_session=True))
-                sub.append_item(item)
-            return [top]
+            try:
+                config = self._config()
+                ops = entries_for(selected, background, self._clipboard_has_files()) if config else []
+                if not ops:
+                    return []
+                # "_" would be taken for a mnemonic in a GTK menu, "__" is a plain one
+                top = Nautilus.MenuItem(name="TrustCopy::menu", label=str(config["name"]).replace("_", "__"))
+                sub = Nautilus.Menu()
+                top.set_submenu(sub)
+                for op in ops:
+                    item = Nautilus.MenuItem(name=f"TrustCopy::{op}", label=str(config["labels"][op]))
+                    item.connect("activate", lambda _item, op=op: self._run(config["launcher"], args(op)))
+                    sub.append_item(item)
+                return [top]
+            except (OSError, ValueError, KeyError, TypeError, AttributeError):
+                return []  # from another version or edited by hand: no entries rather than an error at every right click
+
+        @staticmethod
+        def _run(launcher, args):
+            try:
+                subprocess.Popen([launcher, *args], start_new_session=True)
+            except OSError:
+                pass  # the program is gone (package removed): nothing to start
 
         def get_file_items(self, files):  # Files 43 and newer pass only the selection
             uris = [f.get_uri() for f in files]

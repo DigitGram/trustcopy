@@ -960,3 +960,8 @@ msgstr "正在移动到 {dest}，{percent}%"
 #: src/ui_panel.py
 msgid "The computer stays on: the checksum file could not be written."
 msgstr "计算机保持开机：无法写入校验和文件。"
+
+#: src/desktop.py
+#, python-brace-format
+msgid "Not changed: {path} is not a file of TrustCopy."
+msgstr "未更改：{path} 不是 TrustCopy 的文件。"

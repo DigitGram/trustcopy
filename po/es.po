@@ -978,3 +978,8 @@ msgstr "Moviendo a {dest}, {percent} %"
 #: src/ui_panel.py
 msgid "The computer stays on: the checksum file could not be written."
 msgstr "El equipo sigue encendido: no se pudo escribir el archivo de sumas de verificación."
+
+#: src/desktop.py
+#, python-brace-format
+msgid "Not changed: {path} is not a file of TrustCopy."
+msgstr "Sin cambios: {path} no es un archivo de TrustCopy."

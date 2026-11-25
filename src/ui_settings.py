@@ -92,7 +92,7 @@ class Settings(Adw.ApplicationWindow):
         shortcuts) or a separate entry of its own (with its name). Each switch greys what belongs to the other way."""
         available = desktop.extension_available()
         own = self.cfg["extension"] and available
-        self.scripts_row = Adw.SwitchRow(title=_("Context menu in the Scripts folder"), active=not own)
+        self.scripts_row = Adw.SwitchRow(title=_("Context menu in the Scripts folder"), active=not own, sensitive=available)  # the only way without the package
         self.entries_row = self.combo(_("Entries"), _("In the submenu “TrustCopy” they take one more click."), [_("Under Scripts"), _("In a submenu")], ("scripts", "folder"), "menu")
         self.shortcuts_row = self._shortcuts_row()
         self.extension_row = Adw.SwitchRow(title=_("Separate entry in the context menu"), active=own, sensitive=available,
@@ -283,6 +283,7 @@ class Settings(Adw.ApplicationWindow):
         window = self.reopen() if reopen else self
         if error:
             window.toast(error)
+            window._show_way(desktop.extension_in_use())  # the switches show what is saved, not what was asked for
         after = desktop.files_setup()
         running = desktop.files_running([fm for fm in after if after[fm] != before[fm]])
         if running:

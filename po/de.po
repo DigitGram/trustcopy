@@ -978,3 +978,8 @@ msgstr "Verschiebt nach {dest}, {percent} %"
 #: src/ui_panel.py
 msgid "The computer stays on: the checksum file could not be written."
 msgstr "Der Computer bleibt an: Die Prüfsummen-Datei konnte nicht geschrieben werden."
+
+#: src/desktop.py
+#, python-brace-format
+msgid "Not changed: {path} is not a file of TrustCopy."
+msgstr "Nicht geändert: {path} ist keine Datei von TrustCopy."

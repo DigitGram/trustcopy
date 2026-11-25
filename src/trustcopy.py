@@ -22,6 +22,7 @@ from i18n import _
 
 def main():
     i18n.set_language(desktop.load_config()["language"])
+    desktop.sync_entries()  # python3-nautilus gone since the last start: back to the Scripts entries
     if sys.argv[1:2] == ["--version"]:
         print(f"TrustCopy {core.__version__}")
         return 0

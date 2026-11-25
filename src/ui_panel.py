@@ -425,6 +425,7 @@ class Panel(Adw.ApplicationWindow):
     def show_waiting(self, place, total):
         """A job that has to wait keeps its window, so its options can be set meanwhile; the graph's place says it waits, where, and what runs."""
         self.wait_place = (place, total)
+        self.say("")  # a line of the time before it was queued ("Reading clipboard…", "Choose a destination folder…") would stand under the card
         self.wait_card.set_visible(True)
         self.wait_cover.set_visible(True)
         self._wait_text()
@@ -432,7 +433,7 @@ class Panel(Adw.ApplicationWindow):
             self.wait_timer = GLib.timeout_add_seconds(1, self._wait_tick)
 
     def _wait_tick(self):
-        if not self.wait_card.get_visible():
+        if not self.wait_card.get_visible() or self.get_application() is None:  # it runs now, or the window is gone
             self.wait_timer = 0
             return False
         self._wait_text()
@@ -917,6 +918,9 @@ class Panel(Adw.ApplicationWindow):
         self.retry.set_visible(False)
 
     def on_close(self, *a):
+        if self.wait_timer:  # a closed window that was waiting: no more ticks
+            GLib.source_remove(self.wait_timer)
+            self.wait_timer = 0
         if self.active:  # let the engine remove its temp file first, finish() closes the window afterwards
             self.job.cancel()
             self.closing = True

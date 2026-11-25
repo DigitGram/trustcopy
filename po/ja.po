@@ -960,3 +960,8 @@ msgstr "{dest} へ移動中、{percent}%"
 #: src/ui_panel.py
 msgid "The computer stays on: the checksum file could not be written."
 msgstr "コンピューターはオンのままです。チェックサムファイルを書き込めませんでした。"
+
+#: src/desktop.py
+#, python-brace-format
+msgid "Not changed: {path} is not a file of TrustCopy."
+msgstr "変更しませんでした: {path} は TrustCopy のファイルではありません。"

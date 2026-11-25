@@ -996,3 +996,8 @@ msgstr "Przenoszenie do {dest}, {percent}%"
 #: src/ui_panel.py
 msgid "The computer stays on: the checksum file could not be written."
 msgstr "Komputer pozostaje włączony: nie udało się zapisać pliku sum kontrolnych."
+
+#: src/desktop.py
+#, python-brace-format
+msgid "Not changed: {path} is not a file of TrustCopy."
+msgstr "Bez zmian: {path} nie jest plikiem TrustCopy."
