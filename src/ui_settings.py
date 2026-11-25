@@ -25,7 +25,7 @@ class Settings(Adw.ApplicationWindow):
         super().__init__(application=app, title=_("Settings"), default_width=700, default_height=760)
         self.cfg = desktop.load_config()
         stack = Adw.ViewStack()
-        for title, icon, groups in ((_("General"), "preferences-system-symbolic", (self._general_group(), self._context_group(), self._info_group())),
+        for title, icon, groups in ((_("General"), "preferences-system-symbolic", (self._context_group(), self._info_group())),
                                     (_("Copying"), "edit-copy-symbolic", (self._copying_group(), self._finished_group())),
                                     (_("Updates"), "software-update-available-symbolic", self._update_groups())):
             if not groups:  # no update check offered (a Flatpak updates through its store)
@@ -38,13 +38,6 @@ class Settings(Adw.ApplicationWindow):
         view = Adw.ToolbarView(content=self.toasts)
         view.add_top_bar(Adw.HeaderBar(title_widget=Adw.ViewSwitcher(stack=stack, policy=Adw.ViewSwitcherPolicy.WIDE)))
         self.set_content(view)
-
-    def _general_group(self):
-        languages = i18n.languages()
-        language = self.combo(_("Language"), "", [_("System default"), *languages.values()], ["auto", *languages], "language")
-        general = Adw.PreferencesGroup()  # the page is called "General"
-        general.add(language)
-        return general
 
     def _copying_group(self):
         verify = self.switch(_("Verify files after copying"), _("Reads every copy back from the disk and compares checksums."), "verify")
@@ -209,7 +202,10 @@ class Settings(Adw.ApplicationWindow):
         about = Adw.ActionRow(title=_("About TrustCopy"), activatable=True)
         about.add_suffix(Gtk.Image.new_from_icon_name("go-next-symbolic"))
         about.connect("activated", lambda *a: self.get_application().about())
+        languages = i18n.languages()
+        language = self.combo(_("Language"), "", [_("System default"), *languages.values()], ["auto", *languages], "language")
         info = Adw.PreferencesGroup(title=_("Other"))
+        info.add(language)
         info.add(reset_row)
         info.add(about)
         return info
