@@ -25,8 +25,11 @@ class Settings(Adw.ApplicationWindow):
         super().__init__(application=app, title=_("Settings"), default_width=700, default_height=760)
         self.cfg = desktop.load_config()
         stack = Adw.ViewStack()
-        for title, icon, groups in ((_("General"), "preferences-system-symbolic", (self._general_group(), self._context_group(), *self._update_groups(), self._info_group())),
-                                    (_("Copying"), "edit-copy-symbolic", (self._copying_group(), self._finished_group()))):
+        for title, icon, groups in ((_("General"), "preferences-system-symbolic", (self._general_group(), self._context_group(), self._info_group())),
+                                    (_("Copying"), "edit-copy-symbolic", (self._copying_group(), self._finished_group())),
+                                    (_("Updates"), "software-update-available-symbolic", self._update_groups())):
+            if not groups:  # no update check offered (a Flatpak updates through its store)
+                continue
             page = Adw.PreferencesPage()
             for group in groups:
                 page.add(group)
@@ -152,7 +155,7 @@ class Settings(Adw.ApplicationWindow):
         """A switch for the weekly check at start (off by default) and a row that checks right now and then says what it found."""
         if not desktop.update_check_offered():
             return ()
-        group = Adw.PreferencesGroup(title=_("Updates"))
+        group = Adw.PreferencesGroup()  # the tab is called "Updates"
         group.add(self.switch(_("Check for updates weekly"), _("Asks GitHub once a week for the newest version. Nothing is sent and nothing is installed."), "update_check"))
         self.update_page = None  # set once a newer release is found: the button then opens its page
         self.update_row = Adw.ActionRow(title=_("Installed version: {version}").format(version=core.__version__))
