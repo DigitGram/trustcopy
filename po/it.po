@@ -927,3 +927,35 @@ msgstr "Altro"
 #, python-brace-format
 msgid "in {t}"
 msgstr "in {t}"
+
+#: src/ui_settings.py
+msgid "Context menu in the Scripts folder"
+msgstr "Menu contestuale nella cartella Script"
+
+#: src/ui_settings.py
+msgid "Separate entry in the context menu"
+msgstr "Voce separata nel menu contestuale"
+
+#: src/ui_settings.py
+msgid "Only the entries that fit what you selected."
+msgstr "Solo le voci adatte alla selezione."
+
+#: src/ui_settings.py
+msgid "Needs the package python3-nautilus: sudo apt install python3-nautilus"
+msgstr "Richiede il pacchetto python3-nautilus: sudo apt install python3-nautilus"
+
+#: src/ui_settings.py
+msgid "Name of the entry"
+msgstr "Nome della voce"
+
+#: src/ui_settings.py
+msgid "Turn off the keyboard shortcuts?"
+msgstr "Disattivare le scorciatoie da tastiera?"
+
+#: src/ui_settings.py
+msgid "Files binds keys only to entries in the Scripts folder, not to a separate entry, so the keyboard shortcuts of TrustCopy stop working. They come back when you switch to the Scripts folder again."
+msgstr "“File” può associare i tasti solo alle voci nella cartella Script, non a una voce separata, quindi le scorciatoie da tastiera di TrustCopy smettono di funzionare. Tornano al ritorno alla cartella Script."
+
+#: src/ui_settings.py
+msgid "Switch"
+msgstr "Passa"

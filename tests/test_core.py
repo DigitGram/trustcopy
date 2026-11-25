@@ -1709,6 +1709,7 @@ class Integration(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         for name, path in (("SCRIPTS_DIR", Path(tmp.name, "scripts")), ("CONFIG_FILE", Path(tmp.name, "settings.json")),
                            ("ACCELS_FILE", Path(tmp.name, "nautilus", "scripts-accels")),
+                           ("EXTENSION_FILE", Path(tmp.name, "ext", "trustcopy.py")), ("MENU_FILE", Path(tmp.name, "data", "menu.json")),
                            ("FORKS", {"nemo": Path(tmp.name, "nemo"), "caja": Path(tmp.name, "caja")})):  # never the real folders
             patcher = mock.patch.object(desktop, name, path)
             patcher.start()
@@ -1717,6 +1718,51 @@ class Integration(unittest.TestCase):
 
     def names(self):
         return sorted(p.name for p in desktop.SCRIPTS_DIR.iterdir())
+
+    def test_the_extension_offers_only_what_fits(self):
+        import nautilus_ext
+        self.assertEqual(nautilus_ext.entries_for(["file:///a"], False, False), ["copy", "move"])
+        self.assertEqual(nautilus_ext.entries_for(["file:///a"], False, True), ["copy", "move"])
+        self.assertEqual(nautilus_ext.entries_for([], True, True), ["paste"])  # the folder background, with files on the clipboard
+        self.assertEqual(nautilus_ext.entries_for([], True, False), [])
+        self.assertEqual(nautilus_ext.entries_for([], False, True), [])
+
+    def test_with_the_extension_on_there_are_no_scripts_and_no_shortcuts_and_back(self):
+        with mock.patch.object(desktop, "extension_available", lambda: True):
+            self.assertIsNone(desktop.set_option("shortcuts", True))
+            self.assertTrue(desktop.ACCELS_FILE.is_file())
+            before = desktop.files_setup()["nautilus"]
+            self.assertIsNone(desktop.set_option("extension", True))
+            self.assertEqual(self.names(), [])  # no double entries
+            self.assertFalse(desktop.ACCELS_FILE.exists())  # Files binds keys to scripts only
+            text = desktop.EXTENSION_FILE.read_text()
+            self.assertEqual(text.splitlines()[1], desktop.MARKER)
+            menu = json.loads(desktop.MENU_FILE.read_text())
+            self.assertEqual((menu["name"], menu["labels"]["paste"]), ("TrustCopy", "Paste from clipboard"))
+            self.assertNotEqual(desktop.files_setup()["nautilus"], before)  # Files has to restart
+            same = desktop.files_setup()["nautilus"]
+            desktop.set_option("menu_name", "  My   copy ")  # a new name needs no restart: it is read when the menu opens
+            self.assertEqual(json.loads(desktop.MENU_FILE.read_text())["name"], "My copy")
+            self.assertEqual(desktop.files_setup()["nautilus"], same)
+            self.assertIsNone(desktop.set_option("extension", False))
+            self.assertFalse(desktop.EXTENSION_FILE.exists() or desktop.MENU_FILE.exists())
+            self.assertEqual(len(self.names()), 3)
+            self.assertTrue(desktop.ACCELS_FILE.is_file())  # the shortcuts are back
+
+    def test_without_python3_nautilus_the_extension_setting_changes_nothing(self):
+        with mock.patch.object(desktop, "extension_available", lambda: False):
+            self.assertIsNone(desktop.set_option("extension", True))
+            self.assertFalse(desktop.EXTENSION_FILE.exists())
+            self.assertEqual(len(self.names()), 3)
+
+    def test_removing_the_entries_also_removes_the_extension_but_not_a_foreign_file(self):
+        with mock.patch.object(desktop, "extension_available", lambda: True):
+            desktop.set_option("extension", True)
+            desktop.install_scripts(remove_only=True)
+            self.assertFalse(desktop.EXTENSION_FILE.exists())
+            desktop.EXTENSION_FILE.write_text("# somebody else's\n")
+            desktop.install_scripts(remove_only=True)
+            self.assertEqual(desktop.EXTENSION_FILE.read_text(), "# somebody else's\n")
 
     def test_scripts_are_named_in_the_current_language_and_replaced_on_change(self):
         i18n.set_language("de")

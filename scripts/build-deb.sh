@@ -62,6 +62,7 @@ Architecture: all
 Installed-Size: $SIZE
 Depends: python3 (>= 3.10), python3-gi, python3-gi-cairo, gir1.2-gtk-4.0, gir1.2-adw-1 (>= 1.5)
 Recommends: nautilus | nemo | caja
+Suggests: python3-nautilus
 Maintainer: DigitGram <120712067+DigitGram@users.noreply.github.com>
 Homepage: https://github.com/DigitGram/trustcopy
 Description: Verified copying and moving for the Files right-click menu

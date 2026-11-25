@@ -927,3 +927,35 @@ msgstr ""
 #, python-brace-format
 msgid "in {t}"
 msgstr ""
+
+#: src/ui_settings.py
+msgid "Context menu in the Scripts folder"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Separate entry in the context menu"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Only the entries that fit what you selected."
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Needs the package python3-nautilus: sudo apt install python3-nautilus"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Name of the entry"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Turn off the keyboard shortcuts?"
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Files binds keys only to entries in the Scripts folder, not to a separate entry, so the keyboard shortcuts of TrustCopy stop working. They come back when you switch to the Scripts folder again."
+msgstr ""
+
+#: src/ui_settings.py
+msgid "Switch"
+msgstr ""

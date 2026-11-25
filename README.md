@@ -172,7 +172,13 @@ right-click menu under **Scripts**:
 | Right-click the folder background | **Scripts** > **TrustCopy: Paste from clipboard** (takes what you copied or cut with Ctrl+C / Ctrl+X) |
 
 On some drives Files does not offer **Scripts** in the background menu (seen on the top folder of an exFAT USB stick).
-Use a keyboard shortcut for pasting there.
+Use a keyboard shortcut for pasting there, or the separate entry below.
+
+Optional, for **Files (Nautilus) only**: with the `python3-nautilus` package installed (`sudo apt install python3-nautilus`), turn on
+*Separate entry in the context menu* in the settings. TrustCopy then has an entry of its own that shows only what fits (*Copy* and *Move* for
+a selection, *Paste* for the folder background when you copied files), works beyond 1,500 selected files and can be renamed. Files binds
+keys only to scripts, so the keyboard shortcuts do not work while it is on; the *Scripts* entries are removed too. TrustCopy never installs
+the package itself.
 
 **Keyboard shortcuts** (Nautilus only, off by default, switched on in the settings): **Ctrl+Alt+C** copy to…,
 **Ctrl+Alt+X** move to…, **Ctrl+Alt+V** paste from clipboard. Each key can be changed there; a key that GNOME, Files or

@@ -88,11 +88,57 @@ class Settings(Adw.ApplicationWindow):
         return finished
 
     def _context_group(self):
-        menu = self.combo(_("Entries"), "", [_("Under Scripts"), _("In a submenu")], ("scripts", "folder"), "menu")
-        context = Adw.PreferencesGroup(title=_("Context menu"), description=_("In the submenu “TrustCopy” they take one more click."))
-        context.add(menu)
-        context.add(self._shortcuts_row())
+        """Two ways to get the right-click entries, exactly one on: the Scripts folder (with its menu style and the keyboard
+        shortcuts) or a separate entry of its own (with its name). Each switch greys what belongs to the other way."""
+        available = desktop.extension_available()
+        own = self.cfg["extension"] and available
+        self.scripts_row = Adw.SwitchRow(title=_("Context menu in the Scripts folder"), active=not own)
+        self.entries_row = self.combo(_("Entries"), _("In the submenu “TrustCopy” they take one more click."), [_("Under Scripts"), _("In a submenu")], ("scripts", "folder"), "menu")
+        self.shortcuts_row = self._shortcuts_row()
+        self.extension_row = Adw.SwitchRow(title=_("Separate entry in the context menu"), active=own, sensitive=available,
+                                           subtitle=_("Only the entries that fit what you selected.") if available
+                                           else _("Needs the package python3-nautilus: sudo apt install python3-nautilus"))
+        self.name_row = Adw.EntryRow(title=_("Name of the entry"), text=self.cfg["menu_name"] or desktop.MENU_DIR, show_apply_button=True)
+        self.name_row.connect("apply", lambda row: self.apply("menu_name", "" if row.get_text().strip() in ("", desktop.MENU_DIR) else row.get_text()))
+        self._switching = False
+        self._show_way(own)
+        self.scripts_row.connect("notify::active", self._way_toggled)
+        self.extension_row.connect("notify::active", self._way_toggled)
+        context = Adw.PreferencesGroup(title=_("Context menu"))
+        for row in (self.scripts_row, self.entries_row, self.shortcuts_row, self.extension_row, self.name_row):
+            context.add(row)
         return context
+
+    def _show_way(self, own):
+        """The switches and the settings that go with the way `own` (the separate entry) or the Scripts folder."""
+        self._switching = True
+        self.extension_row.set_active(own)
+        self.scripts_row.set_active(not own)
+        self._switching = False
+        for row in (self.entries_row, self.shortcuts_row):
+            row.set_sensitive(not own)
+        self.name_row.set_sensitive(own)
+        self.shortcuts_row.set_expanded(not own and self.shortcuts_row.get_enable_expansion())  # folded away while it is greyed: it only takes room
+
+    def _way_toggled(self, row, _p):
+        """The two switches act like one toggle: switching one on switches the other off, and the one that is on cannot be left off.
+        shortcut: no way to have no entry at all; upgrade if users ask for it."""
+        if self._switching or self.scripts_row.get_active() != self.extension_row.get_active():
+            return  # ours, or a late notice of a change we made: exactly one is on, nothing to do
+        self._choose_way((row is self.extension_row) == row.get_active(), ask=True)
+
+    def _choose_way(self, own, ask):
+        """Takes the way `own` (the separate entry) or the Scripts folder. Files binds keys only to scripts, so leaving them
+        for the separate entry loses the shortcuts: that is asked first, and Cancel puts the switches back."""
+        if own and ask and desktop.load_config()["shortcuts"]:
+            self._show_way(False)
+            # TRANSLATORS: "Files" is the name of the GNOME file manager (Nautilus), "Dateien" in German; put the name in quotes the way your language does
+            text = _("Files binds keys only to entries in the Scripts folder, not to a separate entry, so the keyboard shortcuts of TrustCopy stop working. They come back when you switch to the Scripts folder again.")
+            warning_dialog(self, _("Turn off the keyboard shortcuts?"), text, _("Cancel"), _("Switch"),
+                           lambda yes: yes and self._choose_way(True, ask=False))
+            return
+        self._show_way(own)
+        self.apply("extension", own)
 
     def _shortcuts_row(self):
         """The switch with the three actions and their keys below it (they unfold when it is on)."""

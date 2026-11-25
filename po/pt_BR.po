@@ -927,3 +927,35 @@ msgstr "Outros"
 #, python-brace-format
 msgid "in {t}"
 msgstr "em {t}"
+
+#: src/ui_settings.py
+msgid "Context menu in the Scripts folder"
+msgstr "Menu de contexto na pasta Scripts"
+
+#: src/ui_settings.py
+msgid "Separate entry in the context menu"
+msgstr "Entrada separada no menu de contexto"
+
+#: src/ui_settings.py
+msgid "Only the entries that fit what you selected."
+msgstr "Somente as entradas que combinam com a seleção."
+
+#: src/ui_settings.py
+msgid "Needs the package python3-nautilus: sudo apt install python3-nautilus"
+msgstr "Requer o pacote python3-nautilus: sudo apt install python3-nautilus"
+
+#: src/ui_settings.py
+msgid "Name of the entry"
+msgstr "Nome da entrada"
+
+#: src/ui_settings.py
+msgid "Turn off the keyboard shortcuts?"
+msgstr "Desativar os atalhos de teclado?"
+
+#: src/ui_settings.py
+msgid "Files binds keys only to entries in the Scripts folder, not to a separate entry, so the keyboard shortcuts of TrustCopy stop working. They come back when you switch to the Scripts folder again."
+msgstr "O “Arquivos” só associa teclas a entradas da pasta Scripts, não a uma entrada separada, então os atalhos de teclado do TrustCopy deixam de funcionar. Eles voltam quando você volta para a pasta Scripts."
+
+#: src/ui_settings.py
+msgid "Switch"
+msgstr "Mudar"

@@ -4,6 +4,7 @@
 entries, the keyboard shortcuts and restarting the file managers. The copy engine is in core.py."""
 import contextlib
 import functools
+import glob
 import json
 import os
 import re
@@ -27,7 +28,7 @@ CONFIG_FILE = Path(os.environ.get("XDG_CONFIG_HOME") or "~/.config").expanduser(
 CONFLICTS = ("ask", "skip", "keep_both", "newer", "overwrite")
 AFTER = ("keep", "clean", "always")  # what the window does when the job is over
 DEFAULTS = {"verify": True, "algo": "crc32", "conflict": "ask", "after": "keep", "sums": False, "sums_algo": "sha256",
-            "notify": True, "sound": False, "menu": "scripts", "shortcuts": False, "keys": {}, "language": "auto",
+            "notify": True, "sound": False, "menu": "scripts", "extension": False, "menu_name": "", "shortcuts": False, "keys": {}, "language": "auto",
             "update_check": False, "update_last": 0,  # weekly check at start: off until the user switches it on
             "integrated": False}  # the .deb creates the right-click entries at the first start (see first_run_entries)
 
@@ -90,6 +91,8 @@ def set_option(key, value):
     settings, so changing any of them rebuilds them; returns an error text (file not writable,
     install_scripts()'s), else None.
     """
+    if key == "menu_name":
+        value = " ".join(str(value).split())[:40]  # one line, no padding, nothing a menu would choke on
     saved = {**load_config(), key: value}
     try:
         CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -98,7 +101,7 @@ def set_option(key, value):
         return str(e)
     if key == "language":
         i18n.set_language(value)
-    return install_scripts() if key in ("language", "menu", "shortcuts", "keys") else None
+    return install_scripts() if key in ("language", "menu", "extension", "menu_name", "shortcuts", "keys") else None
 
 
 def reset_config():
@@ -158,11 +161,10 @@ def update_due(now=None):
 
 
 # --------------------------------------------------------------------------- Files (Nautilus) integration
-# shortcut: Nautilus scripts instead of a nautilus-python extension, so there is no extra dependency;
-# the price is that the entries live under "Scripts", flat or in a "TrustCopy" submenu (setting "menu"), and that
-# Files passes individually selected files in one environment variable (Linux caps it at 128 KiB: about 1,500 files of typical path
-# length): beyond that the script silently does not start. A selected folder is not affected.
-# Upgrade if users ask for a top-level entry.
+# By default Nautilus scripts, so there is no extra dependency; the price is that the entries live under "Scripts", flat or in a
+# "TrustCopy" submenu (setting "menu"), and that Files passes individually selected files in one environment variable (Linux caps it
+# at 128 KiB: about 1,500 files of typical path length): beyond that the script silently does not start. A selected folder is not
+# affected. Opt-in (setting "extension", needs python3-nautilus): a nautilus-python extension instead, see nautilus_ext.py.
 
 DATA = Path(os.environ.get("XDG_DATA_HOME") or "~/.local/share").expanduser()
 SCRIPTS_DIR = DATA / "nautilus/scripts"
@@ -209,13 +211,14 @@ def menu_entries(base=None):
 
 def files_setup():
     """What each file manager reads when it starts, by program: the entries it lists (the forks the same names in their
-    own folders) and, for Files only, the shortcuts file. A change shows after a restart."""
+    own folders) and, for Files only, the shortcuts file and whether the extension is in use. A change shows after a restart
+    (the extension's texts and name are read each time the menu opens, so those need none)."""
     try:
         shortcuts = ACCELS_FILE.read_bytes()
     except OSError:
         shortcuts = b""
-    entries = menu_entries()
-    return {"nautilus": (entries, shortcuts), **dict.fromkeys(FORKS, entries)}
+    entries, via_extension = menu_entries(), extension_in_use()
+    return {"nautilus": ([] if via_extension else entries, b"" if via_extension else shortcuts, via_extension), **dict.fromkeys(FORKS, entries)}
 
 
 def _ours(path):
@@ -230,11 +233,43 @@ def _ours(path):
         return False
 
 
+EXTENSION_FILE = DATA / "nautilus-python/extensions/trustcopy.py"
+EXTENSION_SOURCE = Path(__file__).resolve().parent / "nautilus_ext.py"
+MENU_FILE = DATA / "trustcopy/menu.json"  # what the extension reads each time the menu opens (the same path is in nautilus_ext.py)
+
+
+def extension_available():
+    """True when Files can load Python extensions (python3-nautilus, for Files 43 and newer)."""
+    patterns = ("/usr/lib/*/nautilus/extensions-4", "/usr/lib64/nautilus/extensions-4", "/usr/lib/nautilus/extensions-4")
+    return any(Path(d, "libnautilus-python.so").exists() for pattern in patterns for d in glob.glob(pattern))
+
+
+def extension_in_use():
+    """True when the setting is on and Files can use it: then the Scripts entries and their shortcuts are gone."""
+    return load_config()["extension"] and extension_available()
+
+
+def _apply_extension(on):
+    """Puts the extension and its menu texts in place when `on`, else takes them away (the file only if it is ours)."""
+    if on:
+        menu = {"launcher": str(LAUNCHER), "name": load_config()["menu_name"] or MENU_DIR, "labels": {op: _(title) for op, title in SCRIPT_ACTIONS.items()}}
+        MENU_FILE.parent.mkdir(parents=True, exist_ok=True)
+        MENU_FILE.write_text(json.dumps(menu, ensure_ascii=False))
+        EXTENSION_FILE.parent.mkdir(parents=True, exist_ok=True)
+        EXTENSION_FILE.write_text("#!/usr/bin/python3\n" + MARKER + "\n" + EXTENSION_SOURCE.read_text())
+    else:
+        MENU_FILE.unlink(missing_ok=True)
+        if _ours(EXTENSION_FILE):
+            EXTENSION_FILE.unlink()
+
+
 def install_scripts(remove_only=False):
     """(Re)create the right-click entries in the current language and menu style, dropping stale ones
     (any language, any style, even from an older translation), for Files and for each fork that is installed.
     Returns an error text, or None on success."""
     try:
+        via_extension = not remove_only and extension_in_use()  # then Files gets no scripts (no double entries) and no shortcuts
+        _apply_extension(via_extension)
         seen = set()
         for fm, base in (("nautilus", SCRIPTS_DIR), *FORKS.items()):
             if base.resolve() in seen:  # linked to another one: a second pass would delete what the first wrote
@@ -245,7 +280,7 @@ def install_scripts(remove_only=False):
                 old.unlink()
             with contextlib.suppress(OSError):  # not there, or holds files that are not ours
                 folder.rmdir()
-            if remove_only or not (fm == "nautilus" or shutil.which(fm)):
+            if remove_only or (via_extension and fm == "nautilus") or not (fm == "nautilus" or shutil.which(fm)):
                 continue  # a fork that is not installed gets no folder; its old entries are gone anyway
             for key, script in zip(SCRIPT_ACTIONS, menu_entries(base)):
                 script.parent.mkdir(parents=True, exist_ok=True)
@@ -253,7 +288,7 @@ def install_scripts(remove_only=False):
                 script.chmod(0o755)
     except (OSError, RuntimeError) as e:  # RuntimeError: resolve() on a symlink loop
         return str(e)
-    return install_accels(remove_only)
+    return install_accels(remove_only or via_extension)
 
 
 def first_run_entries():

@@ -3,7 +3,7 @@
 ## How it works
 
 The installer copies `src/` to `~/.local/share/trustcopy/`, links `~/.local/bin/trustcopy` and registers
-a desktop entry and the icons. The right-click entries are small Nautilus scripts (and Nemo/Caja scripts, when installed) that `trustcopy` writes itself, named in the current language. `core.py` holds the copy engine and `desktop.py` the settings, the Nautilus scripts and the shortcuts (neither has UI code);
+a desktop entry and the icons. The right-click entries are small Nautilus scripts (and Nemo/Caja scripts, when installed) that `trustcopy` writes itself, named in the current language (optionally, setting `extension`, a `nautilus_ext.py` copy in `~/.local/share/nautilus-python/extensions/` instead, which needs `python3-nautilus`). `core.py` holds the copy engine and `desktop.py` the settings, the Nautilus scripts and the shortcuts (neither has UI code);
 the `ui_*.py` modules only show it.
 
 ## Project layout

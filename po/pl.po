@@ -945,3 +945,35 @@ msgstr "Inne"
 #, python-brace-format
 msgid "in {t}"
 msgstr "w {t}"
+
+#: src/ui_settings.py
+msgid "Context menu in the Scripts folder"
+msgstr "Menu kontekstowe w folderze Skrypty"
+
+#: src/ui_settings.py
+msgid "Separate entry in the context menu"
+msgstr "Osobna pozycja w menu kontekstowym"
+
+#: src/ui_settings.py
+msgid "Only the entries that fit what you selected."
+msgstr "Tylko pozycje pasujące do zaznaczenia."
+
+#: src/ui_settings.py
+msgid "Needs the package python3-nautilus: sudo apt install python3-nautilus"
+msgstr "Wymaga pakietu python3-nautilus: sudo apt install python3-nautilus"
+
+#: src/ui_settings.py
+msgid "Name of the entry"
+msgstr "Nazwa pozycji"
+
+#: src/ui_settings.py
+msgid "Turn off the keyboard shortcuts?"
+msgstr "Wyłączyć skróty klawiszowe?"
+
+#: src/ui_settings.py
+msgid "Files binds keys only to entries in the Scripts folder, not to a separate entry, so the keyboard shortcuts of TrustCopy stop working. They come back when you switch to the Scripts folder again."
+msgstr "„Pliki” mogą przypisywać klawisze tylko do pozycji w folderze Skrypty, a nie do osobnej pozycji, więc skróty klawiszowe TrustCopy przestaną działać. Wrócą po ponownym przełączeniu na folder Skrypty."
+
+#: src/ui_settings.py
+msgid "Switch"
+msgstr "Przełącz"
