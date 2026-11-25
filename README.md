@@ -87,8 +87,16 @@ Older systems are not supported; the installer stops with an install hint.
 
 ## Install
 
-TrustCopy installs for the current user only. It needs no root and refuses to run under `sudo`. The installer
-downloads exactly the version it belongs to, and releases are [signed](#verify-the-download).
+Two ways, pick one. Releases are [signed](#verify-the-download).
+
+| | For | Installs | Needs |
+| --- | --- | --- | --- |
+| [Install script](#install-script-for-your-user) | any distribution | for your user, `~/.local` | no root |
+| [.deb](#debian-ubuntu-linux-mint-the-deb) | Debian, Ubuntu, Linux Mint | for the whole system | `sudo` |
+
+### Install script, for your user
+
+The script needs no root and refuses to run under `sudo`. It downloads exactly the version it belongs to.
 
 Read it first, then run it:
 
@@ -117,20 +125,41 @@ To remove it:
 ~/.local/share/trustcopy/install.sh --purge       # removes the settings too
 ```
 
+### Debian, Ubuntu, Linux Mint: the .deb
+
+If you would rather not use a terminal: download `trustcopy_<version>_all.deb` from the
+[latest release](https://github.com/DigitGram/trustcopy/releases/latest) and open it with a double click (Software or
+*Install*), or from a terminal:
+
+```sh
+sudo apt install ./trustcopy_<version>_all.deb   # pulls in GTK 4 and libadwaita
+```
+
+The package installs for all users, below `/usr`. The right-click entries sit in each user's own home folder, which a
+package cannot write to: TrustCopy creates them when you open it for the first time (find it in the Activities overview);
+restart the file manager (`nautilus -q`) if it asks. Do not combine it with the install script above: use one of them.
+
+To remove it, run `sudo apt remove trustcopy`. That also deletes the right-click entries of all users (only files
+TrustCopy wrote). Your settings in `~/.config/trustcopy` are kept; delete that folder too if you want them gone
+(`apt purge` leaves your home folder alone).
+
 ### Verify the download
 
-Releases are signed with the key of `digitgram@proton.me`, fingerprint
-`E7AA EB31 A4DE CF99 B314 7E1D FAAB 30B5 FD49 0E93`.
+Every release has a file `SHA256SUMS` with the checksums of `install.sh` and the `.deb`, and `SHA256SUMS.asc`, its GPG
+signature. The key is the one of `digitgram@proton.me`, fingerprint
+`E7AA EB31 A4DE CF99 B314 7E1D FAAB 30B5 FD49 0E93`. Download the files you want into one folder, then:
 
 ```sh
 curl -fsSL https://github.com/DigitGram.gpg | gpg --import
-curl -fsSLO https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh
-curl -fsSLO https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh.asc
-gpg --verify install.sh.asc install.sh
+curl -fsSLO https://github.com/DigitGram/trustcopy/releases/latest/download/SHA256SUMS
+curl -fsSLO https://github.com/DigitGram/trustcopy/releases/latest/download/SHA256SUMS.asc
+gpg --verify SHA256SUMS.asc SHA256SUMS
+sha256sum -c --ignore-missing SHA256SUMS   # --ignore-missing skips the files you did not download
 ```
 
-Run the script only if gpg reports a good signature and the fingerprint matches the one above. The signed script
-names the exact commit it downloads, so the signature covers the program as well, not just the installer.
+Trust the files only if gpg reports a good signature, the fingerprint matches the one above and `sha256sum` says
+`OK` for each. `install.sh` names the exact commit it downloads, so this covers the program as well, not just the
+installer. (The releases up to 1.3 have a separate `install.sh.asc` instead: `gpg --verify install.sh.asc install.sh`.)
 
 ## Usage
 
