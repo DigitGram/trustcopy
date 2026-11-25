@@ -141,6 +141,20 @@ h2{margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px);line-height
 
 /* install */
 .install .box{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+/* the two ways to install: tabs when the script runs, both stacked without it */
+.ways{display:flex;flex-direction:column;gap:18px}
+.way{display:flex;flex-direction:column;gap:12px}
+.way-title{margin:0;color:var(--white);font-size:17px}
+.way p{margin:0;color:var(--sub);font-size:16.5px}
+.way p code{font-size:.9em}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{padding:7px 15px;border-radius:999px;border:1px solid var(--panel-line);background:rgba(255,255,255,.05);color:var(--sub);font:700 14px Lato,sans-serif;cursor:pointer}
+.tabs button:hover{background:rgba(255,255,255,.1);color:var(--white)}
+.tabs button[aria-selected=true]{background:rgba(87,227,137,.2);border-color:rgba(87,227,137,.6);color:#fff}
+.tabs button:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.ways.js .way-title{display:none}
+.ways.js .way[hidden]{display:none}
+.code.plain{padding-right:20px}
 .codewrap{position:relative}
 .code{background:#04100f;border:1px solid var(--panel-line);border-radius:14px;padding:20px 78px 20px 22px;
   font:400 15.5px/1.55 ui-monospace,"JetBrains Mono","DejaVu Sans Mono",monospace;color:#cfe9dc;overflow-x:auto;white-space:pre}
@@ -257,24 +271,36 @@ footer .links{display:flex;flex-wrap:wrap;gap:22px}
 <section class="features install" id="install">
   <div class="wrap">
     <div class="kicker">Install</div>
-    <h2>One line, no root.</h2>
-    <p class="intro">Installs for the current user only. Running it again from a newer release updates. The settings can also check for a newer version once a week, if you switch that on; nothing is sent or installed.</p>
+    <h2>Two ways, pick one.</h2>
+    <p class="intro">Every release is signed. The settings can also check for a newer version once a week, if you switch that on; nothing is sent or installed.</p>
     <div class="box">
       <div>
-        <div class="codewrap">
-          <div class="code" id="cmd"><span class="c"># curl</span>
+        <div class="ways">
+          <div class="way">
+            <h4 class="way-title">Install script</h4>
+            <p>Any distribution. Installs for your user only, no root. Running it again from a newer release updates.</p>
+            <div class="codewrap">
+              <div class="code"><span class="c"># curl</span>
 curl -fsSL https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash
 
 <span class="c"># or wget</span>
 wget -qO- https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash</div>
-          <button class="copy" type="button" aria-label="Copy the curl command">Copy</button>
+              <button class="copy" type="button" aria-label="Copy the curl command">Copy</button>
+            </div>
+          </div>
+          <div class="way">
+            <h4 class="way-title">.deb</h4>
+            <p>Debian, Ubuntu and Linux Mint. Installs for all users and pulls in GTK 4 and libadwaita. Download <code>trustcopy_&lt;version&gt;_all.deb</code> from the <a href="https://github.com/DigitGram/trustcopy/releases/latest">latest release</a>, double-click it or:</p>
+            <div class="code plain">sudo apt install ./trustcopy_&lt;version&gt;_all.deb</div>
+            <p>The right-click entries live in your own home folder, so TrustCopy creates them when you open it for the first time (find it in the Activities overview).</p>
+          </div>
         </div>
       </div>
       <div>
         <ul>
           <li><b>Needs</b> a GNOME-family desktop with Nautilus: Ubuntu 24.04+, Fedora 40+, Debian 13+, Linux Mint 22+. Nemo and Caja get the same Scripts entries.</li>
           <li><b>Then</b> right-click files › <i>Scripts</i> › <i>TrustCopy: Copy to…</i></li>
-          <li><b>Signed.</b> Releases carry a GPG signature; the fingerprint is
+          <li><b>Signed.</b> Every release has a <code>SHA256SUMS</code> file with a GPG signature, covering the script and the .deb. The fingerprint is
             <div class="fp">E7AA EB31 A4DE CF99 B314 7E1D FAAB 30B5 FD49 0E93</div></li>
           <li><a href="https://github.com/DigitGram/trustcopy#verify-the-download">How to verify the download</a></li>
         </ul>
@@ -337,6 +363,28 @@ wget -qO- https://github.com/DigitGram/trustcopy/releases/latest/download/instal
     show(i);
   });
   show(0);
+})();
+(function () {  /* tabs for the two ways to install */
+  var ways = document.querySelector('.ways');
+  if (!ways) return;
+  var panels = [].slice.call(ways.querySelectorAll('.way')), bar = document.createElement('div'), tabs = [];
+  bar.className = 'tabs'; bar.setAttribute('role', 'tablist'); bar.setAttribute('aria-label', 'Ways to install');
+  function pick(i) {
+    tabs.forEach(function (t, k) { t.setAttribute('aria-selected', k === i ? 'true' : 'false'); t.tabIndex = k === i ? 0 : -1; });
+    panels.forEach(function (p, k) { p.hidden = k !== i; });
+  }
+  panels.forEach(function (p, i) {
+    var t = document.createElement('button');
+    t.type = 'button'; t.setAttribute('role', 'tab'); t.textContent = p.querySelector('.way-title').textContent;
+    t.addEventListener('click', function () { pick(i); });
+    t.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      var j = (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      pick(j); tabs[j].focus(); e.preventDefault();
+    });
+    tabs.push(t); bar.appendChild(t);
+  });
+  ways.insertBefore(bar, ways.firstChild); ways.classList.add('js'); pick(0);
 })();
 document.querySelector('.copy').addEventListener('click', function () {
   var b = this, text = 'curl -fsSL https://github.com/DigitGram/trustcopy/releases/latest/download/install.sh | bash';
