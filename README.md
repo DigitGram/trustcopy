@@ -60,6 +60,7 @@ months later.
 - **Switch off when done.** In the job window, *When finished* can also suspend or shut down the computer, after a countdown you can cancel.
 - **Speed test.** In the settings, *Test* shows which checksum algorithm is fastest on your computer and recommends the fastest secure one.
 - **Pause, resume, queue.** Jobs run one after the other, and a waiting job's window says its place and what runs now; errors are retried, and "Retry failed" repeats only those files.
+- **Your menu.** The entries sit under *Scripts*, or, with the `python3-nautilus` package, in an entry of their own that shows only what fits and that you can rename (a switch in the settings; the keyboard shortcuts need the *Scripts* entries).
 - **Native look.** GTK 4 and libadwaita, light and dark, in ten languages (English, Deutsch, Español, Français, Italiano, 日本語, Polski, Português (Brasil), Українська, 简体中文).
 
 <p align="center">
