@@ -63,12 +63,21 @@ def fake_area(tips=None):
     return NS(get_color=lambda: NS(red=1, green=1, blue=1), get_tooltip_text=lambda: tips[-1], set_tooltip_text=tips.append)
 
 
+def descendants(widget):
+    """Every widget below `widget`, depth first."""
+    child = widget.get_first_child()
+    while child:
+        yield child
+        yield from descendants(child)
+        child = child.get_next_sibling()
+
+
 def child(tmp):
     """Runs one copy in a window and checks the window once the copy is over, again with step 2 picked."""
     sys.path.insert(0, str(SRC))
     import desktop, ui_common as common, ui_dialogs as dialogs, ui_graph as graph, ui_gtk
     from ui_panel import Panel
-    from gi.repository import GLib
+    from gi.repository import Adw, GLib, Gtk
 
     segs = []
     pen = NS(curve_to=lambda *a: segs.append(a), line_to=lambda *a: segs.append(a))
@@ -298,6 +307,23 @@ def child(tmp):
             return True  # the next round checks the window with the read graph
         try:
             app.show_settings()  # the window with the shortcut rows must build
+            i18n, ui_settings, cut, before = sys.modules["i18n"], sys.modules["ui_settings"], [], sys.modules["i18n"]._current
+            try:
+                for lang in dict.fromkeys(["en", *i18n.languages()]):  # the tab names are written out in full in every language
+                    i18n.set_language(lang)
+                    window = ui_settings.Settings(app)
+                    window.present()
+                    end = time.monotonic() + 0.3
+                    while time.monotonic() < end:
+                        GLib.MainContext.default().iteration(False)
+                    switcher = next(w for w in descendants(window) if isinstance(w, Adw.ViewSwitcher))
+                    if switcher.get_width() < switcher.measure(Gtk.Orientation.HORIZONTAL, -1)[1]:
+                        cut.append(lang)
+                    window.destroy()
+            finally:
+                i18n.set_language(before)
+            if cut:
+                failures.append(f"tab names are cut off in {cut}")
             dialogs.warning_dialog(app.settings, "t", "x", "no", "yes", print)  # asked at once, as after a new language: no width yet
             width = app.settings.get_visible_dialog().get_extra_child().get_size_request()[0]
             if not 0 < width <= 480:
