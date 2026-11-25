@@ -974,3 +974,7 @@ msgstr "Copia in {dest}, {percent}%"
 #, python-brace-format
 msgid "Moving to {dest}, {percent}%"
 msgstr "Spostamento in {dest}, {percent}%"
+
+#: src/ui_panel.py
+msgid "The computer stays on: the checksum file could not be written."
+msgstr "Il computer resta acceso: non è stato possibile scrivere il file di checksum."

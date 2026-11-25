@@ -992,3 +992,7 @@ msgstr "Kopiowanie do {dest}, {percent}%"
 #, python-brace-format
 msgid "Moving to {dest}, {percent}%"
 msgstr "Przenoszenie do {dest}, {percent}%"
+
+#: src/ui_panel.py
+msgid "The computer stays on: the checksum file could not be written."
+msgstr "Komputer pozostaje włączony: nie udało się zapisać pliku sum kontrolnych."

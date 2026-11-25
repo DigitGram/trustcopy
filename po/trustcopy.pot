@@ -974,3 +974,7 @@ msgstr ""
 #, python-brace-format
 msgid "Moving to {dest}, {percent}%"
 msgstr ""
+
+#: src/ui_panel.py
+msgid "The computer stays on: the checksum file could not be written."
+msgstr ""

@@ -956,3 +956,7 @@ msgstr "正在复制到 {dest}，{percent}%"
 #, python-brace-format
 msgid "Moving to {dest}, {percent}%"
 msgstr "正在移动到 {dest}，{percent}%"
+
+#: src/ui_panel.py
+msgid "The computer stays on: the checksum file could not be written."
+msgstr "计算机保持开机：无法写入校验和文件。"

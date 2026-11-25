@@ -823,6 +823,9 @@ class Panel(Adw.ApplicationWindow):
             self.sums_label.set_label(_("Checksum file created: {name}").format(name=desktop.shown(os.path.basename(path))))
         elif error:
             self.sums_label.set_label(_("The checksum file could not be written: {error}").format(error=desktop.shown(error)))
+        if error and self.power_after:  # like any error: nobody who sleeps through one wants the computer off
+            self.power_after = ""
+            self.toasts.add_toast(Adw.Toast(title=_("The computer stays on: the checksum file could not be written.")))
         if self.close_after_sums:
             self.close()
         elif self.power_after:

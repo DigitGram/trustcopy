@@ -974,3 +974,7 @@ msgstr "Copiando a {dest}, {percent} %"
 #, python-brace-format
 msgid "Moving to {dest}, {percent}%"
 msgstr "Moviendo a {dest}, {percent} %"
+
+#: src/ui_panel.py
+msgid "The computer stays on: the checksum file could not be written."
+msgstr "El equipo sigue encendido: no se pudo escribir el archivo de sumas de verificación."

@@ -136,6 +136,12 @@ def child(tmp):
     assert [c[:2] for c in steps_of(checking)] == [(["k-step-done"], "✓"), (["k-step-active"], "2"), (["k-step-todo"], "3")]
     two = steps_of(NS(check_pass=False, verify=False, algo="crc32", written=0))
     assert two[1][2] is False and two[2][1] == "2", two  # no verification: two steps, the last one is the second
+    def sums_end(**result):  # the checksum file is done: does the computer still go off?
+        panel = NS(sums_row=MagicMock(), sums_label=MagicMock(), close_after_sums=False, power_after="poweroff", confirm_power=MagicMock(), toasts=MagicMock())
+        Panel.sums_done(panel, **result)
+        return panel.confirm_power.called, panel.power_after
+    assert sums_end(path="/x/SHA256SUMS") == (True, "poweroff") and sums_end() == (True, "poweroff"), "a written or skipped checksum file keeps the power action"
+    assert sums_end(error="disk full") == (False, ""), "the computer must not go off after a checksum file that could not be written"
     for reading, marked in ((False, 1), (True, 2)):  # the speed tile of the graph on show is the marked one
         tiles = [MagicMock() for _t in range(4)]
         Panel._show_steps(NS(complete=True, picked=3, steps=[(MagicMock(), MagicMock(), MagicMock()) for _s in range(3)], joins=[MagicMock()], reading=reading, tile_boxes=tiles, active=False, verify_secs=0.0,

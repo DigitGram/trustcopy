@@ -956,3 +956,7 @@ msgstr "{dest} へコピー中、{percent}%"
 #, python-brace-format
 msgid "Moving to {dest}, {percent}%"
 msgstr "{dest} へ移動中、{percent}%"
+
+#: src/ui_panel.py
+msgid "The computer stays on: the checksum file could not be written."
+msgstr "コンピューターはオンのままです。チェックサムファイルを書き込めませんでした。"
