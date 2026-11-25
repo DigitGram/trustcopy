@@ -959,3 +959,18 @@ msgstr "O “Arquivos” só associa teclas a entradas da pasta Scripts, não a 
 #: src/ui_settings.py
 msgid "Switch"
 msgstr "Mudar"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Place {pos} of {total}"
+msgstr "Posição {pos} de {total}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Copying to {dest}, {percent}%"
+msgstr "Copiando para {dest}, {percent}%"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Moving to {dest}, {percent}%"
+msgstr "Movendo para {dest}, {percent}%"

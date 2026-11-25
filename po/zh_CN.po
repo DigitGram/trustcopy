@@ -941,3 +941,18 @@ msgstr "“文件”只能将按键绑定到“脚本”文件夹中的菜单项
 #: src/ui_settings.py
 msgid "Switch"
 msgstr "切换"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Place {pos} of {total}"
+msgstr "第 {pos} 位，共 {total} 个"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Copying to {dest}, {percent}%"
+msgstr "正在复制到 {dest}，{percent}%"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Moving to {dest}, {percent}%"
+msgstr "正在移动到 {dest}，{percent}%"

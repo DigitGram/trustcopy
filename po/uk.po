@@ -977,3 +977,18 @@ msgstr "«Файли» прив’язують клавіші лише до пу
 #: src/ui_settings.py
 msgid "Switch"
 msgstr "Перемкнути"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Place {pos} of {total}"
+msgstr "Місце {pos} з {total}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Copying to {dest}, {percent}%"
+msgstr "Копіювання до {dest}, {percent}%"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Moving to {dest}, {percent}%"
+msgstr "Переміщення до {dest}, {percent}%"

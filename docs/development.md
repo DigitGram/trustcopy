@@ -23,7 +23,7 @@ po/                  translations (trustcopy.pot is the template)
 data/                desktop entry, icons
 install.sh           per-user installer and uninstaller
 tests/test_core.py   checks for core.py, desktop.py, i18n.py and the translations
-tests/smoke_gtk.py   opens the progress window on a real copy and checks that the bars are laid out
+tests/smoke_gtk.py   opens the progress window on a real copy and checks that the bars are laid out, the settings tabs and a waiting job
 tests/scenarios.sh   sandbox to try every dialog by hand (conflicts, errors, bad checksum, full disk)
 tests/install_test.sh  installs into a throw-away home and removes it again
 ```

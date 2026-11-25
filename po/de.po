@@ -959,3 +959,18 @@ msgstr "„Dateien“ kann Tasten nur an Einträge im Skripte-Ordner binden, nic
 #: src/ui_settings.py
 msgid "Switch"
 msgstr "Umschalten"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Place {pos} of {total}"
+msgstr "Platz {pos} von {total}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Copying to {dest}, {percent}%"
+msgstr "Kopiert nach {dest}, {percent} %"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Moving to {dest}, {percent}%"
+msgstr "Verschiebt nach {dest}, {percent} %"

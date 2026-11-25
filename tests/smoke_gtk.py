@@ -342,6 +342,10 @@ def child(tmp):
             win.show_speeds({"crc32": 900e6, "sha256": 300e6, "sha512": 600e6, "sha1": 100e6, "md5": 100e6})
         except Exception as e:  # noqa: BLE001 - whatever breaks it is a failure of this test
             failures.append(f"settings window: {e!r}")
+        try:
+            failures.extend(waiting_problems(app, tmp))
+        except Exception as e:  # noqa: BLE001
+            failures.append(f"waiting job: {e!r}")
         app.quit()
         return False
 
@@ -352,6 +356,43 @@ def child(tmp):
     app.run(["trustcopy", "copy", "--to", f"{tmp}/dst", f"{tmp}/file"])
     if failures:
         sys.exit("; ".join(failures))
+
+
+def waiting_problems(app, tmp):
+    """A job that has to wait keeps its window (its options can be set meanwhile) and says where it stands and what runs; the card is gone once it runs."""
+    import threading
+    from gi.repository import GLib
+    core, Panel = sys.modules["core"], sys.modules["ui_panel"].Panel
+    gate, original = threading.Event(), core.Job.run
+    core.Job.run = lambda self: (gate.wait(), original(self))[1]  # the first job stands still until the gate opens
+    found = []
+
+    def pump(seconds, until=lambda: False):
+        end = time.monotonic() + seconds
+        while time.monotonic() < end and not until():
+            GLib.MainContext.default().iteration(False)
+            time.sleep(0.01)
+    try:
+        panels = []
+        for n in (1, 2, 3):
+            Path(tmp, f"q{n}").mkdir()
+            panel = Panel(app)
+            panel.present()
+            panel.begin("copy", [f"{tmp}/file"], f"{tmp}/q{n}")
+            panels.append(panel)
+        pump(1.2)
+        if [p.wait_card.get_visible() for p in panels] != [False, True, True]:
+            found.append(f"the waiting cards are wrong: {[p.wait_card.get_visible() for p in panels]}")
+        elif not panels[1].wait_text.get_text().startswith("Place 2 of 3") or not panels[2].wait_text.get_text().startswith("Place 3 of 3") or "Copying to" not in panels[1].wait_text.get_text():
+            found.append(f"a waiting job does not say its place and what runs: {panels[1].wait_text.get_text()!r}")
+        gate.set()
+        pump(20, lambda: app.running is None and not any(p.wait_card.get_visible() for p in panels))
+        if any(p.wait_card.get_visible() for p in panels) or not all(Path(tmp, f"q{n}", "file").exists() for n in (1, 2, 3)):
+            found.append("the queue did not run every job, or a card stayed")
+    finally:
+        core.Job.run = original
+        gate.set()
+    return found
 
 
 def main():

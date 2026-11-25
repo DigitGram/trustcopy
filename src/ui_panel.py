@@ -167,6 +167,15 @@ class Panel(Adw.ApplicationWindow):
         self.big_speed = Gtk.Label(halign=Gtk.Align.END, valign=Gtk.Align.START, margin_top=10, margin_end=14, css_classes=["title-4", "k-num"])
         graph = self.graph_box = Gtk.Overlay(child=self.graph, vexpand=True)
         graph.add_overlay(self.big_speed)
+        self.wait_title = Gtk.Label(label=_("Waiting for the previous job…"), css_classes=["title-4"], wrap=True, justify=Gtk.Justification.CENTER)
+        self.wait_text = Gtk.Label(css_classes=["dim-label", "k-num"], wrap=True, justify=Gtk.Justification.CENTER)
+        self.wait_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, valign=Gtk.Align.CENTER, halign=Gtk.Align.CENTER, visible=False)
+        for w in (Gtk.Image(icon_name="document-open-recent-symbolic", pixel_size=32, css_classes=["dim-label"]), self.wait_title, self.wait_text):
+            self.wait_card.append(w)
+        self.wait_cover = Gtk.Box(css_classes=["card"], visible=False)  # hides the empty graph while the job waits
+        graph.add_overlay(self.wait_cover)
+        graph.add_overlay(self.wait_card)
+        self.wait_place, self.wait_timer = (0, 0), 0
         self.top = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         bar = Gtk.Overlay(child=self.bar)
         bar.add_overlay(self.percent)
@@ -413,8 +422,36 @@ class Panel(Adw.ApplicationWindow):
         return paths
 
     # --- running -------------------------------------------------------------
+    def show_waiting(self, place, total):
+        """A job that has to wait keeps its window, so its options can be set meanwhile; the graph's place says it waits, where, and what runs."""
+        self.wait_place = (place, total)
+        self.wait_card.set_visible(True)
+        self.wait_cover.set_visible(True)
+        self._wait_text()
+        if not self.wait_timer:
+            self.wait_timer = GLib.timeout_add_seconds(1, self._wait_tick)
+
+    def _wait_tick(self):
+        if not self.wait_card.get_visible():
+            self.wait_timer = 0
+            return False
+        self._wait_text()
+        return True
+
+    def _wait_text(self):
+        """"Place 2 of 3 · Copying to /Videos, 45 %": where this job stands and what runs now."""
+        place, total = self.wait_place
+        parts = [_("Place {pos} of {total}").format(pos=place, total=total)]
+        ahead = self.get_application().running
+        if ahead and ahead is not self and ahead.job:
+            text = _("Moving to {dest}, {percent}%") if ahead.job.move else _("Copying to {dest}, {percent}%")
+            parts.append(text.format(dest=ahead.route_texts[1].get_text(), percent=int(ahead.bar.get_fraction() * 100)))
+        self.wait_text.set_text(" · ".join(parts))
+
     def run(self):
         self.active = True
+        self.wait_card.set_visible(False)
+        self.wait_cover.set_visible(False)
         self.say("")
         self.pause.set_visible(True)
         self.last_t = self.t0 = time.monotonic()

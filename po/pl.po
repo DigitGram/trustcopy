@@ -977,3 +977,18 @@ msgstr "„Pliki” mogą przypisywać klawisze tylko do pozycji w folderze Skry
 #: src/ui_settings.py
 msgid "Switch"
 msgstr "Przełącz"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Place {pos} of {total}"
+msgstr "Miejsce {pos} z {total}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Copying to {dest}, {percent}%"
+msgstr "Kopiowanie do {dest}, {percent}%"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Moving to {dest}, {percent}%"
+msgstr "Przenoszenie do {dest}, {percent}%"

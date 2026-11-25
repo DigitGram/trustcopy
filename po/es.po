@@ -959,3 +959,18 @@ msgstr "“Archivos” solo puede asignar teclas a entradas de la carpeta Script
 #: src/ui_settings.py
 msgid "Switch"
 msgstr "Cambiar"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Place {pos} of {total}"
+msgstr "Puesto {pos} de {total}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Copying to {dest}, {percent}%"
+msgstr "Copiando a {dest}, {percent} %"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Moving to {dest}, {percent}%"
+msgstr "Moviendo a {dest}, {percent} %"

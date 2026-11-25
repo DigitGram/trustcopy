@@ -95,7 +95,7 @@ class App(Adw.Application):
     def enqueue(self, panel):
         if self.running:
             self.waiting.append(panel)
-            panel.say(_("Waiting for the previous job…"))
+            self.refresh_waiting()
         else:
             self.running = panel
             self.stay_awake(True)
@@ -106,6 +106,12 @@ class App(Adw.Application):
         self.stay_awake(bool(self.running))  # kept across queued jobs, released after the last one
         if self.running:
             self.running.run()
+        self.refresh_waiting()
+
+    def refresh_waiting(self):
+        """Tells each waiting window its place: the running job is the first."""
+        for place, panel in enumerate(self.waiting, 2):
+            panel.show_waiting(place, len(self.waiting) + 1)
 
     def stay_awake(self, on):
         """No automatic suspend while jobs run (the screen may still turn off). Nothing to undo when the session offers no inhibit."""
@@ -118,3 +124,4 @@ class App(Adw.Application):
     def forget(self, panel):
         if panel in self.waiting:
             self.waiting.remove(panel)
+            self.refresh_waiting()

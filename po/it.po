@@ -959,3 +959,18 @@ msgstr "“File” può associare i tasti solo alle voci nella cartella Script, 
 #: src/ui_settings.py
 msgid "Switch"
 msgstr "Passa"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Place {pos} of {total}"
+msgstr "Posizione {pos} di {total}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Copying to {dest}, {percent}%"
+msgstr "Copia in {dest}, {percent}%"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Moving to {dest}, {percent}%"
+msgstr "Spostamento in {dest}, {percent}%"

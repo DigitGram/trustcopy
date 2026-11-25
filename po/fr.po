@@ -959,3 +959,18 @@ msgstr "« Fichiers » ne peut associer des touches qu’aux entrées du dossier
 #: src/ui_settings.py
 msgid "Switch"
 msgstr "Changer"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Place {pos} of {total}"
+msgstr "Position {pos} sur {total}"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Copying to {dest}, {percent}%"
+msgstr "Copie vers {dest}, {percent} %"
+
+#: src/ui_panel.py
+#, python-brace-format
+msgid "Moving to {dest}, {percent}%"
+msgstr "Déplacement vers {dest}, {percent} %"

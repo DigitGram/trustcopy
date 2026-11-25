@@ -59,7 +59,7 @@ months later.
 - **Sparse files stay sparse.** A VM disk or a preallocated download keeps its holes on the target, and only its data is read and written.
 - **Switch off when done.** In the job window, *When finished* can also suspend or shut down the computer, after a countdown you can cancel.
 - **Speed test.** In the settings, *Test* shows which checksum algorithm is fastest on your computer and recommends the fastest secure one.
-- **Pause, resume, queue.** Jobs run one after the other; errors are retried, and "Retry failed" repeats only those files.
+- **Pause, resume, queue.** Jobs run one after the other, and a waiting job's window says its place and what runs now; errors are retried, and "Retry failed" repeats only those files.
 - **Native look.** GTK 4 and libadwaita, light and dark, in ten languages (English, Deutsch, Español, Français, Italiano, 日本語, Polski, Português (Brasil), Українська, 简体中文).
 
 <p align="center">
